@@ -1,0 +1,50 @@
+html, body {
+    font-family: "pyidaungsu", sans-serif;
+    font-size: 14px;
+}
+@page {
+	header: page-header;
+	footer: page-footer;
+}
+.logo_img {
+    url
+}
+.text-center {
+    text-align: center;
+}
+.text-right {
+    text-align: right;
+}
+.text-sm {
+    font-size: 10px;
+}
+.to-div p {
+    padding: 3px;
+    margin: 0;
+}
+.mt-50 {
+    margin-top: 50px;
+}
+.mb-50 {
+    margin-bottom: 50px;
+}
+.mt-10 {
+    margin-top: 10px;
+}
+.mb-10 {
+    margin-bottom: 10px;
+}
+
+.m-l-20 {
+    margin-left: 20px !important;
+}
+.w-md {
+    width: 35%;
+}
+.table {
+    width: 100%;
+}
+.table tbody tr td {
+    font-size: 20px;
+    line-height: 35px;
+}
