@@ -2,20 +2,21 @@
 
 @section('content')
 <div class="row justify-content-center py-5">
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
-            <div class="card-header bg-primary">
-                <h4 class="card-title text-center text-white">{{ __('lang.'.$heading) }}</h4>
+            <div class="card-header bg-success">
+                <h4 class="card-title text-center text-white m-0">{{ __('lang.'.$heading) }}</h4>
             </div>
             <div class="card-body">
-                <br/>
+                <h5 class="py-2 text-danger text-center ">{{ __('lang.required_msg') }}</h5><br/>
+
                 {!! Form::open(['route' => '417_recomm_store', 'files' => true]) !!}
                 {!! Form::hidden('form_id', $form_id, ['id' => 'form_id']) !!}
                     <div class="row justify-content-center">
                         <div class="col-md-6">
                             <div class="form-group m-0">
                                 <div class="col-8">
-                                    <p class="card-title">{{ __('lang.occupy_letter') }}</p>
+                                    <p class="card-title">{{ __('lang.occupy_letter') }} <span class="text-danger f-s-15">&#10039;</span></p>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -31,10 +32,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-md-6">
                             <div class="form-group row m-0">
                                 <div class="col-8">
-                                    <p class="card-title">{{ __('lang.noinvade_letter') }}</p>
+                                    <p class="card-title">{{ __('lang.noinvade_letter') }} <span class="text-danger f-s-15">&#10039;</span></p>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -53,8 +54,8 @@
                     </div>
             </div>
             <div class="card-footer text-center">
-                <a href="{{ route('all_meter_forms') }}" class="col-3 waves-effect waves-light btn btn-secondary btn-rounded">{{ __('lang.cancel') }}</a>
-                <button type="submit" class="col-3 waves-effect waves-light btn btn-primary btn-rounded">{{ __('lang.submit') }}</button>
+                <a href="{{ route('all_meter_forms') }}" class="col-md-3 waves-effect waves-light btn btn-secondary btn-rounded">{{ __('lang.cancel') }}</a>
+                <button type="submit" class="col-md-3 waves-effect waves-light btn btn-primary btn-rounded">{{ __('lang.submit') }}</button>
             </div>
             {!! Form::close() !!}
         </div>

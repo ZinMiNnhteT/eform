@@ -60,60 +60,10 @@ a .text-gray:hover {
     color: red;
 }
 
-/* Small Desktop & above all */
-@media (min-width: 1024px) {
-    #rule_regualtion {
-        overflow-y: scroll;
-        height: 400px;
-    }
-    /* .page-wrapper {
-        min-height: 540px !important;
-    } */
-}
-@media (max-width: 1023px) {
-    /* min-height: 556px !important; */
-}
-/* Ipad & above all */
-@media (min-width: 768px) {
-    /* min-height: 556px !important; */
-}
-/* phone and below ipad */
-@media (max-width: 767px) {
-    /* .fixed-layout .page-wrapper {
-        padding-top: 67px !important;
-    } */
-    .nav-sm-none {
-        margin-top: 50px;
-    }
-    /* min-height: 556px !important; */
-}
-
 .page-wrapper {
     min-height: 540px !important;
 }
-@media (min-height: 576px) {
-    .page-wrapper {
-        min-height: 540px !important;
-    }
-    .mail-detail-div {
-        min-height: 500px;
-    }
-}
-@media (min-height: 768px) {
-    .page-wrapper {
-        min-height: 720px !important;
-    }
-}
-@media (min-height: 992px) {
-    .page-wrapper {
-        min-height: 960px !important;
-    }
-}
-@media (min-height: 1600px) {
-    .page-wrapper {
-        min-height: 1140px !important;
-    }
-}
+
 .nav-link {
     line-height: 30px;
 }
@@ -175,6 +125,9 @@ a .text-gray:hover {
 }
 .vm {
     vertical-align: middle;
+}
+ul.p-0.notice.jstf {
+    text-align: justify !important;
 }
 
 #captcha a {
@@ -397,6 +350,7 @@ aside > div::-webkit-scrollbar-thumb {
 
 /* Custom CSS by NN17 */
 .ygn-meter-list li.meter-list-item,
+.mdy-meter-list li.meter-list-item,
 .other-meter-list li.meter-list-item {
     background: #eff0f1;
     padding: 20px;
@@ -411,6 +365,12 @@ aside > div::-webkit-scrollbar-thumb {
     font-weight: bold;
 }
 
+.mdy-meter-list li.meter-list-item:hover {
+    border-left: 8px solid #009efb !important;
+    background: #b9e5ff;
+    font-weight: bold;
+}
+
 .other-meter-list li.meter-list-item:hover {
     border-left: 8px solid #36bea6 !important;
     background: #d4f3ed;
@@ -418,16 +378,19 @@ aside > div::-webkit-scrollbar-thumb {
 }
 
 .ygn-meter-list a,
+.mdy-meter-list a,
 .other-meter-list a {
     color: #333;
 }
 
 .ygn-meter-list li.meter-list-item:first-child,
+.mdy-meter-list li.meter-list-item:first-child,
 .other-meter-list li.meter-list-item:first-child {
     border-top: none;
 }
 
 .ygn-meter-list li.meter-list-item:last-child,
+.mdy-meter-list li.meter-list-item:last-child,
 .other-meter-list li.meter-list-item:first-child {
     border-bottom: none;
 }
@@ -509,3 +472,100 @@ ul.term-condition li{
 .fa-45 {
     font-size: 45px;
 }
+
+/* // inbox css */
+i.ti-email.size-lg {
+    font-size: 50px;
+}
+
+.text-fade {
+    color: #999;
+}
+
+.min-h-100p{
+    min-height: 100%;
+}
+
+.p-t-100{
+    padding-top: 100px;
+}
+
+.form-control {
+    border: 1px solid #adb5bd !important;
+}
+
+
+
+/* media */
+
+/* Small Desktop & above all */
+@media (min-width: 1024px) {
+    #rule_regualtion {
+        overflow-y: scroll;
+        height: 400px;
+    }
+    /* .page-wrapper {
+        min-height: 540px !important;
+    } */
+}
+@media (max-width: 1023px) {
+    /* min-height: 556px !important; */
+}
+/* Ipad & above all */
+@media (min-width: 768px) {
+    /* min-height: 556px !important; */
+}
+/* phone and below ipad */
+@media (max-width: 767px) {
+    /* .fixed-layout .page-wrapper {
+        padding-top: 67px !important;
+    } */
+    .nav-sm-none {
+        margin-top: 50px;
+    }
+    /* min-height: 556px !important; */
+}
+
+@media (min-height: 576px) {
+    .page-wrapper {
+        min-height: 540px !important;
+    }
+    .mail-detail-div {
+        min-height: 500px;
+    }
+}
+@media (min-height: 768px) {
+    .page-wrapper {
+        min-height: 720px !important;
+    }
+}
+@media (min-height: 992px) {
+    .page-wrapper {
+        min-height: 960px !important;
+    }
+}
+@media (min-height: 1600px) {
+    .page-wrapper {
+        min-height: 1140px !important;
+    }
+}
+.invalid-feedback {
+    display: block !important;
+}
+
+/* may zin moe css */
+a.pdf-block {
+    width: max-content;
+    margin: 5px;
+    background: #f6f6f6;
+    padding: 5px 10px;
+    border: 1px solid #dee2e680;
+    border-radius: 2px;
+    height: max-content;
+}
+.display-flex {
+    display: flex !important;
+    align-items: baseline;
+}
+
+/* may zin moe css */

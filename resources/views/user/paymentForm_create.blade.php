@@ -6,10 +6,24 @@
     <div class="col-12">
         <div class="card">
 
+            @if ($form->div_state_id == 2)
+                <?php 
+                    $org_name = 'ရန်ကုန်လျှပ်စစ်ဓာတ်အားပေးရေးကော်ပိုရေးရှင်း';
+                ?>
+            @elseif ($form->div_state_id == 3)
+                <?php 
+                    $org_name = 'မန္တလေးလျှပ်စစ်ဓာတ်အားပေးရေးကော်ပိုရေးရှင်း';
+                ?>
+            @else
+                <?php 
+                    $org_name = 'လျှပ်စစ်ဓာတ်အားဖြန့်ဖြူးရေးလုပ်ငန်း';
+                ?>
+            @endif
+
             <div class="card-body">
                 <h4 class="text-center mm">လျှပ်စစ်စွမ်းအားဝန်ကြီးဌာန</h4>
-                <h4 class="text-center mm">လျှပ်စစ်ဓါတ်အားဖြန့်ဖြူးရေးလုပ်ငန်း</h4>
-                <p class="text-right p-r-40 mm">နေ့စွဲ။ {{ mmNum(date('d - m - Y')) }}</p>
+                <h4 class="text-center mm">{{ $org_name }}</h4>
+               
 
                 <div class="row justify-content-center mm">
                     <div class="col-8">
@@ -295,72 +309,6 @@
                         @endif
                     </div>
                 </div>
-
-                
-                {!! Form::open(['route' => 'user_pay_form.store', 'files' => true]) !!}
-                {!! Form::hidden('form_id', $form->id) !!}
-                <div class="row justify-content-center mb-3 mt-3 mm">
-                    <div class="col-md-6">
-                        <div class="card border-primary">
-                            <div class="card-header bg-primary">
-                                <h4 class="m-b-0 text-white">{{ __('lang.online_alert_msg') }}</h4></div>
-                            <div class="card-body">
-                                <div class="chk-online-box">
-                                    <div class="form-group row">
-                                        <label for="cardnumber" class="control-label l-h-35 text-md-right col-md-3">
-                                            Card Number
-                                        </label>
-                                        <div class="col-md-9">
-                                            {!! Form::text('cardnumber', null, ['id' => 'cardnumber', 'class' => 'form-control inner-form','data-encrypt'=>'cardnumber','maxlength'=>'16','placeholder'=>'Credit Card Number']) !!}
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="cardinfo" class="control-label l-h-35 text-md-right col-md-3">
-                                            Card Information
-                                        </label>
-                                        <div class="col-md-4">
-                                            {!! Form::text('month', null, ['id' => 'cardinfo', 'class' => 'form-control inner-form','data-encrypt'=>'month','maxlength'=>'2','placeholder'=>'MM']) !!}
-                                        </div>
-                                        <div class="col-md-4">
-                                            {!! Form::text('year', null, ['id' => 'cardinfo', 'class' => 'form-control inner-form','data-encrypt'=>'year','maxlength'=>'4','placeholder'=>'YYYY']) !!}
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="cardnumber" class="control-label l-h-35 text-md-right col-md-3">
-                                            CVV2/CVC2
-                                        </label>
-                                        <div class="col-md-9">
-                                            {!! Form::text('cardnumber', null, ['id' => 'cardnumber', 'class' => 'form-control inner-form','data-encrypt'=>'cvv','maxlength'=>'4','placeholder'=>'CVV2/CVC2','autocomplete'=>'off']) !!}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {{--  <div class="col-4">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" name="office_payment" class="custom-control-input" id="office_pay_chkbox">
-                            <label for="office_pay_chkbox" class="custom-control-label p-l-20 custom-office"><strong>{{ __('lang.click_bank_payment') }}</strong></label>
-                        </div>
-                        <div class="form-group chk-office-box d-none">
-                            <label for="office_pay_text">{{ __('lang.bank_receipt') }}</label>
-                            <input type="file" name="office_pay" class="form-control" id="office_pay_text" accept=".jpg,.png">
-                            <p class="text-danger f-s-10 mb-2">{{ __('lang.bank_receipt_alert_msg') }}</p>
-                        </div>
-                    </div>  --}}
-                    {{--  <div class="col-4">  --}}
-                        {{--  <div class="custom-control custom-checkbox">
-                            <input type="checkbox" name="online_payment" class="custom-control-input" id="online_pay_chkbox">
-                            <label for="online_pay_chkbox" class="custom-control-label p-l-20 custom-online"><strong>{{ __('lang.click_online_payment') }}</strong></label>
-                        </div>  --}}
-                        
-                    {{--  </div>  --}}
-                </div>
-                <hr/>
-                <div class="text-center">
-                    <input type="submit" name="survey_submit" value="{{ __('lang.do_payment') }}" class="btn btn-rounded btn-primary">
-                </div>
-                {!! Form::close() !!}
             </div>
         </div>
     </div>

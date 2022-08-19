@@ -2,19 +2,19 @@
 
 @section('content')
 <div class="row justify-content-center py-5">
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
             <div class="card-header bg-primary">
-                <h4 class="card-title text-center text-white">{{ __('lang.'.$heading) }}</h4>
+                <h4 class="card-title text-center text-white m-0">{{ __('lang.'.$heading) }}</h4>
             </div>
             <div class="card-body">
-                
+                <h5 class="py-2 text-danger text-center ">{{ __('lang.required_msg') }}</h5><br/>
                 {!! Form::open(['route' => '417_bill_store_ygn', 'files' => true]) !!}
                 {!! Form::hidden('form_id', $form_id) !!}
                 <div class="row justify-content-center">
                     <div class="col-md-12">
                         <div class="form-group m-0">
-                            <h4 class="card-title">{{ __('lang.prev_bill_photo') }}</h4>
+                            <h4 class="card-title">{{ __('lang.prev_bill_photo') }} <span class="text-danger f-s-15">&#10039;</span></h4>
                         </div>
                         <div class="form-group">
                             {!! Form::file('front', ['class' => 'cursor-p front', 'accept' => '.jpg,.png', 'onchange' => 'readURL(this, "front")', 'required']) !!}

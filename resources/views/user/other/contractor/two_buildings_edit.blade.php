@@ -3,10 +3,10 @@
 @section('content')
 <div class="row justify-content-center py-5">
     
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
-            <div class="card-header bg-primary">
-                <h4 class="text-center text-white">
+            <div class="card-header bg-success">
+                <h4 class="text-center text-white m-0">
                     {{__('lang.room_count_meter_type')}}
                 </h4>
             </div>
@@ -81,8 +81,8 @@
 
             </div>
             <div class="card-footer text-center">
-                <a href="{{ route('contractor_applied_form',$c_form->application_form_id) }}" class="col-3 waves-effect waves-light btn btn-secondary btn-rounded mb-1">{{ __('lang.cancel') }}</a>
-                <button type="submit" class="col-3 waves-effect waves-light btn btn-rounded btn-primary text-white">{{ __('lang.edit') }}</button>
+                <a href="{{ route('contractor_applied_form',$c_form->application_form_id) }}" class="col-md-3 waves-effect waves-light btn btn-secondary btn-rounded mb-1">{{ __('lang.cancel') }}</a>
+                <button type="submit" class="col-md-3 waves-effect waves-light btn btn-rounded btn-primary text-white">{{ __('lang.edit') }}</button>
             </div>
             {!! Form::close() !!}
         </div>

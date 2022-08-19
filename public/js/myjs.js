@@ -1,7 +1,13 @@
 function url() {
-    return window.location.origin + '/eform/';
+    return window.location.origin+'/eform/public';
+    // return window.location.origin;
+}
+function now() {
+    var date = new Date();
+    return date.toLocaleTimeString();
 }
 $(document).ready(function() {
+
     /* select2 */
     $(".s2").select2();
     /* add mm font on select2 */
@@ -23,11 +29,79 @@ $(document).ready(function() {
         todayHighlight: true,
         format: "dd-mm-yyyy"
     });
+    $('.timepicker').timepicker({
+        timeFormat: 'h:mm p',
+        interval: 5,
+        // minTime: '10',
+        // maxTime: '6:00pm',
+        // defaultTime: now(),
+        startTime: '10:00',
+        dynamic: false,
+        dropdown: true,
+        scrollbar: true
+    });
 });
 $(document).ready(function() {
     $("#room").on("change", function() {
         var meter = Number($(this).val());
         $("#residentialMeter").val(meter);
+        var meter10k = Number($("#pMeter10").val());
+        var meter20k = Number($("#pMeter20").val());
+        var meter30k = Number($("#pMeter30").val());
+        if(meter10k == ""){
+            meter10k = 0;
+        }
+        if(meter20k == ""){
+            meter20k = 0;
+        }
+        if(meter30k == ""){
+            meter30k = 0;
+        }
+        var total = meter10k + meter20k + meter30k;
+        if (meter >= total) {
+            var meterDiff = meter - total;
+            $("#residentialMeter").val(meterDiff);
+        } else {
+            $(this).focus();
+        }
+    });
+
+    $("#floor_count").on("change", function() {
+        var apartment_count = Number($("#apartment_count").val());
+        var floor_count = Number($(this).val());
+        if(floor_count != "" && apartment_count != ""){
+            var meter = Number(apartment_count * floor_count);
+            $("#room").val(meter);
+            var meter10k = Number($("#pMeter10").val());
+            var meter20k = Number($("#pMeter20").val());
+            var meter30k = Number($("#pMeter30").val());
+            if(meter10k == ""){
+                meter10k = 0;
+            }
+            if(meter20k == ""){
+                meter20k = 0;
+            }
+            if(meter30k == ""){
+                meter30k = 0;
+            }
+            var total = meter10k + meter20k + meter30k;
+            if (meter >= total) {
+                var meterDiff = meter - total;
+                $("#residentialMeter").val(meterDiff);
+            } else {
+                $(this).focus();
+            }
+        }
+    });
+
+    $("#apartment_count").on("change", function() {
+        var floor_count = Number($("#floor_count").val());
+        var apartment_count = Number($(this).val());
+        if(floor_count != "" && apartment_count != ""){
+            var meter = Number(apartment_count * floor_count);
+            $("#room").val(meter);
+            $("#residentialMeter").val(meter);
+        }
     });
 
     $("#pMeter10").on("blur", function() {
@@ -127,12 +201,16 @@ $(document).ready(function() {
 
         if (type == 'other') {
             $("#otherWrap").removeClass('d-none');
+            $('#otherWrap .input-required input').prop('required',true);
+            $('#gStaff-wrap .input-required input').prop('required',false);
         }
         else {
             $('#otherWrap').addClass('d-none');
+            $('#gStaff-wrap .input-required input').prop('required',true);
+            $('#otherWrap .input-required input').prop('required',false);
         }
     });
-
+    
     $(".refresh_captcha").on("click", function() {
         $.ajax({
             type: "GET",
@@ -186,7 +264,7 @@ $(document).ready(function() {
             data: { id: region_id },
             success: function(e) {
                 $("#district").html(e.district);
-                $("#township").html(e.township);
+                // $("#township").html(e.township);
             }
         });
     });
@@ -286,7 +364,7 @@ $(document).ready(function() {
                             e.target.result +
                             '" title="' +
                             name +
-                            '" />' +
+                            '" data-toggle="modal" data-target="#myImg"/>' +
                             // "<br/><span class=\"cursor-p remove\">Remove</span>" +
                             "</div>"
                     );
@@ -296,6 +374,76 @@ $(document).ready(function() {
                     $(".btn-remove").click(function() {
                         $(".pre-img").remove();
                         $("#uploadFile").val("");
+                        $(this).addClass("d-none");
+                    });
+                };
+                fileReader.readAsDataURL(f);
+            }
+        });
+    }
+
+    /* Multiple Image Preview */
+    if (window.File && window.FileList && window.FileReader) {
+        $("#uploadFile2").on("change", function(e) {
+            $(".pre-img2").remove();
+            var files = e.target.files,
+                filesLength = files.length;
+            for (var i = 0; i < filesLength; i++) {
+                var f = files[i];
+                var fileReader = new FileReader();
+                fileReader.onload = function(e) {
+                    var file = e.target;
+                    $("#image_preview2").append(
+                        '<div class="col-4 text-center pre-img2">' +
+                            '<img class="img-thumbnail custom-img-thumbnail" src="' +
+                            e.target.result +
+                            '" title="' +
+                            name +
+                            '" data-toggle="modal" data-target="#myImg"/>' +
+                            // "<br/><span class=\"cursor-p remove\">Remove</span>" +
+                            "</div>"
+                    );
+                    $(".btn-remove2").removeClass("d-none");
+
+                    // remove
+                    $(".btn-remove2").click(function() {
+                        $(".pre-img2").remove();
+                        $("#uploadFile2").val("");
+                        $(this).addClass("d-none");
+                    });
+                };
+                fileReader.readAsDataURL(f);
+            }
+        });
+    }
+
+    /* Multiple Image Preview */
+    if (window.File && window.FileList && window.FileReader) {
+        $("#uploadFile3").on("change", function(e) {
+            $(".pre-img3").remove();
+            var files = e.target.files,
+                filesLength = files.length;
+            for (var i = 0; i < filesLength; i++) {
+                var f = files[i];
+                var fileReader = new FileReader();
+                fileReader.onload = function(e) {
+                    var file = e.target;
+                    $("#image_preview3").append(
+                        '<div class="col-4 text-center pre-img3">' +
+                            '<img class="img-thumbnail custom-img-thumbnail" src="' +
+                            e.target.result +
+                            '" title="' +
+                            name +
+                            '" data-toggle="modal" data-target="#myImg"/>' +
+                            // "<br/><span class=\"cursor-p remove\">Remove</span>" +
+                            "</div>"
+                    );
+                    $(".btn-remove3").removeClass("d-none");
+
+                    // remove
+                    $(".btn-remove3").click(function() {
+                        $(".pre-img3").remove();
+                        $("#uploadFile3").val("");
                         $(this).addClass("d-none");
                     });
                 };
@@ -462,6 +610,7 @@ $(document).ready(function() {
             .find("input:checkbox[name='confirm']")
             .data("per");
 
+        run_waitMe('.role-view','bounce','');
         $.ajax({
             type: "POST",
             url: url() + "/role_action",
@@ -476,6 +625,7 @@ $(document).ready(function() {
                 confirm_perm: confirm_perm
             },
             success: function(e) {
+                stop_waitMe('.role-view');
                 $(".write" + role + write_perm).prop("checked", e.write);
                 $(".edit" + role + edit_perm).prop("checked", e.edit);
                 $(".delete" + role + delete_perm).prop("checked", e.delete);
@@ -489,7 +639,10 @@ $(document).ready(function() {
                         e.confirm
                     );
                 }
-            }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                // alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+            }  
         });
     });
     // ==================== WRITE ========================== //
@@ -517,6 +670,8 @@ $(document).ready(function() {
             .closest("tr")
             .find("input:checkbox[name='confirm']")
             .data("per");
+
+        run_waitMe('.role-view','bounce','');
         $.ajax({
             type: "POST",
             url: url() + "/role_action",
@@ -531,6 +686,7 @@ $(document).ready(function() {
                 confirm_perm: confirm_perm
             },
             success: function(e) {
+                stop_waitMe('.role-view');
                 $(".read" + role + read_perm).prop("checked", e.read);
                 $(".edit" + role + edit_perm).prop("checked", e.edit);
                 $(".delete" + role + delete_perm).prop("checked", e.delete);
@@ -544,7 +700,10 @@ $(document).ready(function() {
                         e.confirm
                     );
                 }
-            }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                // alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+            } 
         });
     });
     // ==================== EDIT ========================== //
@@ -574,6 +733,7 @@ $(document).ready(function() {
             .find("input:checkbox[name='confirm']")
             .data("per");
 
+        run_waitMe('.role-view','bounce','');
         $.ajax({
             type: "POST",
             url: url() + "/role_action",
@@ -588,6 +748,7 @@ $(document).ready(function() {
                 confirm_perm: confirm_perm
             },
             success: function(e) {
+                stop_waitMe('.role-view');
                 $(".read" + role + read_perm).prop("checked", e.read);
                 $(".write" + role + write_perm).prop("checked", e.write);
                 $(".delete" + role + delete_perm).prop("checked", e.delete);
@@ -601,7 +762,10 @@ $(document).ready(function() {
                         e.confirm
                     );
                 }
-            }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                // alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+            } 
         });
     });
     // ==================== DELETE ========================== //
@@ -631,6 +795,7 @@ $(document).ready(function() {
             .find("input:checkbox[name='confirm']")
             .data("per");
 
+        run_waitMe('.role-view','bounce','');
         $.ajax({
             type: "POST",
             url: url() + "/role_action",
@@ -645,6 +810,7 @@ $(document).ready(function() {
                 confirm_perm: confirm_perm
             },
             success: function(e) {
+                stop_waitMe('.role-view');
                 $(".read" + role + read_perm).prop("checked", e.read);
                 $(".write" + role + write_perm).prop("checked", e.write);
                 $(".edit" + role + edit_perm).prop("checked", e.edit);
@@ -658,7 +824,10 @@ $(document).ready(function() {
                         e.confirm
                     );
                 }
-            }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                // alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+            } 
         });
     });
     // ==================== DETAILREAD ====================== //
@@ -688,19 +857,20 @@ $(document).ready(function() {
             .find("input:checkbox[name='confirm']")
             .data("per");
 
-        console.log(
-            read_perm +
-                "/" +
-                write_perm +
-                "/" +
-                edit_perm +
-                "/" +
-                delete_perm +
-                "/" +
-                detailRead_perm +
-                "/" +
-                confirm_perm
-        );
+        // console.log(
+        //     read_perm +
+        //         "/" +
+        //         write_perm +
+        //         "/" +
+        //         edit_perm +
+        //         "/" +
+        //         delete_perm +
+        //         "/" +
+        //         detailRead_perm +
+        //         "/" +
+        //         confirm_perm
+        // );
+        run_waitMe('.role-view','bounce','');
         $.ajax({
             type: "POST",
             url: url() + "/role_action",
@@ -715,6 +885,7 @@ $(document).ready(function() {
                 confirm_perm: confirm_perm
             },
             success: function(e) {
+                stop_waitMe('.role-view');
                 $(".read" + role + read_perm).prop("checked", e.read);
                 $(".write" + role + write_perm).prop("checked", e.write);
                 $(".edit" + role + edit_perm).prop("checked", e.edit);
@@ -725,7 +896,10 @@ $(document).ready(function() {
                         e.confirm
                     );
                 }
-                console.log(e);
+                // console.log(e);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                // alert("Status: " + textStatus); alert("Error: " + errorThrown); 
             }
         });
     });
@@ -755,7 +929,8 @@ $(document).ready(function() {
             .closest("tr")
             .find("input:checkbox[name='detialRead']")
             .data("per");
-
+            
+        run_waitMe('.role-view','bounce','');
         $.ajax({
             type: "POST",
             url: url() + "/role_action",
@@ -770,6 +945,7 @@ $(document).ready(function() {
                 detialRead_perm: detialRead_perm
             },
             success: function(e) {
+                stop_waitMe('.role-view');
                 $(".read" + role + read_perm).prop("checked", e.read);
                 $(".write" + role + write_perm).prop("checked", e.write);
                 $(".edit" + role + edit_perm).prop("checked", e.edit);
@@ -778,12 +954,22 @@ $(document).ready(function() {
                     "checked",
                     e.detail
                 );
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                // alert("Status: " + textStatus); alert("Error: " + errorThrown); 
             }
         });
     });
 
     /* Form Error Resend Modal */
     $("#myResendModal").on("show.bs.modal", function(event) {
+        var button = $(event.relatedTarget);
+        var id = button.data("id");
+        $(this)
+            .find(".modal-body #form_id")
+            .val(id);
+    });
+    $("#myRejectFormModal").on("show.bs.modal", function(event) {
         var button = $(event.relatedTarget);
         var id = button.data("id");
         $(this)
@@ -900,6 +1086,7 @@ $(document).ready(function() {
         // alert(mail_id);
         // $('.nav-noti').removeClass('notify');
         $(this).addClass("active");
+        $(this).removeClass("mail_un_read");
         $(".list-group")
             .children(".list-group-item")
             .not(this)
@@ -921,6 +1108,7 @@ $(document).ready(function() {
                 $(".mail_body div").remove();
                 $.post(url() + "/mail_detail_show", { id: mail_id }, function(e) {
                     // $(".clk-mail").removeClass("mail_un_read");
+                    $('.select-to-read-view').addClass("d-none");
                     $(".mail-view").removeClass("d-none");
                     $(".send_type").append("<span>" + e.send_type + "</span>");
                     $(".mail_uname").append(
@@ -1062,3 +1250,29 @@ $(document).ready(function() {
     /* lock or unlock user */
     
 });
+
+//mayzinmoe
+$(document).on('click','img.imgViewer',function(){
+    $('#imgViewerSrc').attr('src',$(this).attr('src'));
+    $('#imgViewerAlt').html($(this).attr('alt'));
+    $('#imgViewer').modal('show'); 
+});
+
+function run_waitMe(selector,eff,text) {
+    $(selector).waitMe({
+        effect: eff,
+        text: text,
+        color: "#009EFB",
+    });
+}
+
+function stop_waitMe(selector){
+    $(selector).waitMe("hide");
+}
+
+// user js
+$(document).on('click','.tsf-meter-type-choose',function(){
+    var subtype = ($(this).attr('subtype'));
+    $('input[name="sub_type"]').val(subtype);
+});
+

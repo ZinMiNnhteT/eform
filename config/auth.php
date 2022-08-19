@@ -41,8 +41,14 @@ return [
             'provider' => 'users',
         ],
 
+        // 'api' => [
+        //     'driver' => 'passport',
+        //     'provider' => 'users',
+        //     // 'hash' => false,
+        // ],
+
         'api' => [
-            'driver' => 'passport',
+            'driver' => 'jwt',
             'provider' => 'users',
             // 'hash' => false,
         ],
@@ -55,6 +61,12 @@ return [
         'admin_api' => [
             'driver' => 'passport',
             'provider' => 'admins',
+            // 'hash' => false,
+        ],
+
+        'user_api' => [
+            'driver' => 'passport',
+            'provider' => 'users',
             // 'hash' => false,
         ],
     ],

@@ -3,21 +3,24 @@
 @section('content')
 <div class="row justify-content-center py-5">
     
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
-            <div class="card-header bg-primary">
-                <h4 class="text-center text-white">
+            <div class="card-header bg-success">
+                <h4 class="text-center text-white m-0">
                     {{__('lang.room_count_meter_type')}}
                 </h4>
             </div>
             <div class="card-body">
-                
+                <h5 class="py-2 text-danger text-center ">{{ __('lang.required_msg') }}</h5><br/>
                 {!! Form::open(['route' => ['contractor_choose_form']]) !!}
                 <div class="row justify-content-center">
                     <div class="col-md-8">
                         <div class="form-group">
                             <label class="text-info">{{ __('lang.room_count') }} <span class="text-danger f-s-15">&#10039;</span></label>
-                            <input type="number" name="room_count" class="form-control" placeholder="Number of Rooms" id="room" />
+                            <input type="number" name="room_count" class="form-control" placeholder="{{ __('lang.room_count') }}" id="room" required />
+                            @if($errors->has('room_count'))
+                            <span class="text-danger">{{ $errors->first('room_count') }}</span>
+                            @endif
                         </div>
                         {{-- Power Meter --}}
                         <div class="form-group">
@@ -26,20 +29,20 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <label for="pMeter10">10 KW</label>
-                                        <input type="number" name="pMeter10" class="form-control" placeholder="Number of Power Meter" id="pMeter10" />
+                                        <input type="number" name="pMeter10" class="form-control" placeholder="{{ __('lang.power_meter') }}" id="pMeter10" />
                                     </div>
                                     <div class="col-md-4">
                                         <label for="pMeter20">20 KW</label>
-                                        <input type="number" name="pMeter20" class="form-control" placeholder="Number of Power Meter" id="pMeter20" />
+                                        <input type="number" name="pMeter20" class="form-control" placeholder="{{ __('lang.power_meter') }}" id="pMeter20" />
                                     </div>
                                     <div class="col-md-4">
                                         <label for="pMeter30">30 KW</label>
-                                        <input type="number" name="pMeter30" class="form-control" placeholder="Number of Power Meter" id="pMeter30" />
+                                        <input type="number" name="pMeter30" class="form-control" placeholder="{{ __('lang.power_meter') }}" id="pMeter30" />
                                     </div>
                                 </div>
                                 <div class="text-danger text-justify p-10">
                                     <i class="fa fa-hand-o-right"></i>
-                                    ပါဝါမီတာ ထည့်သွင်းလျှောက်ထားလိုလျှင် မိမိလျှောက်ထားလိုသော မီတာအမျိုးအစားတွင် အရေအတွက် ထည့်သွင်းပေးပါရန်
+                                    {{ __('lang.include_number') }}
                                 </div>
                             </div>
                         </div>
@@ -47,7 +50,7 @@
                         {{-- Normal Meter --}}
                         <div class="form-group">
                             <label class="text-info">{{ __('lang.residential_meter') }}</label>
-                            <input type="number" name="meter" class="form-control" placeholder="Number of residential meters" id="residentialMeter" readonly/>
+                            <input type="number" name="meter" class="form-control" placeholder="{{ __('lang.residential_meter') }}" id="residentialMeter" readonly/>
                         </div>
 
                         {{-- Other Meter --}}
@@ -80,8 +83,8 @@
 
             </div>
             <div class="card-footer text-center">
-                <a href="{{ route('contract_rule_regulation') }}" class="col-3 waves-effect waves-light btn btn-secondary btn-rounded mb-1">{{ __('lang.cancel') }}</a>
-                <button type="submit" class="col-3 waves-effect waves-light btn btn-rounded btn-info text-white">{{ __('lang.apply') }}</button>
+                <a href="{{ route('contract_rule_regulation') }}" class="col-md-3 waves-effect waves-light btn btn-secondary btn-rounded mb-1">{{ __('lang.cancel') }}</a>
+                <button type="submit" class="col-md-3 waves-effect waves-light btn btn-rounded btn-info text-white">{{ __('lang.apply') }}</button>
             </div>
             {!! Form::close() !!}
         </div>

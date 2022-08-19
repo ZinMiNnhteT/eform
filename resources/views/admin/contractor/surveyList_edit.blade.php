@@ -13,8 +13,7 @@
             </div>
             
             <div class="card-body">
-               
-
+                <h5 class="py-2 text-danger text-center ">{{ __('lang.required_msg') }}</h5>
                 {!! Form::open(['route' => 'contractorMeterGroundCheckList.update', 'files' => true]) !!}
                 {!! Form::hidden('form_id', $form->id) !!}
                 <div class="row justify-content-center m-t-20">
@@ -101,20 +100,20 @@
                             <div class="bg-secondary p-20">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <label for="">{{ __('lang.feet') }} (FT)</label>
-                                        <input type="number" value="<?php echo $survey_result->tsf_transmit_distance_feet ?>" name="tsf_transmit_distance_feet" class="form-control inner-form" id="tsf_transmit_distance" min="0" />
+                                        <label for="">{{ __('lang.feet') }} (FT) <span class="text-danger f-s-15">&#10039;</span></label>
+                                        <input type="number" value="<?php echo $survey_result->tsf_transmit_distance_feet ?>" name="tsf_transmit_distance_feet" class="form-control inner-form" id="tsf_transmit_distance" min="0" required/>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="">{{ __('lang.kv') }} (KV)</label>
-                                        <input type="number" value="<?php echo $survey_result->tsf_transmit_distance_kv ?>" name="tsf_transmit_distance_kv" class="form-control" min="0" id="tsf_transmit_distance" />
+                                        <label for="">{{ __('lang.kv') }} (KV) <span class="text-danger f-s-15">&#10039;</span></label>
+                                        <input type="text" value="<?php echo $survey_result->tsf_transmit_distance_kv ?>" name="tsf_transmit_distance_kv" class="form-control" id="tsf_transmit_distance" required/>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         {{--  ဓါတ်အားရယူမည့် ထရန်စဖေါ်မာ  --}}
                         <div class="form-group">
-                            <label for="exist_transformer" class="text-info">{{ __('lang.exist_transformer') }}</label>
-                            <textarea name="exist_transformer" class="form-control" id="exist_transformer" rows="3"><?php echo $survey_result->exist_transformer ?></textarea>
+                            <label for="exist_transformer" class="text-info">{{ __('lang.exist_transformer') }} <span class="text-danger f-s-15">&#10039;</span></label>
+                            <textarea name="exist_transformer" class="form-control" id="exist_transformer" rows="3" required><?php echo $survey_result->exist_transformer ?></textarea>
                         </div>
 
                         {{--  under 18 Rooms  --}}
@@ -128,7 +127,7 @@
                                 <div class="row">
                                     <div class="col-md-6 m-b-20">
                                         <label for="">Amp / ရာခိုင်နှုန်း (%) ဖြင့်ဖေါ်ပြပေးရန် </label>
-                                        <input type="number" value="<?php echo $survey_result->amp ?>" name="amp" class="form-control" placeholder="{{ __('lang.by_english') }}" min="0" max="100" />
+                                        <input type="text" value="<?php echo $survey_result->amp ?>" name="amp" class="form-control" placeholder="{{ __('lang.load_percent_format') }}" />
                                     </div>
                                     <div class="col-md-6">
                                         <label class="d-block">ဝန်အားနိုင်နင်းမှု ရွေးချယ်ပေးရန်</label>
@@ -156,14 +155,21 @@
                                 <div class="row">
                                     <div class="col-md-6 m-b-20">
                                         <label for="">Amp / ရာခိုင်နှုန်း (%) ဖြင့်ဖေါ်ပြပေးရန် </label>
-                                        <input type="number" name="amp" class="form-control" placeholder="{{ __('lang.by_english') }}" min="0" max="100" />
+                                        <input type="text" name="amp" class="form-control" placeholder="{{ __('lang.load_percent_format') }}" value="<?php echo $survey_result->amp ?>"/>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="d-block">ဝန်အားနိုင်နင်းမှု ရွေးချယ်ပေးရန်</label>
-                                        <input type="radio" class="check" name="loaded" value="on" id="square-radio-1" data-radio="iradio_square-red" disabled>
-                                        <label for="square-radio-1">နိုင်နင်းမှု ရှိသည်</label>
-                                        <input type="radio" class="check" name="loaded" value="off" id="square-radio-1" data-radio="iradio_square-red" checked>
-                                        <label for="square-radio-1">နိုင်နင်းမှု မရှိပါ</label>
+                                        <?php if ($survey_result->loaded == true): ?>
+                                            <input type="radio" class="check" name="loaded" value="on" id="square-radio-1" data-radio="iradio_square-red" checked>
+                                            <label for="square-radio-1">နိုင်နင်းမှု ရှိသည်</label>
+                                            <input type="radio" class="check" name="loaded" value="off" id="square-radio-1" data-radio="iradio_square-red" >
+                                            <label for="square-radio-1">နိုင်နင်းမှု မရှိပါ</label>
+                                        <?php else: ?>
+                                            <input type="radio" class="check" name="loaded" value="on" id="square-radio-1" data-radio="iradio_square-red" >
+                                            <label for="square-radio-1">နိုင်နင်းမှု ရှိသည်</label>
+                                            <input type="radio" class="check" name="loaded" value="off" id="square-radio-1" data-radio="iradio_square-red" checked>
+                                            <label for="square-radio-1">နိုင်နင်းမှု မရှိပါ</label>
+                                        <?php endif ?>
                                     </div>
                                 </div>
                             </div>
@@ -178,7 +184,7 @@
                                 <div class="row">
                                     <div class="col-md-6 m-b-20">
                                         <label for="">Amp / ရာခိုင်နှုန်း (%) ဖြင့်ဖေါ်ပြပေးရန် </label>
-                                        <input type="number" name="amp" class="form-control" placeholder="{{ __('lang.by_english') }}" min="0" max="100" />
+                                        <input type="text" name="amp" class="form-control" placeholder="{{ __('lang.load_percent_format') }}" />
                                     </div>
                                     <div class="col-md-6">
                                         <label class="d-block">ဝန်အားနိုင်နင်းမှု ရွေးချယ်ပေးရန်</label>
@@ -199,6 +205,30 @@
                             </div>
                         </div>
                         @endif
+
+                        <div class="form-group">
+                            <label for="location_map" class="text-info">
+                                {{ __('lang.location_map_2') }}
+                            </label>
+                            <input type="file" name="location_map" accept=".jpg,.png,.pdf" class="form-control"/>
+                            <div>
+                                @if ($survey_result->location_map)
+                                    <?php 
+                                        $foto = $survey_result->location_map;
+                                        $filename = asset('storage/user_attachments/'.$form->id.'/'.$foto);
+                                        $ext = pathinfo($filename, PATHINFO_EXTENSION);
+                                        ;
+                                    ?>
+                                    <div style="padding-top: 10px;">
+                                        @if($ext != 'pdf')
+                                            <img src="{{ asset('storage/user_attachments/'.$form->id.'/'.$foto) }}" alt="{{ $foto }}" class="img-thumbnail imgViewer" width="150" height="150">
+                                        @else
+                                            <a href="{{ asset('storage/user_attachments/'.$form->id.'/'.$foto) }}" target="_blank" class="pdf-block">{{ $foto }}</a>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
                         
                         <div class="form-group">
                             <label for="remark" class="text-info">

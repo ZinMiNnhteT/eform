@@ -2,10 +2,10 @@
 
 @section('content')
 <div class="row justify-content-center py-5">
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
             <div class="card-header bg-primary">
-                <h4 class="card-title text-center text-white">လျှောက်ထားသူ၏ သာသနာရေးကဒ် ဓါတ်ပုံ</h4>
+                <h4 class="card-title text-center text-white m-0">လျှောက်ထားသူ၏ သာသနာရေးကဒ် ဓါတ်ပုံ (မူရင်း)</h4>
             </div>
             <div class="card-body">
                 {!! Form::open(['route' => 'tsf_nrc_store_ygn', 'files' => true]) !!}
@@ -26,7 +26,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-md-6">
                         <div class="form-group m-0">
                             <h4 class="card-title ">{{ __('သာသနာရေးကဒ် နောက်ဖက်') }}</h4>
                         </div>
@@ -44,8 +44,8 @@
                 </div>
             </div>
             <div class="card-footer text-center">
-                <a href="{{ route('all_meter_forms') }}" class="col-3 waves-effect waves-light btn btn-secondary btn-rounded ">{{ __('lang.cancel') }}</a>
-                <button type="submit" class="col-3 waves-effect waves-light btn btn-primary btn-rounded ">{{ __('lang.submit') }}</button>
+                <a href="{{ route('all_meter_forms') }}" class="col-md-3 waves-effect waves-light btn btn-secondary btn-rounded ">{{ __('lang.cancel') }}</a>
+                <button type="submit" class="col-md-3 waves-effect waves-light btn btn-primary btn-rounded ">{{ __('lang.submit') }}</button>
             </div>
             {!! Form::close() !!}
         </div>

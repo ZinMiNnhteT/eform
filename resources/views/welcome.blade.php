@@ -14,8 +14,11 @@
         <link rel="stylesheet" href="{{ asset('css/welcome.css') }}">
     </head>
     <body class="bg-img {{ checkMM() }}">
-        <nav class="navbar navbar-expand-md">
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand d-sm-none d-block" href="{{ url('/') }}">
+                {{ config('app.name', 'Laravel') }}
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
@@ -44,10 +47,10 @@
                             </li>
                         @endif
                             <li class="nav-item">
-                                <a class="nav-link text-danger" href="{{ url('language/en') }}"><i class="flag-icon flag-icon-gb"></i></a>
+                                <a class="nav-link" href="{{ url('language/en') }}"><i class="flag-icon flag-icon-gb"></i></a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-danger" href="{{ url('language/mm') }}"><i class="flag-icon flag-icon-mm"></i></a>
+                                <a class="nav-link" href="{{ url('language/mm') }}"><i class="flag-icon flag-icon-mm"></i></a>
                             </li>
                         </ul>
                     @endauth
@@ -65,7 +68,7 @@
                 <div class="col-md-8">
                     <div class="card bg-none">
                         <div class="card-body py-md-5 px-md-5">
-                            <ul class="p-0">
+                            <ul class="p-0 notice jstf">
                                 <li><h4 class="custom-text">မီတာ/ပါဝါမီတာ/ထရန်စဖေါ်မာ လျှောက်ထားရာတွင် လျှောက်ထားသူ၏ ကိုယ်ရေးအချက်အလက်များနှင့် ပူးတွဲပါစာရွက်စာတမ်းများကို တိကျမှန်ကန်စွာ ဖြည့်သွင်းပေးရမည်။</h4></li>
                                 <li><h4 class="custom-text">မီတာ/ပါဝါမီတာ/ထရန်စဖေါ်မာ လျှောက်ထားရာတွင် ဌာနမှ ပူးတွဲတင်ပြရန် သက်မှတ်ထားသော စာရွက်စာတမ်းများအား ထင်ရှားပြတ်သားစွာ ဓါတ်ပုံရိုက်ယူ၍သော်လည်ကောင်း၊ Scan ဖတ်၍သော်လည်ကောင်း ပူးတွဲတင်ပြပေးရမည်။</h4></li>
                                 <li><h4 class="custom-text">ပူးတွဲပါစာရွက်စာတမ်းများ မပြည့်စုံခြင်း၊ ထင်ရှားမှု၊ ပြတ်သားမှုမရှိပါက လျှောက်လွှာအား ထည့်သွင်းစဉ်းစားမည် မဟုတ်ပါ။</h4></li>
@@ -77,5 +80,6 @@
                 </div>
             </div>
         </div>
+    <script src="{{ asset('js/app.js') }}"></script>
     </body>
 </html>

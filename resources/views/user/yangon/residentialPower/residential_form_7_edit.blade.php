@@ -2,19 +2,39 @@
 
 @section('content')
 <div class="row justify-content-center py-5">
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
             <div class="card-header bg-primary">
-                <h5 class="card-title text-center text-white">{{ __('lang.'.$heading) }}</h5>
+                <h5 class="card-title text-center text-white m-0">{{ __('lang.'.$heading) }}</h5>
             </div>
             <div class="card-body">
                 <div class="container">
+                @php
+                    $required = 'required';
+                    $star = '<span class="text-danger f-s-15">&#10039;</span>';
+                    if ($files->count() > 0){
+                        foreach ($files as $file){
+                            if ($file->electric_power){
+                                $data = explode(',', $file->electric_power);
+                                foreach ($data as $item){
+                                    $required = '';
+                                    $star = '';
+                                }
+                            }
+                        }
+                    }
+                @endphp
+                @if($required == 'required')
+                    <h5 class="py-2 text-danger text-center ">{{ __('lang.required_msg') }}</h5>
+                    <br/>
+                @endif
                 {!! Form::open(['route' => 'resident_power_electricpower_update_ygn', 'method' => 'PATCH', 'files' => true]) !!}
                 {!! Form::hidden('form_id', $form_id, ['id' => 'form_id']) !!}
                     <div class="row">
                         <div class="col-12">
-                            <h4 class="card-title">{{ __('lang.electricpower_photo') }}</h4>
-                            {!! Form::file('front[]', ['class' => 'cursor-p front', 'accept' => '.pdf.jpg,.png', 'id' => 'uploadFile', 'multiple']) !!}
+                            <h4 class="card-title">{{ __('lang.electricpower_photo') }} {!! $star !!}</h4>
+                            {!! Form::file('front[]', ['class' => 'cursor-p front', 'accept' => '.pdf.jpg,.png', 'id' => 'uploadFile', 'multiple',$required]) !!}
+                            <p class="px-1 py-1 m-t-10 text-danger">{{ __('lang.owner_photo_msg') }}</p>
                             
                             <div class="preview-wrapper m-t-10">
                                 <div id="image_preview" class="row m-t-10 m-b-10"></div>
@@ -29,7 +49,7 @@
                         @if ($file->electric_power)
                     @php $data = explode(',', $file->electric_power); @endphp
                             @foreach ($data as $item)
-                    <div class="col-2 text-center">
+                    <div class="col-md-2 col-sm-3 text-center">
                         <img src="{{ asset('storage/user_attachments/'.$form->id.'/'.$item) }}" alt="{{ $item }}"  width="175" height="150" alt="" class="img-thumbnail custom-img-thumbnail">
                     </div>
                             @endforeach

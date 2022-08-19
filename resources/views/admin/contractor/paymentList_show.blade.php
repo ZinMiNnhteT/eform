@@ -81,11 +81,11 @@
                                 @foreach ($files as $file)
                                 <div class="row text-center mt-2">
                                     <div class="col-md-6">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->nrc_copy_front) }}" alt="{{ $file->nrc_copy_front }}" class="img-thumbnail" width="150" height="150">
+                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->nrc_copy_front) }}" alt="{{ $file->nrc_copy_front }}" class="img-thumbnail imgViewer" width="150" height="150">
                                         <p class="m-t-10 m-b-10">{{ __('lang.nrc_front') }}</p>
                                     </div>
                                     <div class="col-md-6">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->nrc_copy_back) }}" alt="{{ $file->nrc_copy_back }}" class="img-thumbnail" width="150" height="150">
+                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->nrc_copy_back) }}" alt="{{ $file->nrc_copy_back }}" class="img-thumbnail imgViewer" width="150" height="150">
                                         <p class="m-t-10 m-b-10">{{ __('lang.nrc_back') }}</p>
                                     </div>
                                 </div>
@@ -102,12 +102,12 @@
                                 @foreach ($files as $file)
                                 <div class="row text-center mt-2">
                                     <div class="col-md-6">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->form_10_front) }}" alt="{{ $file->form_10_front }}" class="img-thumbnail" width="150" height="150">
+                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->form_10_front) }}" alt="{{ $file->form_10_front }}" class="img-thumbnail imgViewer" width="150" height="150">
                                         <p class="m-t-10 m-b-10">{{ __('lang.form10_front') }}</p>
                                     </div>
                                     @if ($file->form_10_back)
                                     <div class="col-md-6">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->form_10_back) }}" alt="{{ $file->form_10_back }}" class="img-thumbnail" width="150" height="150">
+                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->form_10_back) }}" alt="{{ $file->form_10_back }}" class="img-thumbnail imgViewer" width="150" height="150">
                                         <p class="m-t-10 m-b-10">{{ __('lang.form10_back') }}</p>
                                     </div>
                                     @endif
@@ -125,11 +125,11 @@
                                 @foreach ($files as $file)
                                 <div class="row text-center mt-2">
                                     <div class="col-md-6">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->occupy_letter) }}" alt="{{ $file->occupy_letter }}" class="img-thumbnail" width="150" height="150">
+                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->occupy_letter) }}" alt="{{ $file->occupy_letter }}" class="img-thumbnail imgViewer" width="150" height="150">
                                         <p class="m-t-10 m-b-10">{{ __('lang.occupy_letter') }}</p>
                                     </div>
                                     <div class="col-md-6">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->no_invade_letter) }}" alt="{{ $file->no_invade_letter }}" class="img-thumbnail" width="150" height="150">
+                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->no_invade_letter) }}" alt="{{ $file->no_invade_letter }}" class="img-thumbnail imgViewer" width="150" height="150">
                                         <p class="m-t-10 m-b-10">{{ __('lang.noinvade_letter') }}</p>
                                     </div>
                                 </div>
@@ -151,7 +151,7 @@
                                     @endphp
                                     @foreach ($owner_foto as $foto)
                                     <div class="col-md-6 text-center">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ $foto }}" class="img-thumbnail" width="150" height="150">
+                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ $foto }}" class="img-thumbnail imgViewer" width="150" height="150">
                                         <p class="m-t-10 m-b-10">{{ __('lang.owner_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})</p>
                                     </div>
                                     @php
@@ -174,7 +174,7 @@
                                 @foreach ($files as $file)
                                 <div class="row text-center mt-2">
                                     <div class="col-md-6">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->building_permit) }}" alt="{{ $file->building_permit }}" class="img-thumbnail" width="150" height="150">
+                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->building_permit) }}" alt="{{ $file->building_permit }}" class="img-thumbnail imgViewer" width="150" height="150">
                                         <p class="m-t-10 m-b-10">{{ __('lang.applied_permit_photo') }}</p>
                                     </div>
                                 </div>
@@ -193,7 +193,7 @@
                                 @foreach ($files as $file)
                                 <div class="row text-center mt-2">
                                     <div class="col-md-6">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->bcc) }}" alt="{{ $file->bcc }}" class="img-thumbnail" width="150" height="150">
+                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->bcc) }}" alt="{{ $file->bcc }}" class="img-thumbnail imgViewer" width="150" height="150">
 
                                         <p class="m-t-10 m-b-10">{{ __('lang.applied_bcc_photo') }}</p>
                                     </div>
@@ -213,7 +213,7 @@
                                 @foreach ($files as $file)
                                 <div class="row text-center mt-2">
                                     <div class="col-md-6">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->dc_recomm) }}" alt="{{ $file->dc_recomm }}" class="img-thumbnail" width="150" height="150">
+                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->dc_recomm) }}" alt="{{ $file->dc_recomm }}" class="img-thumbnail imgViewer" width="150" height="150">
 
                                         <p class="m-t-10 m-b-10">{{ __('lang.applied_dc_recomm_photo') }}</p>
                                     </div>
@@ -233,7 +233,7 @@
                                 @foreach ($files as $file)
                                 <div class="row text-center mt-2">
                                     <div class="col-md-6">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->prev_bill) }}" alt="{{ $file->prev_bill }}" class="img-thumbnail" width="150" height="150">
+                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->prev_bill) }}" alt="{{ $file->prev_bill }}" class="img-thumbnail imgViewer" width="150" height="150">
 
                                         <p class="m-t-10 m-b-10">{{ __('lang.applied_bill_photo') }}</p>
                                     </div>
@@ -241,6 +241,259 @@
                                 @endforeach
                             </div>
                         </div>
+
+                        @if($data->apply_division == 1)
+                            {{-- လယ်ယာပိုင်မြေအားအခြားနည်းဖြင့်သုံးဆွဲရန်ခွင့်ပြုချက် --}}
+                            <div class="card mb-1">
+                                <div class="card-header d-flex" role="tab" id="headingOne">
+                                    <h5 class="mb-0 ">
+                                        <a data-toggle="collapse" data-parent="#app_show" href="#farmland" aria-expanded="true" aria-controls="collapseOne">
+                                        {{ __('lang.farmland_permit') }}
+                                        </a>
+                                    </h5>
+                                    @if (chk_send($data->id) !== 'first')
+                                        @if (chk_form_finish($data->id, $data->apply_type)['farmland'])
+                                    <div class="ml-auto">
+                                        <a href="{{ route('contractor_farmland_edit_ygn', $data->id) }}" class="btn-edit text-info ">{{ __('lang.create') }}</a>
+                                    </div>
+                                        @else
+                                    <div class="ml-auto">
+                                        <a href="{{ route('contractor_farmland_edit_ygn', $data->id) }}" class="btn-edit text-danger ">{{ __('lang.edit') }}</a>
+                                    </div>
+                                        @endif
+                                    @endif
+                                </div>
+                                <div id="farmland" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                                    @if ($files->count() > 0)
+                                        @foreach ($files as $file)
+                                            @if ($file->farmland)
+                                    <div class="row text-center mt-2">
+                                        @php
+                                            $farmland_foto = explode(',', $file->farmland);
+                                            $i = 1;
+                                        @endphp
+                                                @foreach ($farmland_foto as $foto)
+                                        <div class="col-md-6 text-center">
+                                            <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ __('lang.permit') }} ({{ checkMM()=='mm'?mmNum($i):$i }})" class="img-thumbnail imgViewer" width="150" height="150">
+                                            <p class=" m-t-10 m-b-10">{{ __('lang.permit') }} ({{ checkMM()=='mm'?mmNum($i):$i }})</p>
+                                        </div>
+                                        @php
+                                            $i++;
+                                        @endphp
+                                                @endforeach
+                                    </div>
+                                            @else
+                                    <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                            @endif
+                                        @endforeach
+                                    @else
+                                    <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                    @endif
+                                </div>
+                            </div>
+
+                            {{-- အဆောက်အဦဓါတ်ပုံ --}}
+                            <div class="card mb-1">
+                                <div class="card-header d-flex" role="tab" id="headingOne">
+                                    <h5 class="mb-0 ">
+                                        <a data-toggle="collapse" data-parent="#app_show" href="#building" aria-expanded="true" aria-controls="collapseOne">
+                                        {{ __('lang.building_photo') }}
+                                        </a>
+                                    </h5>
+                                    @if (chk_send($data->id) !== 'first')
+                                        @if (chk_form_finish($data->id, $data->apply_type)['building'])
+                                    <div class="ml-auto">
+                                        <a href="{{ route('contractor_building_edit_ygn', $data->id) }}" class="btn-edit text-info ">{{ __('lang.create') }}</a>
+                                    </div>
+                                        @else
+                                    <div class="ml-auto">
+                                        <a href="{{ route('contractor_building_edit_ygn', $data->id) }}" class="btn-edit text-danger ">{{ __('lang.edit') }}</a>
+                                    </div>
+                                        @endif
+                                    @endif
+                                </div>
+                                <div id="building" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                                    @if ($files->count() > 0)
+                                        @foreach ($files as $file)
+                                            @if ($file->building)
+                                    <div class="row text-center mt-2">
+                                        @php
+                                            $building_foto = explode(',', $file->building);
+                                            $i = 1;
+                                        @endphp
+                                                @foreach ($building_foto as $foto)
+                                        <div class="col-md-6 text-center">
+                                            <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ __('lang.building_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})" class="img-thumbnail imgViewer" width="150" height="150">
+                                            <p class=" m-t-10 m-b-10">{{ __('lang.building_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})</p>
+                                        </div>
+                                        @php
+                                            $i++;
+                                        @endphp
+                                                @endforeach
+                                    </div>
+                                            @else
+                                    <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                            @endif
+                                        @endforeach
+                                    @else
+                                    <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                    @endif
+                                </div>
+                            </div>
+
+                            {{-- bq --}}
+                            <div class="card mb-1">
+                                <div class="card-header d-flex" role="tab" id="headingOne">
+                                    <h5 class="mb-0 ">
+                                        <a data-toggle="collapse" data-parent="#app_show" href="#bq" aria-expanded="true" aria-controls="collapseOne">
+                                        {{ __('lang.bq_photo') }}
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="bq" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                                    @if ($files->count() > 0)
+                                        @foreach ($files as $file)
+                                            @if ($file->bq)
+                                    <div class="row text-center mt-2">
+                                        @php
+                                            $fotos = explode(',', $file->bq);
+                                            $i = 1;
+                                        @endphp
+                                                @foreach ($fotos as $foto)
+                                        <div class="col-md-6 text-center">
+                                            <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ __('lang.building_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})" class="img-thumbnail imgViewer" width="150" height="150">
+                                            <p class=" m-t-10 m-b-10">{{ __('lang.bq_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})</p>
+                                        </div>
+                                        @php
+                                            $i++;
+                                        @endphp
+                                                @endforeach
+                                    </div>
+                                            @else
+                                    <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                            @endif
+                                        @endforeach
+                                    @else
+                                    <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                    @endif
+                                </div>
+                            </div>
+
+                            {{-- drawing --}}
+                            <div class="card mb-1">
+                                <div class="card-header d-flex" role="tab" id="headingOne">
+                                    <h5 class="mb-0 ">
+                                        <a data-toggle="collapse" data-parent="#app_show" href="#drawing" aria-expanded="true" aria-controls="collapseOne">
+                                        {{ __('lang.drawing_photo') }}
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="drawing" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                                    @if ($files->count() > 0)
+                                        @foreach ($files as $file)
+                                            @if ($file->drawing)
+                                    <div class="row text-center mt-2">
+                                        @php
+                                            $fotos = explode(',', $file->drawing);
+                                            $i = 1;
+                                        @endphp
+                                                @foreach ($fotos as $foto)
+                                        <div class="col-md-6 text-center">
+                                            <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ __('lang.building_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})" class="img-thumbnail imgViewer" width="150" height="150">
+                                            <p class=" m-t-10 m-b-10">{{ __('lang.drawing_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})</p>
+                                        </div>
+                                        @php
+                                            $i++;
+                                        @endphp
+                                                @endforeach
+                                    </div>
+                                            @else
+                                    <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                            @endif
+                                        @endforeach
+                                    @else
+                                    <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                    @endif
+                                </div>
+                            </div>
+
+                            {{-- map --}}
+                            <div class="card mb-1">
+                                <div class="card-header d-flex" role="tab" id="headingOne">
+                                    <h5 class="mb-0 ">
+                                        <a data-toggle="collapse" data-parent="#app_show" href="#map" aria-expanded="true" aria-controls="collapseOne">
+                                        {{ __('lang.map_photo') }}
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="map" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                                    @if ($files->count() > 0)
+                                        @foreach ($files as $file)
+                                            @if ($file->map)
+                                    <div class="row text-center mt-2">
+                                        @php
+                                            $fotos = explode(',', $file->map);
+                                            $i = 1;
+                                        @endphp
+                                                @foreach ($fotos as $foto)
+                                        <div class="col-md-6 text-center">
+                                            <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ __('lang.building_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})" class="img-thumbnail imgViewer" width="150" height="150">
+                                            <p class=" m-t-10 m-b-10">{{ __('lang.map_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})</p>
+                                        </div>
+                                        @php
+                                            $i++;
+                                        @endphp
+                                                @endforeach
+                                    </div>
+                                            @else
+                                    <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                            @endif
+                                        @endforeach
+                                    @else
+                                    <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                    @endif
+                                </div>
+                            </div>
+
+                            {{-- ရေစက်မီတာလျှောက်ထားရာတွင် ကန်ထရိုက်ရှိ အခန်းစေ့နေသူများ၏ ကန့်ကွက်မှုမရှိကြောင်း လက်မှတ်ရေးထိုးထားမှုစာ (မူရင်း)  --}}
+                            <div class="card mb-1">
+                                <div class="card-header d-flex" role="tab" id="headingOne">
+                                    <h5 class="mb-0 ">
+                                        <a data-toggle="collapse" data-parent="#app_show" href="#sign" aria-expanded="true" aria-controls="collapseOne">
+                                        {{ __('lang.sign_header') }}
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="sign" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                                    @if ($files->count() > 0)
+                                        @foreach ($files as $file)
+                                            @if ($file->sign)
+                                    <div class="row text-center mt-2">
+                                        @php
+                                            $sign_photo = explode(',', $file->sign);
+                                            $i = 1;
+                                        @endphp
+                                                @foreach ($sign_photo as $foto)
+                                        <div class="col-md-6 text-center">
+                                            <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ __('lang.building_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})" class="img-thumbnail imgViewer" width="150" height="150">
+                                            <p class=" m-t-10 m-b-10">{{ __('lang.building_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})</p>
+                                        </div>
+                                        @php
+                                            $i++;
+                                        @endphp
+                                                @endforeach
+                                    </div>
+                                            @else
+                                    <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                            @endif
+                                        @endforeach
+                                    @else
+                                    <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
+
                     </div>
                     @if ($error->count() > 0)
                     <div class="card mb-1">
@@ -297,11 +550,11 @@
                                                 </tr>
                                                 <tr>
                                                     <td>{{ __('lang.account') }}</td>
-                                                    <td>{{ who($survey_result->survey_engineer) }}</td>
+                                                    <td>{{ who($survey_result->survey_engineer)->email }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>{{ __('lang.name') }}</td>
-                                                    <td>{{ who($survey_result->survey_engineer) }}</td>
+                                                    <td>{{ who($survey_result->survey_engineer)->name }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>{{ __('lang.position') }}</td>
@@ -440,9 +693,18 @@
                                                         @endphp
                                                         <div class="row">
                                                             @foreach ($bq_foto as $foto)
+                                                            <?php 
+                                                                $filename = asset('storage/user_attachments/'.$data->id.'/'.$foto);
+                                                                $ext = pathinfo($filename, PATHINFO_EXTENSION);
+                                                                ;
+                                                            ?>
+                                                            @if($ext != 'pdf')
                                                             <div class="col-md-3 text-center">
-                                                                <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ $foto }}" class="img-thumbnail" width="150" height="150">
+                                                                <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ $foto }}" class="img-thumbnail imgViewer" width="150" height="150">
                                                             </div>
+                                                            @else
+                                                                <a href="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" target="_blank" class="pdf-block">{{ $foto }}</a>
+                                                            @endif
                                                             @endforeach
                                                         </div>
                                                     @endif
@@ -469,9 +731,18 @@
                                                             @endphp
                                                             <div class="row">
                                                                 @foreach ($location_foto as $foto)
+                                                                <?php 
+                                                                    $filename = asset('storage/user_attachments/'.$data->id.'/'.$foto);
+                                                                    $ext = pathinfo($filename, PATHINFO_EXTENSION);
+                                                                    ;
+                                                                ?>
+                                                                @if($ext != 'pdf')
                                                                 <div class="col-md-3 text-center">
-                                                                    <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ $foto }}" class="img-thumbnail" width="150" height="150">
+                                                                    <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ $foto }}" class="img-thumbnail imgViewer" width="150" height="150">
                                                                 </div>
+                                                                @else
+                                                                    <a href="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" target="_blank" class="pdf-block">{{ $foto }}</a>
+                                                                @endif
                                                                 @endforeach
                                                             </div>
                                                         @endif
@@ -512,9 +783,18 @@
                                                             @endphp
                                                             <div class="row">
                                                                 @foreach ($bq_cost_dist_foto as $foto)
+                                                                <?php 
+                                                                    $filename = asset('storage/user_attachments/'.$data->id.'/'.$foto);
+                                                                    $ext = pathinfo($filename, PATHINFO_EXTENSION);
+                                                                    ;
+                                                                ?>
+                                                                @if($ext != 'pdf')
                                                                 <div class="col-md-3 text-center">
-                                                                    <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ $foto }}" class="img-thumbnail" width="150" height="150">
+                                                                    <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ $foto }}" class="img-thumbnail imgViewer" width="150" height="150">
                                                                 </div>
+                                                                @else
+                                                                <a href="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" target="_blank" class="pdf-block">{{ $foto }}</a>
+                                                                @endif
                                                                 @endforeach
                                                             </div>
                                                         @endif
@@ -548,18 +828,29 @@
                                                             @endphp
                                                             <div class="row">
                                                                 @foreach ($bq_cost_dist_foto as $foto)
+                                                                <?php 
+                                                                    $filename = asset('storage/user_attachments/'.$data->id.'/'.$foto);
+                                                                    $ext = pathinfo($filename, PATHINFO_EXTENSION);
+                                                                    ;
+                                                                ?>
+                                                                @if($ext != 'pdf')
                                                                 <div class="col-md-3 text-center">
-                                                                    <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ $foto }}" class="img-thumbnail" width="150" height="150">
+                                                                    <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ $foto }}" class="img-thumbnail imgViewer" width="150" height="150">
                                                                 </div>
+                                                                @else
+                                                                <a href="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" target="_blank" class="pdf-block">{{ $foto }}</a>
+                                                                @endif
                                                                 @endforeach
                                                             </div>
                                                         @endif
                                                     </td>
                                                 </tr>
+                                                @if($survey_result->remark_div_state)
                                                 <tr>
                                                     <td>{{ __('lang.remark') }}</td>
                                                     <td>{{ $survey_result->remark_div_state }}</td>
                                                 </tr>
+                                                @endif
 
                                                 @endif
                                                 
@@ -765,13 +1056,19 @@
                     {!! Form::hidden('form_id', $data->id) !!}
                     <div class="text-center mb-3 mt-3 mm">
                         @if ($user_pay)
-                        @if ($user_pay->payment_type == 1)
-                        <p>{{ "Bank Receipt" }}</p>
-                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$user_pay->files) }}" alt="{{ $user_pay->files }}" class="img-thumbnail" width="150" height="150">
-                        @elseif ($user_pay->payment_type == 2)
-                        <p>{{ "Online Payment" }}</p>
+                            @if ($user_pay->payment_type == 1)
+                            <p>{{ "Bank Receipt" }}</p>
+                            <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$user_pay->files) }}" alt="{{ $user_pay->files }}" class="img-thumbnail imgViewer" width="150" height="150">
+                            @elseif ($user_pay->payment_type == 2)
+                            <p>{{ "Online Payment" }}</p>
+                            @endif
                         @endif
-                        @endif
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-md-8 form-group mm">
+                            <label>ငွေသွင်းလက်ခံသည့် နေ့</label>
+                            <input type="text" name="accept_date" class="form-control mydatepicker" placeholder="ငွေသွင်းလက်ခံသည့် နေ့ ဖြည့်သွင်းရန်">
+                        </div>
                     </div>
                     <hr/>
                     <div class="text-center">

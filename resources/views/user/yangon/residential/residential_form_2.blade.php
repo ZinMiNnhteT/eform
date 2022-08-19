@@ -2,9 +2,9 @@
 
 @section('content')
 <div class="row justify-content-center">
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
-            <div class="card-header bg-primary text-white"><h5 class="card-title text-center">{{ __('lang.'.$heading) }}</h5></div>
+            <div class="card-header bg-primary text-white"><h5 class="card-title text-center m-0">{{ __('lang.'.$heading) }}</h5></div>
             <div class="card-body">
                 
                 <h5 class="py-2 text-danger text-center ">{{ __('lang.required_msg') }}</h5>
@@ -51,6 +51,7 @@
                                 {{ __('lang.nrc') }} <span class="text-danger f-s-15">&#10039;</span>
                             </label>
                             <input type="text" name="nrc" value="{{ $nrc }}" id="nrc" class="form-control {{ $errors->has('nrc') ? 'is-invalid' : '' }}" required>
+                            <small class="text-danger"> {{ __('lang.nrc_help') }}</small>
                         </div>
                         {{--  Mobile Phone  --}}
                         <div class="form-group">
@@ -58,6 +59,7 @@
                                 {{ __('lang.contact_phone') }} <span class="text-danger f-s-15">&#10039;</span>
                             </label>
                             <input type="text" name="applied_phone" value="{{ $applied_phone }}" id="phone" class="form-control {{ $errors->has('applied_phone') ? 'is-invalid' : '' }}" required>
+                            <small class="text-danger"> {{ __('lang.phone_help') }}</small>
                         </div>
                         {{--  Work  --}}
                         <div class="form-group">
@@ -66,15 +68,15 @@
                             </label>
                             <select name="jobType" class="form-control" id="jobType" required>
                                 <option value="">{{ __('lang.choose1') }}</option>
-                                <option value="gstaff" {{ $job_type != 'gstaff' ? : 'selected' }}>အစိုးရဝန်ထမ်း</option>
-                                <option value="staff" {{ $job_type != 'staff' ? : 'selected' }}>ဝန်ထမ်း</option>
-                                <option value="other" {{ $job_type != 'other' ? : 'selected' }}>အခြား</option>
+                                <option value="gstaff" {{ $job_type != 'gstaff' ? : 'selected' }}>{{ __('lang.civil_servant') }}</option>
+                                <option value="staff" {{ $job_type != 'staff' ? : 'selected' }}>{{ __('lang.staff') }}</option>
+                                <option value="other" {{ $job_type != 'other' ? : 'selected' }}>{{ __('lang.other') }}</option>
                             </select>
                         </div>
                         {{--  Wrapper div for govStaff  --}}
                         <div class="gStaff-wrapper {{ $job_type == 'gstaff' || $job_type == 'staff' ? : 'd-none' }}" id="gStaff-wrap">
                             <div class="form-group m-t-20">
-                                <div class="row">
+                                <div class="row input-required">
                                     <div class="col-md-6">
                                         {{--  Position  --}}
                                         <label for="pos" class="text-info">{{ __('lang.position') }} <span class="text-danger f-s-15">&#10039;</span></label> 
@@ -94,7 +96,7 @@
                             </div>
                         </div>
                         <div class="otherWrapper {{ $job_type == 'other' ? : 'd-none' }}" id="otherWrap">
-                            <div class="form-group">
+                            <div class="form-group input-required">
                                 <label for="other" class="text-info">{{ __('lang.other') }} <span class="text-danger f-s-15">&#10039;</span></label>
                                 <input type="text" name="other" value="{{ $job_type == 'other' ? $position : '' }}" class="form-control" />
                             </div>
@@ -190,9 +192,9 @@
                             <div class="col-md-3 mb-1">
                                 <a href="{{ route('all_meter_forms') }}" class="waves-effect waves-light btn btn-block btn-rounded btn-secondary ">{{ __('lang.cancel') }}</a>
                             </div>
-                            <div class="col-md-3 mb-1">
+                            {{-- <div class="col-md-3 mb-1">
                                 <button name="save_type" value="draft" type="submit" class="waves-effect waves-light btn btn-block btn-rounded btn-warning text-dark">{{ __('lang.save_draft') }}</button>
-                            </div>
+                            </div> --}}
                             <div class="col-md-3 mb-1">
                                 <button name="save_type" value="save" type="submit" class="waves-effect waves-light btn btn-block btn-rounded btn-primary ">{{ __('lang.submit') }}</button>
                             </div>

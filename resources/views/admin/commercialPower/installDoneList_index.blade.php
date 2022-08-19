@@ -53,11 +53,10 @@
                         
                         @if ($form->count() > 0)
                         @foreach ($form as $data)
-
-                            {{--  chk same div/state  --}}
-                            @if (admin()->div_state == $data->div_state_id || admin()->group_lvl <= 1)
-
+                        
                             @if (chk_send($data->id)) {{--  chk user send already  --}}
+
+                            @if (check_div_dist_town($data->div_state_id, $data->district_id, $data->township_id) || admin()->group_lvl <= 2) {{--  chk permissions  --}}
                             <tr>
                                 <td class="text-center">{{ checkMM() == 'mm' ? mmNum(++$i) : (++$i) }}</td>
                                 <td class="align-middle">{{ $data->fullname }}</td>
@@ -66,19 +65,21 @@
                                 <td class="align-middle">{{ district($data->district_id) }}</td>
                                 <td class="align-middle">{{ div_state($data->div_state_id) }}</td>
                                 <td class="align-middle text-center">
-                                    {{ checkMM() == 'mm' ? mmMonth(date('m', strtotime($data->created_at))).' '.
+                                    {{-- {{ checkMM() == 'mm' ? mmMonth(date('m', strtotime($data->created_at))).' '.
                                     mmNum(date('d', strtotime($data->created_at))).', '.
-                                    mmNum(date('y', strtotime($data->created_at))) : date('M d, y', strtotime($data->created_at)) }}
+                                    mmNum(date('y', strtotime($data->created_at))) : date('M d, y', strtotime($data->created_at)) }} --}}
+
+                                    {{ install_accepted_date($data->id) }}
                                 </td>
                                 <td class="align-middle {{ chk_userForm($data->id)['color'] }}">
-                                    {{ chk_userForm($data->id)['msg'] }}
+                                    {{ __('lang.'.chk_userForm($data->id)['msg']) }}
                                 </td>
 
                                 @if (hasPermissions(['commercialPowerInstallDone-create', 'commercialPowerInstallDone-show']))
                                 <td class="text-center">
                                     
                                     @if (hasPermissions(['commercialPowerInstallDone-show']))
-                                    <a href="{{ route('commercialPowerMeterInstallationDoneList.show', $data->id) }}" class="btn btn-{{ chk_userForm($data->id)['to_confirm_install'] ? 'warning' : 'info' }}" data-toggle="tooltip" data-title="View"><i class="fa fa-search fa-fw"></i></a>
+                                    <a href="{{ route('commercialPowerMeterInstallationDoneList.show', $data->id) }}" class="btn btn-{{ chk_userForm($data->id)['ei_confirm'] ? 'warning' : 'info' }}" data-toggle="tooltip" data-title="View"><i class="fa fa-search fa-fw"></i></a>
                                     @endif
                                 </td>
                                 @endif
@@ -86,8 +87,7 @@
                             </tr>
                             @endif {{--  end chk user send already  --}}
 
-                            @endif
-                            {{--  end chk same div/state  --}}
+                            @endif {{--  end chk same div/state  --}}
 
                         @endforeach
                         @else
@@ -97,6 +97,9 @@
                         @endif
                         </tbody>
                     </table>
+                </div>
+                <div class="pull-right m-b-30">
+                    {{ $form->links() }}
                 </div>
             </div>
         </div>

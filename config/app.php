@@ -181,6 +181,9 @@ return [
         Laravel\Passport\PassportServiceProvider::class,
         SMartins\PassportMultiauth\Providers\MultiauthServiceProvider::class,
 
+
+        Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
+
     ],
 
     /*
@@ -236,7 +239,11 @@ return [
         
         'Captcha' => Mews\Captcha\Facades\Captcha::class,
         // 'PDF' => Barryvdh\DomPDF\Facade::class,
-        'PDF' => niklasravnsborg\LaravelPdf\Facades\Pdf::class
+        'PDF' => niklasravnsborg\LaravelPdf\Facades\Pdf::class,
+
+
+        'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
+        'JWTFactory' => 'Tymon\JWTAuth\Facades\JWTFactory',
     ],
 
 ];

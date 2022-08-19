@@ -140,9 +140,9 @@
                                     </div>
                                 </div>
                                 @if ($chking_user->active)
-                                <a class="dropdown-item" href="javascript:void(0)"><i class="ti-user m-r-5 m-l-5"></i> {{ __('lang.profile') }}</a>
+                                <a class="dropdown-item" href="{{ route('user_profile_edit') }}"><i class="ti-user m-r-5 m-l-5"></i> {{ __('lang.profile') }}</a>
                                 <a class="dropdown-item" href="javascript:void(0)"><i class="ti-email m-r-5 m-l-5"></i> {{ __('lang.inbox') }}</a>
-                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{{ route('user_password_edit') }}"><i class="ti-key m-r-5 m-l-5"></i> {{ __('lang.change_password') }}</a> 
                                 @endif
                                 <a class="dropdown-item" href="logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="ti-power-off m-r-5 m-l-5"></i> {{ __('lang.logout') }}</a>
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -199,26 +199,26 @@
             <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
                 <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                     <li class="nav-item m-l-10 m-r-10">
-                        <a class="nav-link {{ active('index', $active, null) }}" href="{{ route('home') }}"><i class="ti-home f-s-15 text-danger vm"></i> {{ __('lang.user_home_page') }}</a>
+                        <a class="nav-link {{ active('index', @$active, null) }}" href="{{ route('home') }}"><i class="ti-home f-s-15 text-danger vm"></i> {{ __('lang.user_home_page') }}</a>
                     </li>
                     <li class="nav-item m-l-10 m-r-10">
-                        <a class="nav-link {{ active('resident_app', $active, null) }}" href="{{ route('all_meter_forms') }}"><i class="ti-layout-grid2 f-s-15 text-danger vm"></i> {{ __('lang.app_form_menu') }}</a>
+                        <a class="nav-link {{ active('resident_app', @$active, null) }}" href="{{ route('all_meter_forms') }}"><i class="ti-layout-grid2 f-s-15 text-danger vm"></i> {{ __('lang.app_form_menu') }}</a>
                     </li>
                     <li class="nav-item m-l-10 m-r-10">
-                        <a class="nav-link {{ active('inbox', $active, null) }}" href="{{ route('inbox.index') }}"><i class="ti-email f-s-15 text-danger vm"></i> {{ __('lang.mail_menu') }}</a>
+                        <a class="nav-link {{ active('inbox', @$active, null) }}" href="{{ route('inbox.index') }}"><i class="ti-email f-s-15 text-danger vm"></i> {{ __('lang.mail_menu') }}</a>
                     </li>
                     <li class="nav-item m-l-10 m-r-10">
-                        <a class="nav-link {{ active('overall', $active, null) }}" href="{{ route('overall_process') }}"><i class="ti-bar-chart f-s-15 text-danger vm"></i> {{ __('lang.process_menu') }}
+                        <a class="nav-link {{ active('overall', @$active, null) }}" href="{{ route('overall_process') }}"><i class="ti-bar-chart f-s-15 text-danger vm"></i> {{ __('lang.process_menu') }}
                             {{--  @if (chk_send_count())
                             <span class="badge badge-danger">{{ chk_send_count() }}</span>
                             @endif  --}}
                         </a>
                     </li>
                     <li class="nav-item m-l-10 m-r-10">
-                        <a class="nav-link {{ active('rule_regu', $active, null) }}" href="{{ route('rule_regu') }}"><i class="fa fa-fw fa-bullhorn f-s-15 text-danger vm"></i> {{ __('lang.rr_menu') }}</a>
+                        <a class="nav-link {{ active('rule_regu', @$active, null) }}" href="{{ route('rule_regu') }}"><i class="fa fa-fw fa-bullhorn f-s-15 text-danger vm"></i> {{ __('lang.rr_menu') }}</a>
                     </li>
                     <li class="nav-item m-l-10 m-r-10">
-                        <a class="nav-link {{ active('faqs', $active, null) }}" href="{{ route('faqs') }}"><i class="fa fa-fw fa-question-circle f-s-15 text-danger vm"></i> {{ __('lang.faqs') }}</a>
+                        <a class="nav-link {{ active('faqs', @$active, null) }}" href="{{ route('faqs') }}"><i class="fa fa-fw fa-question-circle f-s-15 text-danger vm"></i> {{ __('lang.faqs') }}</a>
                     </li>
                 </ul>
             </div>
@@ -240,6 +240,8 @@
         </footer>
         {{--  End footer  --}}
     </div>
+
+    
 
     {{--  Scripts  --}}
     <script src="{{ asset('js/app.js') }}"></script>

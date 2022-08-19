@@ -12848,3 +12848,7 @@ File: scss
     text-align: center;
     margin-top: 10px;
     overflow: hidden; } }
+
+#technical th {
+    font-weight: 600;
+}

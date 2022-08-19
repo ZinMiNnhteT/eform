@@ -3,10 +3,10 @@
 @section('content')
 <div class="row justify-content-center py-5">
     
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
             <div class="card-header bg-primary">
-                <h4 class="text-center text-white">
+                <h4 class="text-center text-white m-0">
                     {{__('lang.room_count_meter_type')}}
                 </h4>
             </div>
@@ -17,9 +17,21 @@
                 <div class="row justify-content-center">
                     <div class="col-md-8">
                         <div class="form-group">
-                            <label class="text-info">{{ __('lang.room_count') }} <span class="text-danger f-s-15">&#10039;</span></label>
-                            <input type="number" value="{{$c_form->room_count}}" name="room_count" class="form-control" placeholder="Number of Rooms" id="room" />
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="text-info">{{ __('lang.apartment_count') }} <span class="text-danger f-s-15">&#10039;</span></label>
+                                    <input type="number" value="{{$c_form->apartment_count}}" name="apartment_count" class="form-control" placeholder="{{ __('lang.apartment_count') }}" id="apartment_count" required />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-info">{{ __('lang.floor_count') }} <span class="text-danger f-s-15">&#10039;</span></label>
+                                    <input type="number" value="{{$c_form->floor_count}}" name="floor_count" class="form-control" placeholder="{{ __('lang.floor_count') }}" id="floor_count" required />
+                                </div>
+                            </div>
                         </div>
+
+                        {{-- အခန်းအရေအတွက် --}}
+                        <input type="hidden" value="{{$c_form->room_count}}" name="room_count" class="form-control" placeholder="Number of Rooms" id="room" required/>
+
                         {{-- Power Meter --}}
                         <div class="form-group">
                             <label class="text-info">{{ __('lang.power_meter') }}</label>
@@ -81,8 +93,8 @@
 
             </div>
             <div class="card-footer text-center">
-                <a href="{{ route('contractor_applied_form_ygn',$c_form->application_form_id) }}" class="col-3 waves-effect waves-light btn btn-secondary btn-rounded mb-1">{{ __('lang.cancel') }}</a>
-                <button type="submit" class="col-3 waves-effect waves-light btn btn-rounded btn-primary text-white">{{ __('lang.edit') }}</button>
+                <a href="{{ route('contractor_applied_form_ygn',$c_form->application_form_id) }}" class="col-md-3 waves-effect waves-light btn btn-secondary btn-rounded mb-1">{{ __('lang.cancel') }}</a>
+                <button type="submit" class="col-md-3 waves-effect waves-light btn btn-rounded btn-primary text-white">{{ __('lang.edit') }}</button>
             </div>
             {!! Form::close() !!}
         </div>

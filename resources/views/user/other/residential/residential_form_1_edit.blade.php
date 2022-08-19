@@ -20,14 +20,18 @@
                                 </tr>
                                 <tr class="text-center">
                                     @foreach ($fee_names as $item)
-                                    <th>{{ __('lang.'.$item->slug) }}</th>
+                                        @if ($item->slug == 'type_one' || $item->slug == 'type_two' || $item->slug == 'type_three')
+                                            <th class="">{{ __('lang.'.$item->slug.'_org') }}</th>
+                                        @else
+                                            <th class="">{{ __('lang.'.$item->slug) }}</th>
+                                        @endif
                                     @endforeach
                                 </tr>
                             </thead>
                             <tbody>
                                 @php $country = 0; $small = 0; $city = 0; @endphp
                                 @foreach ($tbl_col_name as $col_name)
-                                @if ($col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'sub_type')
+                                @if ($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'sub_type')
                                 <tr>
                                     <td class="">{{ __('lang.'.$col_name) }}</td>
                                     @foreach ($fee_names as $fee)

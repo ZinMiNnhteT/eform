@@ -19,7 +19,8 @@
         "niklasravnsborg/laravel-pdf": "^3.1",
         "pusher/pusher-php-server": "^3.4",
         "smartins/passport-multiauth": "^4.1",
-        "spatie/laravel-permission": "^2.35"
+        "spatie/laravel-permission": "^2.35",
+        "tymon/jwt-auth": "^1.0"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

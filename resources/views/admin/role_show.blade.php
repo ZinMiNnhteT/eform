@@ -15,7 +15,7 @@
                 </div>
             </div>
 
-            <div class="card-body">
+            <div class="card-body role-view">
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
@@ -30,7 +30,7 @@
                         </thead>
                         <tbody>
                             {{-- Dashboard --}}
-                            <tr class="bg-secondary">
+                            <tr>
                                 <td>{{ __('lang.dashboard') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'dashboard') !== false)
@@ -43,7 +43,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr>
+                            {{--  <tr>
                                 <td>{{ __('lang.inbox') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'inbox') !== false)
@@ -56,7 +56,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-secondary">
+                            <tr>
                                 <td>{{ __('lang.applying_form_list') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'applyingForm') !== false)
@@ -82,7 +82,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-secondary">
+                            <tr>
                                 <td>{{ __('lang.reject_form_list') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'rejectForm') !== false)
@@ -107,8 +107,8 @@
                                 </td>
                                 @endif
                                 @endforeach
-                            </tr>
-                            <tr class="bg-secondary">
+                            </tr>  --}}
+                            <tr>
                                 <td>{{ __('lang.registered_form_list') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'registeredForm') !== false)
@@ -126,7 +126,7 @@
                                 <td class="text-center text-primary font-weight-bold bg-custom-info">{{ __('lang.residential') }} {{ __('lang.meter') }}</td>
                                 <td colspan="5"></td>
                             </tr>
-                            <tr class="bg-custom-info">
+                            <tr>
                                 <td>{{ __('lang.residentApplication') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'residentApplication') !== false)
@@ -139,7 +139,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-info">
+                            <tr>
                                 <td>{{ __('lang.residentSurvey') }}</td>
 
                                 @foreach ($permissions as $value)
@@ -153,7 +153,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-info">
+                            <tr>
                                 <td>{{ __('lang.residentSurveyDoneTsp') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'residentialChkGrdTownship') !== false)
@@ -166,7 +166,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-info">
+                            <tr>
                                 <td>{{ __('lang.residentPending') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'residentPending') !== false)
@@ -179,7 +179,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-info">
+                            <tr>
                                 <td>{{ __('lang.residentReject') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'residentReject') !== false)
@@ -192,7 +192,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-info">
+                            <tr>
                                 <td>{{ __('lang.announce') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'residentialAnnounce') !== false)
@@ -205,7 +205,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-info">
+                            <tr>
                                 <td>{{ __('lang.residentConfrimPayment') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'residentialConfirmPayment') !== false)
@@ -218,7 +218,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-info">
+                            <tr>
                                 <td>{{ __('lang.chk_install') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'residentialChkInstall') !== false)
@@ -231,7 +231,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-info">
+                            <tr>
                                 <td>{{ __('lang.reg_meter') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'residentialRegister') !== false)
@@ -247,10 +247,10 @@
                             <!-- -------------- End Residential Meter -------------- -->
                             <!-- -------------- Residential Power Meter -------------- -->
                             <tr>
-                                <td class="text-center text-primary font-weight-bold bg-custom-success">{{ __('lang.residential') }} {{ __('lang.power') }} {{ __('lang.meter') }}</td>
+                                <td class="text-center text-primary font-weight-bold bg-custom-info">{{ __('lang.residential') }} {{ __('lang.power') }} {{ __('lang.meter') }}</td>
                                 <td colspan="5"></td>
                             </tr>
-                            <tr class="bg-custom-success">
+                            <tr>
                                 <td>{{ __('lang.residentApplication') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'residentPowerApplication') !== false)
@@ -263,7 +263,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-success">
+                            <tr>
                                 <td>{{ __('lang.residentSurvey') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'residentialPowerGrdChk') !== false)
@@ -276,7 +276,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-success">
+                            <tr>
                                 <td>{{ __('lang.residentSurveyDoneTsp') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'residentialPowerTownshipChkGrd') !== false)
@@ -289,7 +289,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-success">
+                            <tr>
                                 <td>{{ __('lang.residentSurveyDoneDist') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'residentialPowerDistrictChkGrd') !== false)
@@ -302,7 +302,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-success">
+                            <tr>
                                 <td>{{ __('lang.residentPending') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'residentPowerPending') !== false)
@@ -315,7 +315,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-success">
+                            <tr>
                                 <td>{{ __('lang.residentReject') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'residentPowerReject') !== false)
@@ -328,7 +328,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-success">
+                            <tr>
                                 <td>{{ __('lang.announce') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'residentialPowerAnnounce') !== false)
@@ -341,7 +341,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-success">
+                            <tr>
                                 <td>{{ __('lang.residentConfrimPayment') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'residentialPowerConfirmPayment') !== false)
@@ -354,7 +354,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-success">
+                            <tr>
                                 <td>{{ __('lang.chk_install') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'residentialPowerChkInstall') !== false)
@@ -367,7 +367,20 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-success">
+                            <tr>
+                                <td>{{ __('lang.ei_chk_install') }}</td>
+                                @foreach ($permissions as $value)
+                                @if (strpos($value->name, 'residentialPowerInstallDone') !== false)
+                                <td class="text-center">
+                                    <div class="custom-control custom-checkbox p-l-0">
+                                        <input name="{{ chkbox_name($value->name) }}" type="checkbox" class="custom-control-input {{ chkbox_name($value->name) }}{{ $id }}{{ $value->id }}" id="{{ $value->name }}" data-role="{{ $id }}" data-per="{{ $value->id }}" {{ roleHasPermission($id, $value->id) ? 'checked' : '' }} {{ $id > 1 ? '' : 'disabled' }}>
+                                        <label class="custom-control-label" for="{{ $value->name }}"></label>
+                                    </div>
+                                </td>
+                                @endif
+                                @endforeach
+                            </tr>
+                            <tr>
                                 <td>{{ __('lang.reg_meter') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'residentialPowerRegister') !== false)
@@ -383,10 +396,10 @@
                             <!-- -------------- End Residential Power Meter -------------- -->
                             <!-- -------------- Commercial Power Meter -------------- -->
                             <tr>
-                                <td class="text-center text-primary font-weight-bold bg-custom-warning">{{ __('lang.commercial') }} {{ __('lang.power') }} {{ __('lang.meter') }}</td>
+                                <td class="text-center text-primary font-weight-bold bg-custom-info">{{ __('lang.commercial') }} {{ __('lang.power') }} {{ __('lang.meter') }}</td>
                                 <td colspan="5"></td>
                             </tr>
-                            <tr class="bg-custom-warning">
+                            <tr>
                                 <td>{{ __('lang.residentApplication') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'commercialPowerApplication') !== false)
@@ -399,7 +412,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-warning">
+                            <tr>
                                 <td>{{ __('lang.residentSurvey') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'commercialPowerGrdChk') !== false)
@@ -412,8 +425,8 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-warning">
-                                <td>{{ __('lang.residentSurveyDone') }}</td>
+                            <tr>
+                                <td>{{ __('lang.residentSurveyDoneTsp') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'commercialPowerTownshipChkGrd') !== false)
                                 <td class="text-center">
@@ -425,8 +438,8 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-warning">
-                                <td>{{ __('lang.residentSurveyDone') }}</td>
+                            <tr>
+                                <td>{{ __('lang.residentSurveyDoneDist') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'commercialPowerDistrictChkGrd') !== false)
                                 <td class="text-center">
@@ -438,7 +451,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-warning">
+                            <tr>
                                 <td>{{ __('lang.residentPending') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'commercialPowerPending') !== false)
@@ -451,7 +464,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-warning">
+                            <tr>
                                 <td>{{ __('lang.residentReject') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'commercialPowerReject') !== false)
@@ -464,7 +477,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-warning">
+                            <tr>
                                 <td>{{ __('lang.announce') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'commercialPowerAnnounce') !== false)
@@ -477,7 +490,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-warning">
+                            <tr>
                                 <td>{{ __('lang.residentConfrimPayment') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'commercialPowerConfirmPayment') !== false)
@@ -490,7 +503,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-warning">
+                            <tr>
                                 <td>{{ __('lang.chk_install') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'commercialPowerChkInstall') !== false)
@@ -503,7 +516,20 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-warning">
+                            <tr>
+                                <td>{{ __('lang.ei_chk_install') }}</td>
+                                @foreach ($permissions as $value)
+                                @if (strpos($value->name, 'commercialPowerInstallDone') !== false)
+                                <td class="text-center">
+                                    <div class="custom-control custom-checkbox p-l-0">
+                                        <input name="{{ chkbox_name($value->name) }}" type="checkbox" class="custom-control-input {{ chkbox_name($value->name) }}{{ $id }}{{ $value->id }}" id="{{ $value->name }}" data-role="{{ $id }}" data-per="{{ $value->id }}" {{ roleHasPermission($id, $value->id) ? 'checked' : '' }} {{ $id > 1 ? '' : 'disabled' }}>
+                                        <label class="custom-control-label" for="{{ $value->name }}"></label>
+                                    </div>
+                                </td>
+                                @endif
+                                @endforeach
+                            </tr>
+                            <tr>
                                 <td>{{ __('lang.reg_meter') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'commercialPowerRegister') !== false)
@@ -519,10 +545,10 @@
                             <!-- -------------- End Commercial Power Meter -------------- -->
                             <!-- -------------- Contractor Meter -------------- -->
                             <tr>
-                                <td class="text-center text-primary font-weight-bold bg-custom-danger">{{ __('lang.contractor') }} {{ __('lang.meter') }}</td>
+                                <td class="text-center text-primary font-weight-bold bg-custom-info">{{ __('lang.contractor') }} {{ __('lang.meter') }}</td>
                                 <td colspan="5"></td>
                             </tr>
-                            <tr class="bg-custom-danger">
+                            <tr>
                                 <td>{{ __('lang.residentApplication') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'contractorApplication') !== false)
@@ -535,7 +561,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-danger">
+                            <tr>
                                 <td>{{ __('lang.residentSurvey') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'contractorGrdChk') !== false)
@@ -548,7 +574,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-danger">
+                            <tr>
                                 <td>{{ __('lang.residentSurveyDoneTsp') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'contractorTownshipChkGrd') !== false)
@@ -561,7 +587,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-danger">
+                            <tr>
                                 <td>{{ __('lang.residentSurveyDoneDist') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'contractorDistrictChkGrd') !== false)
@@ -574,7 +600,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-danger">
+                            <tr>
                                 <td>{{ __('lang.residentSurveyDoneDivstate') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'contractorDivStateChkGrd') !== false)
@@ -587,7 +613,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-danger">
+                            <tr>
                                 <td>{{ __('lang.residentPending') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'contractorPending') !== false)
@@ -600,7 +626,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-danger">
+                            <tr>
                                 <td>{{ __('lang.residentReject') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'contractorReject') !== false)
@@ -613,7 +639,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-danger">
+                            <tr>
                                 <td>{{ __('lang.announce') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'contractorAnnounce') !== false)
@@ -626,7 +652,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-danger">
+                            <tr>
                                 <td>{{ __('lang.residentConfrimPayment') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'contractorConfirmPayment') !== false)
@@ -639,7 +665,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-danger">
+                            <tr>
                                 <td>{{ __('lang.chk_install') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'contractorChkInstall') !== false)
@@ -652,7 +678,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-danger">
+                            <tr>
                                 <td>{{ __('lang.ei_chk_install') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'contractorInstallDone') !== false)
@@ -665,7 +691,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-danger">
+                            <tr>
                                 <td>{{ __('lang.reg_meter') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'contractorRegisteredMeter') !== false)
@@ -680,13 +706,186 @@
                             </tr>
                             <!-- -------------- End Contractor Meter -------------- -->
                             <!-- -------------- Transformer Meter -------------- -->
+                            <tr>
+                                <td class="text-center text-primary font-weight-bold bg-custom-info">{{ __('lang.transformer') }} {{ __('lang.meter') }}</td>
+                                <td colspan="5"></td>
+                            </tr>
+                            <tr>
+                                <td>{{ __('lang.residentApplication') }}</td>
+                                @foreach ($permissions as $value)
+                                @if (strpos($value->name, 'transformerApplication') !== false)
+                                <td class="text-center">
+                                    <div class="custom-control custom-checkbox p-l-0">
+                                        <input name="{{ chkbox_name($value->name) }}" type="checkbox" class="custom-control-input {{ chkbox_name($value->name) }}{{ $id }}{{ $value->id }}" id="{{ $value->name }}" data-role="{{ $id }}" data-per="{{ $value->id }}" {{ roleHasPermission($id, $value->id) ? 'checked' : '' }} {{ $id > 1 ? '' : 'disabled' }}>
+                                        <label class="custom-control-label" for="{{ $value->name }}"></label>
+                                    </div>
+                                </td>
+                                @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td>{{ __('lang.residentSurvey') }}</td>
+                                @foreach ($permissions as $value)
+                                @if (strpos($value->name, 'transformerGrdChk') !== false)
+                                <td class="text-center">
+                                    <div class="custom-control custom-checkbox p-l-0">
+                                        <input name="{{ chkbox_name($value->name) }}" type="checkbox" class="custom-control-input {{ chkbox_name($value->name) }}{{ $id }}{{ $value->id }}" id="{{ $value->name }}" data-role="{{ $id }}" data-per="{{ $value->id }}" {{ roleHasPermission($id, $value->id) ? 'checked' : '' }} {{ $id > 1 ? '' : 'disabled' }}>
+                                        <label class="custom-control-label" for="{{ $value->name }}"></label>
+                                    </div>
+                                </td>
+                                @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td>{{ __('lang.residentSurveyDoneTsp') }}</td>
+                                @foreach ($permissions as $value)
+                                @if (strpos($value->name, 'transformerTownshipChkGrd') !== false)
+                                <td class="text-center">
+                                    <div class="custom-control custom-checkbox p-l-0">
+                                        <input name="{{ chkbox_name($value->name) }}" type="checkbox" class="custom-control-input {{ chkbox_name($value->name) }}{{ $id }}{{ $value->id }}" id="{{ $value->name }}" data-role="{{ $id }}" data-per="{{ $value->id }}" {{ roleHasPermission($id, $value->id) ? 'checked' : '' }} {{ $id > 1 ? '' : 'disabled' }}>
+                                        <label class="custom-control-label" for="{{ $value->name }}"></label>
+                                    </div>
+                                </td>
+                                @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td>{{ __('lang.residentSurveyDoneDist') }}</td>
+                                @foreach ($permissions as $value)
+                                @if (strpos($value->name, 'transformerDistrictChkGrd') !== false)
+                                <td class="text-center">
+                                    <div class="custom-control custom-checkbox p-l-0">
+                                        <input name="{{ chkbox_name($value->name) }}" type="checkbox" class="custom-control-input {{ chkbox_name($value->name) }}{{ $id }}{{ $value->id }}" id="{{ $value->name }}" data-role="{{ $id }}" data-per="{{ $value->id }}" {{ roleHasPermission($id, $value->id) ? 'checked' : '' }} {{ $id > 1 ? '' : 'disabled' }}>
+                                        <label class="custom-control-label" for="{{ $value->name }}"></label>
+                                    </div>
+                                </td>
+                                @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td>{{ __('lang.residentSurveyDoneDivstate') }}</td>
+                                @foreach ($permissions as $value)
+                                @if (strpos($value->name, 'transformerDivStateChkGrd') !== false)
+                                <td class="text-center">
+                                    <div class="custom-control custom-checkbox p-l-0">
+                                        <input name="{{ chkbox_name($value->name) }}" type="checkbox" class="custom-control-input {{ chkbox_name($value->name) }}{{ $id }}{{ $value->id }}" id="{{ $value->name }}" data-role="{{ $id }}" data-per="{{ $value->id }}" {{ roleHasPermission($id, $value->id) ? 'checked' : '' }} {{ $id > 1 ? '' : 'disabled' }}>
+                                        <label class="custom-control-label" for="{{ $value->name }}"></label>
+                                    </div>
+                                </td>
+                                @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td>{{ __('lang.residentSurveyDoneHeadOffice') }}</td>
+                                @foreach ($permissions as $value)
+                                @if (strpos($value->name, 'transformerHeadChkGrd') !== false)
+                                <td class="text-center">
+                                    <div class="custom-control custom-checkbox p-l-0">
+                                        <input name="{{ chkbox_name($value->name) }}" type="checkbox" class="custom-control-input {{ chkbox_name($value->name) }}{{ $id }}{{ $value->id }}" id="{{ $value->name }}" data-role="{{ $id }}" data-per="{{ $value->id }}" {{ roleHasPermission($id, $value->id) ? 'checked' : '' }} {{ $id > 1 ? '' : 'disabled' }}>
+                                        <label class="custom-control-label" for="{{ $value->name }}"></label>
+                                    </div>
+                                </td>
+                                @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td>{{ __('lang.residentPending') }}</td>
+                                @foreach ($permissions as $value)
+                                @if (strpos($value->name, 'transformerPending') !== false)
+                                <td class="text-center">
+                                    <div class="custom-control custom-checkbox p-l-0">
+                                        <input name="{{ chkbox_name($value->name) }}" type="checkbox" class="custom-control-input {{ chkbox_name($value->name) }}{{ $id }}{{ $value->id }}" id="{{ $value->name }}" data-role="{{ $id }}" data-per="{{ $value->id }}" {{ roleHasPermission($id, $value->id) ? 'checked' : '' }} {{ $id > 1 ? '' : 'disabled' }}>
+                                        <label class="custom-control-label" for="{{ $value->name }}"></label>
+                                    </div>
+                                </td>
+                                @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td>{{ __('lang.residentReject') }}</td>
+                                @foreach ($permissions as $value)
+                                @if (strpos($value->name, 'transformerReject') !== false)
+                                <td class="text-center">
+                                    <div class="custom-control custom-checkbox p-l-0">
+                                        <input name="{{ chkbox_name($value->name) }}" type="checkbox" class="custom-control-input {{ chkbox_name($value->name) }}{{ $id }}{{ $value->id }}" id="{{ $value->name }}" data-role="{{ $id }}" data-per="{{ $value->id }}" {{ roleHasPermission($id, $value->id) ? 'checked' : '' }} {{ $id > 1 ? '' : 'disabled' }}>
+                                        <label class="custom-control-label" for="{{ $value->name }}"></label>
+                                    </div>
+                                </td>
+                                @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td>{{ __('lang.announce') }}</td>
+                                @foreach ($permissions as $value)
+                                @if (strpos($value->name, 'transformerAnnounce') !== false)
+                                <td class="text-center">
+                                    <div class="custom-control custom-checkbox p-l-0">
+                                        <input name="{{ chkbox_name($value->name) }}" type="checkbox" class="custom-control-input {{ chkbox_name($value->name) }}{{ $id }}{{ $value->id }}" id="{{ $value->name }}" data-role="{{ $id }}" data-per="{{ $value->id }}" {{ roleHasPermission($id, $value->id) ? 'checked' : '' }} {{ $id > 1 ? '' : 'disabled' }}>
+                                        <label class="custom-control-label" for="{{ $value->name }}"></label>
+                                    </div>
+                                </td>
+                                @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td>{{ __('lang.residentConfrimPayment') }}</td>
+                                @foreach ($permissions as $value)
+                                @if (strpos($value->name, 'transformerConfirmPayment') !== false)
+                                <td class="text-center">
+                                    <div class="custom-control custom-checkbox p-l-0">
+                                        <input name="{{ chkbox_name($value->name) }}" type="checkbox" class="custom-control-input {{ chkbox_name($value->name) }}{{ $id }}{{ $value->id }}" id="{{ $value->name }}" data-role="{{ $id }}" data-per="{{ $value->id }}" {{ roleHasPermission($id, $value->id) ? 'checked' : '' }} {{ $id > 1 ? '' : 'disabled' }}>
+                                        <label class="custom-control-label" for="{{ $value->name }}"></label>
+                                    </div>
+                                </td>
+                                @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td>{{ __('lang.chk_install') }}</td>
+                                @foreach ($permissions as $value)
+                                @if (strpos($value->name, 'transformerChkInstall') !== false)
+                                <td class="text-center">
+                                    <div class="custom-control custom-checkbox p-l-0">
+                                        <input name="{{ chkbox_name($value->name) }}" type="checkbox" class="custom-control-input {{ chkbox_name($value->name) }}{{ $id }}{{ $value->id }}" id="{{ $value->name }}" data-role="{{ $id }}" data-per="{{ $value->id }}" {{ roleHasPermission($id, $value->id) ? 'checked' : '' }} {{ $id > 1 ? '' : 'disabled' }}>
+                                        <label class="custom-control-label" for="{{ $value->name }}"></label>
+                                    </div>
+                                </td>
+                                @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td>{{ __('lang.ei_chk_install') }}</td>
+                                @foreach ($permissions as $value)
+                                @if (strpos($value->name, 'transformerInstallDone') !== false)
+                                <td class="text-center">
+                                    <div class="custom-control custom-checkbox p-l-0">
+                                        <input name="{{ chkbox_name($value->name) }}" type="checkbox" class="custom-control-input {{ chkbox_name($value->name) }}{{ $id }}{{ $value->id }}" id="{{ $value->name }}" data-role="{{ $id }}" data-per="{{ $value->id }}" {{ roleHasPermission($id, $value->id) ? 'checked' : '' }} {{ $id > 1 ? '' : 'disabled' }}>
+                                        <label class="custom-control-label" for="{{ $value->name }}"></label>
+                                    </div>
+                                </td>
+                                @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td>{{ __('lang.reg_meter') }}</td>
+                                @foreach ($permissions as $value)
+                                @if (strpos($value->name, 'transformerRegisteredMeter') !== false)
+                                <td class="text-center">
+                                    <div class="custom-control custom-checkbox p-l-0">
+                                        <input name="{{ chkbox_name($value->name) }}" type="checkbox" class="custom-control-input {{ chkbox_name($value->name) }}{{ $id }}{{ $value->id }}" id="{{ $value->name }}" data-role="{{ $id }}" data-per="{{ $value->id }}" {{ roleHasPermission($id, $value->id) ? 'checked' : '' }} {{ $id > 1 ? '' : 'disabled' }}>
+                                        <label class="custom-control-label" for="{{ $value->name }}"></label>
+                                    </div>
+                                </td>
+                                @endif
+                                @endforeach
+                            </tr>
                             <!-- -------------- End Transformer Meter -------------- -->
                             <!-- -------------- Setting -------------- -->
                             <tr>
-                                <td class="text-center text-primary font-weight-bold bg-custom-secondary">{{ __('lang.setting') }}</td>
+                                <td class="text-center text-primary font-weight-bold bg-custom-info">{{ __('lang.setting') }}</td>
                                 <td colspan="5"></td>
                             </tr>
-                            <tr class="bg-custom-secondary">
+                            <tr>
                                 <td>{{ __('lang.accountSetting') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'accountSetting') !== false)
@@ -699,7 +898,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-secondary">
+                            <tr>
                                 <td>{{ __('lang.roleSetting') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'roleSetting') !== false)
@@ -712,7 +911,7 @@
                                 @endif
                                 @endforeach
                             </tr>
-                            <tr class="bg-custom-secondary">
+                            <tr>
                                 <td>{{ __('lang.userAccounts') }}</td>
                                 @foreach ($permissions as $value)
                                 @if (strpos($value->name, 'userAccount') !== false)

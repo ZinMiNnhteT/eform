@@ -16,298 +16,9 @@
 
                 <div class="container-fluid">
                     <div id="app_show" class="accordion" role="tablist" aria-multiselectable="true">
-                        <div class="card mb-1">
-                            <div class="card-header d-flex" role="tab" id="headingOne">
-                                <h5 class="mb-0">
-                                    <a data-toggle="collapse" data-parent="#app_show" href="#info" aria-expanded="true" aria-controls="collapseOne">{{ __('lang.user_info') }}</a>
-                                </h5>
-                            </div>
-                            <div id="info" class="collapse" role="tabpanel" aria-labelledby="headingOne">
-                                <div class="container">
-                                    <div class="card-body mm">
-                                        <h5 class="text-center"><b>စက်မှုသုံးပါ၀ါမီတာလျှောက်လွှာပုံစံ</b></h5>
-                                        <h6 class="text-right">အမှတ်စဥ် - <b>{{ $data->serial_code }}</b></h6>
-                                        <div class="p-t-10 p-b-10">
-                                            <h6>သို့</h6>
-                                            <h6 class="p-l-30 p-t-10">မြို့နယ်လျှပ်စစ်မှူး/မြို့နယ်လျှပ်စစ်အင်ဂျင်နီယာ</h6>
-                                            <h6 class="p-l-30 p-t-10">လျှပ်စစ်ဓာတ်အားဖြန့်ဖြူးရေးလုပ်ငန်း</h6>
-                                            <h6 class="p-l-30 p-t-10">{{ township_mm($data->township_id) }}</h6>
-                                        </div>
-                                        <div class="text-right p-t-10">
-                                            <h6>ရက်စွဲ။<span class="p-l-20">။</span> {{ mmNum(date('d-m-Y', strtotime($data->date))) }}</h6>
-                                        </div>
-                                        <div class="p-t-10">
-                                            <h6>အကြောင်းအရာ။<span class="p-l-40">။</span> <b>စက်မှုသုံးပါ၀ါမီတာ တပ်ဆင်ခွင့်ပြုပါရန် လျှောက်ထားခြင်း။</b></h6>
-                                        </div>
-                                        <div class="p-t-10">
-                                            <h6 class="l-h-35">
-                                                <span class="p-l-40"></span><span class="p-l-40"></span>
-                                                အထက်ပါကိစ္စနှင့်ပတ်သက်၍ {{ address_mm($data->id) }}နေ ကျွန်တော်/ကျွန်မ၏ <b>{{ $data->applied_building_type ? $data->applied_building_type : '<span class="p-l-40"></span>' }}</b> တွင် {{ cpower_meter_type($data->id) }} တပ်ဆင်သုံးစွဲခွင့်ပြုပါရန် လျှောက်ထားအပ်ပါသည်။
-                                            </h6>
-                                            <h6 class="l-h-35">
-                                                <span class="p-l-40"></span><span class="p-l-40"></span> တပ်ဆင်သုံးစွဲခွင့်ပြုပါက လျှပ်စစ်ဓာတ်အားဖြန့်ဖြူးရေးလုပ်ငန်းမှ သတ်မှတ်ထားသော အခွန်အခများကို အကြေပေးဆောင်မည့်အပြင် တည်ဆဲဥပဒေများအတိုင်း လိုက်နာဆောင်ရွက်မည်ဖြစ်ပါကြောင်းနှင့် အိမ်တွင်းဝါယာသွယ်တန်းခြင်းလုပ်ငန်းများကို လျှပ်စစ်ကျွမ်းကျင်လက်မှတ်ရှိသူများနှင့်သာ ဆောင်ရွက်မည်ဖြစ်ကြောင်း ဝန်ခံကတိပြုလျှောက်ထားအပ်ပါသည်။
-                                            </h6>
-                                        </div>
-                                        <div class="row justify-content-start m-t-30">
-                                            <div class="col-md-4">
-                                                <h6 class="l-h-35"><b>တပ်ဆင်သုံးစွဲလိုသည့် လိပ်စာ</b></h6>
-                                                <h6 class="l-h-35">
-                                                    {{ address_mm($data->id) }}
-                                                </h6>
-                                            </div>
-                                        </div>
-                                        <div class="row justify-content-around m-t-30">
-                                            <div class="col-md-6 offset-md-6">
-                                                <h6><b>လေးစားစွာဖြင့်</b></h6>
-                                                <h6 style="padding-left: 90px; line-height: 35px;">
-                                                    <p class="mb-0">{{ $data->fullname }}</p>
-                                                    <p class="mb-0">{{ $data->nrc }}</p>
-                                                    <p class="mb-0">{{ $data->applied_phone }}</p>
-                                                </h6>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card mb-1">
-                            <div class="card-header d-flex" role="tab" id="headingOne">
-                                <h5 class="mb-0">
-                                    <a data-toggle="collapse" data-parent="#app_show" href="#typeOfMeter" aria-expanded="true" aria-controls="collapseOne">{{ __('lang.applied_plan') }}</a>
-                                </h5>
-                            </div>
-                            <div id="typeOfMeter" class="collapse" role="tabpanel" aria-labelledby="headingOne">
-                                <div class="container">
-                                    <div class="table-responsive p-20">
-                                        <table class="table">
-                                            <thead>
-                                                <tr class="text-center">
-                                                    <th rowspan="2" class="align-middle">{{ __('lang.descriptions') }}</th>
-                                                    <th colspan="3">{{ __('lang.initial_cost') }}</th>
-                                                </tr>
-                                                <tr class="text-center">
-                                                    @foreach ($fee_names as $item)
-                                                    
-                                                    <th>{{ __('lang.'.$item->slug) }}</th>
-                                                    
-                                                    @endforeach
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @php $total = 0; @endphp
-                                                @foreach ($tbl_col_name as $col_name)
-                                                @if ($col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'service_fee' && $col_name != 'incheck_fee' && $col_name != 'sub_type')
-                                                <tr>
-                                                    <td>{{ __('lang.'.$col_name) }}</td>
-                                                    @foreach ($fee_names as $fee)
-                                                    <td class="text-center">{{ checkMM() === 'mm' ? mmNum(number_format($fee->$col_name)) : number_format($fee->$col_name) }}</td>
-                                                    @php $total += $fee->$col_name; @endphp
-                                                    @endforeach
+                        
+                        @include('layouts.user_apply_form')
 
-                                                </tr>
-                                                @endif
-                                                @endforeach
-                                                <tr class="text-center">
-                                                    <td>{{ __('lang.total') }}</td>
-                                                    <td class="text-center"><b>{{ checkMM() == 'mm' ? mmNum(number_format($total)): number_format($total) }}</b></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card mb-1">
-                            <div class="card-header d-flex" role="tab" id="headingOne">
-                                <h5 class="mb-0">
-                                    <a data-toggle="collapse" data-parent="#app_show" href="#nrc" aria-expanded="true" aria-controls="collapseOne">{{ __('lang.nrc') }}</a>
-                                </h5>
-                            </div>
-                            <div id="nrc" class="collapse" role="tabpanel" aria-labelledby="headingOne">
-                                @foreach ($files as $file)
-                                <div class="row text-center mt-2">
-                                    <div class="col-md-6">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->nrc_copy_front) }}" alt="{{ $file->nrc_copy_front }}" class="img-thumbnail" width="150" height="150">
-                                        <p class="m-t-10 m-b-10">{{ __('lang.nrc_front') }}</p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->nrc_copy_back) }}" alt="{{ $file->nrc_copy_back }}" class="img-thumbnail" width="150" height="150">
-                                        <p class="m-t-10 m-b-10">{{ __('lang.nrc_back') }}</p>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        <div class="card mb-1">
-                            <div class="card-header d-flex" role="tab" id="headingOne">
-                                <h5 class="mb-0">
-                                    <a data-toggle="collapse" data-parent="#app_show" href="#form10" aria-expanded="true" aria-controls="collapseOne">{{ __('lang.form10') }}</a>
-                                </h5>
-                            </div>
-                            <div id="form10" class="collapse" role="tabpanel" aria-labelledby="headingOne">
-                                @foreach ($files as $file)
-                                <div class="row text-center mt-2">
-                                    <div class="col-md-6">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->form_10_front) }}" alt="{{ $file->form_10_front }}" class="img-thumbnail" width="150" height="150">
-                                        <p class="m-t-10 m-b-10">{{ __('lang.form10_front') }}</p>
-                                    </div>
-                                    @if ($file->form_10_back)
-                                    <div class="col-md-6">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->form_10_back) }}" alt="{{ $file->form_10_back }}" class="img-thumbnail" width="150" height="150">
-                                        <p class="m-t-10 m-b-10">{{ __('lang.form10_back') }}</p>
-                                    </div>
-                                    @endif
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        <div class="card mb-1">
-                            <div class="card-header d-flex" role="tab" id="headingOne">
-                                <h5 class="mb-0">
-                                    <a data-toggle="collapse" data-parent="#app_show" href="#recommanded_letter" aria-expanded="true" aria-controls="collapseOne">{{ __('lang.recomm') }}</a>
-                                </h5>
-                            </div>
-                            <div id="recommanded_letter" class="collapse" role="tabpanel" aria-labelledby="headingOne">
-                                @foreach ($files as $file)
-                                <div class="row text-center mt-2">
-                                    <div class="col-md-6">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->occupy_letter) }}" alt="{{ $file->occupy_letter }}" class="img-thumbnail" width="150" height="150">
-                                        <p class="m-t-10 m-b-10">{{ __('lang.occupy_letter') }}</p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$file->no_invade_letter) }}" alt="{{ $file->no_invade_letter }}" class="img-thumbnail" width="150" height="150">
-                                        <p class="m-t-10 m-b-10">{{ __('lang.noinvade_letter') }}</p>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        <div class="card mb-1">
-                            <div class="card-header d-flex" role="tab" id="headingOne">
-                                <h5 class="mb-0">
-                                    <a data-toggle="collapse" data-parent="#app_show" href="#owner_letter" aria-expanded="true" aria-controls="collapseOne">{{ __('lang.owner') }}</a>
-                                </h5>
-                            </div>
-                            <div id="owner_letter" class="collapse" role="tabpanel" aria-labelledby="headingOne">
-                                @foreach ($files as $file)
-                                <div class="row text-center mt-2">
-                                    @php
-                                        $owner_foto = explode(',', $file->ownership);
-                                        $i = 1;
-                                    @endphp
-                                    @foreach ($owner_foto as $foto)
-                                    <div class="col-md-6 text-center">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ $foto }}" class="img-thumbnail" width="150" height="150">
-                                        <p class="m-t-10 m-b-10">{{ __('lang.owner_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})</p>
-                                    </div>
-                                    @php
-                                        $i++;
-                                    @endphp
-                                    @endforeach
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        <div class="card mb-1">
-                            <div class="card-header d-flex" role="tab" id="headingOne">
-                                <h5 class="mb-0">
-                                    <a data-toggle="collapse" data-parent="#app_show" href="#transaction_letter" aria-expanded="true" aria-controls="collapseOne">{{ __('lang.applied_transactionlicence_photo') }}</a>
-                                </h5>
-                            </div>
-                            <div id="transaction_letter" class="collapse" role="tabpanel" aria-labelledby="headingOne">
-                                @foreach ($files as $file)
-                                <div class="row text-center mt-2">
-                                    @php
-                                        $power_foto = explode(',', $file->transaction_licence);
-                                        $i = 1;
-                                    @endphp
-                                    @foreach ($power_foto as $foto)
-                                    <div class="col-md-6 text-center">
-                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ $foto }}" class="img-thumbnail" width="150" height="150">
-                                        <p class="m-t-10 m-b-10">{{ __('lang.transactionlicence_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})</p>
-                                    </div>
-                                    @php
-                                        $i++;
-                                    @endphp
-                                    @endforeach
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        @if ($error && $error->count() > 0)
-                        <div class="card mb-1">
-                            <div class="card-header d-flex" role="tab" id="headingOne">
-                                <h5 class="mb-0">
-                                    <a data-toggle="collapse" data-parent="#app_show" href="#form_resend" aria-expanded="true" aria-controls="collapseOne">{{ __('လျှောက်လွှာပြန်လည်ပြင်ဆင်ချက်များ') }}</a>
-                                </h5>
-                            </div>
-                            <div id="form_resend" class="card-body collapse" role="tabpanel" aria-labelledby="headingOne">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th width="30%"><strong>{{ __('lang.office_send_date') }}</strong></th>
-                                                <th><strong>{{ __('lang.office_send_remark') }}</strong></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($error as $e_remark)
-                                            <tr>
-                                                <td>
-                                                    <strong>
-                                                        @if (checkMM() == 'mm')
-                                                        {{ $e_remark->created_at ? mmNum(date('d-m-Y', strtotime($e_remark->created_at))) : '-' }}
-                                                        @else
-                                                        {{ $e_remark->created_at ? date('d-m-Y', strtotime($e_remark->created_at)) : '-' }}
-                                                        @endif
-                                                    </strong>
-                                                </td>
-                                                <td>@php echo $e_remark->error_remark ? $e_remark->error_remark : '-'; @endphp</td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
-                        @if ($pending && $pending->count() > 0)
-                        <div class="card mb-1">
-                            <div class="card-header d-flex" role="tab" id="headingOne">
-                                <h5 class="mb-0">
-                                    <a data-toggle="collapse" data-parent="#app_show" href="#pending" aria-expanded="true" aria-controls="collapseOne">{{ __('စောင့်ဆိုင်းရခြင်းအကြောင်းအရာများ') }}</a>
-                                </h5>
-                            </div>
-                            <div id="pending" class="card-body collapse" role="tabpanel" aria-labelledby="headingOne">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th><strong>{{ __('lang.office_send_date') }}</strong></th>
-                                                <th><strong>{{ __('lang.office_send_remark') }}</strong></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($pending as $pending_case)
-                                            <tr>
-                                                <td>
-                                                    <strong>
-                                                        @if (checkMM() == 'mm')
-                                                        {{ $pending_case->created_at ? mmNum(date('d-m-Y၊ H:i နာရီ', strtotime($pending_case->created_at))) : '-' }}
-                                                        @else
-                                                        {{ $pending_case->created_at ? date('d-m-Y/ H:i A', strtotime($pending_case->created_at)) : '-' }}
-                                                        @endif
-                                                    </strong>
-                                                </td>
-                                                <td>@php echo $pending_case->pending_remark ? $pending_case->pending_remark : '-'; @endphp</td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
                     </div>
                     <div class="card mb-1">
                     @if(hasSurvey($data->id))
@@ -317,6 +28,8 @@
                             <h5 class="mb-0 text-info">{{ __('Technical Data ဖြည့်သွင်းရန်') }}</h5>
                         </div>
                         <div class="card-body">
+                            <h5 class="py-2 text-danger text-center ">{{ __('lang.required_msg') }}</h5>
+                            <br/>
                             {!! Form::open(['route' => 'commercialPowerMeterGroundCheckList.store', 'files' => true]) !!}
                             {!! Form::hidden('form_id', $data->id) !!}
                             <div class="row justify-content-center mt-3">
@@ -345,6 +58,217 @@
                                         </label>
                                             <textarea name="max_load" id="max_load" rows="2" class="form-control inner-form" required></textarea>
                                     </div>
+                                    <h5 class="text-info">
+                                        {{ __('လက်ရှိ ဓာတ်အားခွဲရုံ၊ ဓာတ်အားပေးစက်ရုံ အခြေအနေ') }}
+                                    </h5>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label for="curr_transmitter_date" class="text-info">
+                                                    {{ __('တိုင်းတာသည့် နေ့') }}
+                                                </label>
+                                                <input type="text" id="curr_transmitter_date" name="curr_transmitter_date" class="form-control mydatepicker">
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label for="curr_transmitter_time" class="text-info">
+                                                    {{ __('တိုင်းတာသည့် အချိန်') }} 
+                                                </label>
+                                                <input type="text" id="curr_transmitter_time" name="curr_transmitter_time" class="form-control timepicker">
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label for="curr_transmitter_volt" class="text-info">
+                                                    {{ __('ဗို့အား') }}
+                                                </label>
+                                                <input type="number" id="curr_transmitter_volt" name="curr_transmitter_volt" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="text-info">
+                                        {{ __('ဝန်အား (Amper)') }}
+                                    </p>
+                                    <div class="row mb-2">
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label for="amper_r" class="text-info">
+                                                    {{ __('R') }}
+                                                </label>
+                                                <input type="number" id="amper_r" name="amper_r" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label for="amper_y" class="text-info">
+                                                    {{ __('Y') }}
+                                                </label>
+                                                <input type="number" id="amper_y" name="amper_y" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label for="amper_b" class="text-info">
+                                                    {{ __('B') }}
+                                                </label>
+                                                <input type="number" id="amper_b" name="amper_b" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label for="amper_n" class="text-info">
+                                                    {{ __('N') }}
+                                                </label>
+                                                <input type="number" id="amper_n" name="amper_n" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+    
+                                    <div class="mb-2">
+                                        <p class="text-info">
+                                            {{ __('ဓာတ်အားလိုင်း တိုးချဲ့ရန် လို/မလို') }} <span class="text-danger f-s-15">&#10039;</span>
+                                        </p>
+                                        <div class="row mt-3">
+                                            <div class="custom-control custom-radio col-3" required>
+                                                <input type="radio" name="cable_extend" value="on" class="custom-control-input" id="cable_extend_chkbox1">
+                                                <label for="cable_extend_chkbox1" class="custom-control-label p-l-20"><strong>{{ __('လိုပါသည်') }}</strong></label>
+                                            </div>
+
+                                            <div class="custom-control custom-radio col-3">
+                                                <input type="radio" name="cable_extend" value="off" class="custom-control-input" id="cable_extend_chkbox2" required>
+                                                <label for="cable_extend_chkbox2" class="custom-control-label p-l-20"><strong>{{ __('မလိုပါ') }}</strong></label>
+                                            </div>
+                                        </div>
+                                    </div>
+    
+                                    <div class="mb-2">
+                                        <p class="text-info">
+                                            {{ __('လက်ရှိလျှပ်တာပြောင်းသည် ယခင်က ချို့ယွင်းခဲ့ဖူးခြင်း ရှိ/မရှိ') }} <span class="text-danger f-s-15">&#10039;</span>
+                                        </p>
+                                        <div class="row mt-3">
+                                            <div class="custom-control custom-radio col-3" required>
+                                                <input type="radio" name="transmitter_error" value="on" class="custom-control-input" id="transmitter_error_chkbox1">
+                                                <label for="transmitter_error_chkbox1" class="custom-control-label p-l-20"><strong>{{ __('lang.radio_yes') }}</strong></label>
+                                            </div>
+
+                                            <div class="custom-control custom-radio col-3">
+                                                <input type="radio" name="transmitter_error" value="off" class="custom-control-input" id="transmitter_error_chkbox2" required>
+                                                <label for="transmitter_error_chkbox2" class="custom-control-label p-l-20"><strong>{{ __('lang.radio_no') }}</strong></label>
+                                            </div>
+                                        </div>
+                                    </div>
+    
+                                    <div class="form-group">
+                                        <label for="cable_size_type" class="text-info">
+                                            {{ __('လျှပ်တာပြောင်းမှ ဓာတ်အားသုံးစွဲမည့်နေရာသို့ ဆွဲထားသော လိုင်းကြိုး၊ ကြေးကြိုးအရွယ်အစားနှင့် အရေအတွက်') }}
+                                        </label>
+                                        <input type="text" id="cable_size_type" name="cable_size_type" class="form-control">
+                                    </div>
+    
+                                    <p class="text-info mb-0">
+                                        {{ __('နောက်ဆုံး(၆)လအတွင်း စစ်ဆေးရရှိခဲ့သော လျှပ်တာပြောင်း အင်စူလေးရှင်းအခြေအနေနှင့် စစ်ဆေးသောနေ့') }}
+                                    </p>
+                                    <div class="form-group">
+                                        <label for="insulation_date" class="text-info">
+                                            {{ __('စစ်ဆေးသည့် နေ့') }} 
+                                        </label>
+                                        <input type="text" id="insulation_date" name="insulation_date" class="form-control mydatepicker">
+                                    </div>
+                                    <p class="text-info mb-2">
+                                        {{ __('အခြေအနေ') }} 
+                                    </p>
+                                    <table class="table table-bordered table-sm text-center">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="4"><strong>{{ __('Continuity') }}</strong></td>
+                                                <td></td>
+                                                <td colspan="7"><strong>{{ __('Insulation') }}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="8%"></td>
+                                                <td width="8%">R-Y</td>
+                                                <td width="8%">Y-B</td>
+                                                <td width="8%">B-R</td>
+                                                <td width="8%"></td>
+                                                <td width="8%">R-E</td>
+                                                <td width="8%">Y-E</td>
+                                                <td width="8%">B-E</td>
+                                                <td width="8%">N-E</td>
+                                                <td width="8%">R-Y</td>
+                                                <td width="8%">H-T-E</td>
+                                                <td width="8%">H-T-L-T</td>
+                                            </tr>
+                                            <tr>
+                                                <td width="8%">H-T</td>
+                                                <td width="8%">
+                                                    <input type="text" name="chtry" class="form-control form-control-sm">
+                                                </td>
+                                                <td width="8%">
+                                                    <input type="text" name="chtyb" class="form-control form-control-sm">
+                                                </td>
+                                                <td width="8%">
+                                                    <input type="text" name="chtbr" class="form-control form-control-sm">
+                                                </td>
+                                                <td width="8%">H-T</td>
+                                                <td width="8%">
+                                                    <input type="text" name="ihtre" class="form-control form-control-sm">
+                                                </td>
+                                                <td width="8%">
+                                                    <input type="text" name="ihtye" class="form-control form-control-sm">
+                                                </td>
+                                                <td width="8%">
+                                                    <input type="text" name="ihtbe" class="form-control form-control-sm">
+                                                </td>
+                                                <td width="8%">
+                                                    <input type="text" name="ihtne" class="form-control form-control-sm"> 
+                                                </td>
+                                                <td width="8%">
+                                                    <input type="text" name="ihtry" class="form-control form-control-sm">
+                                                </td>
+                                                <td width="8%">
+                                                    <input type="text" name="ihthte" class="form-control form-control-sm">
+                                                </td>
+                                                <td width="8%">
+                                                    <input type="text" name="ihthtlt" class="form-control form-control-sm">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td width="8%">L-T</td>
+                                                <td width="8%">
+                                                    <input type="text" name="cltry" class="form-control form-control-sm">
+                                                </td>
+                                                <td width="8%">
+                                                    <input type="text" name="cltyb" class="form-control form-control-sm">
+                                                </td>
+                                                <td width="8%">
+                                                    <input type="text" name="cltbr" class="form-control form-control-sm">
+                                                </td>
+                                                <td width="8%">L-T</td>
+                                                <td width="8%">
+                                                    <input type="text" name="iltre" class="form-control form-control-sm">
+                                                </td>
+                                                <td width="8%">
+                                                    <input type="text" name="iltye" class="form-control form-control-sm">
+                                                </td>
+                                                <td width="8%">
+                                                    <input type="text" name="iltbe" class="form-control form-control-sm">
+                                                </td>
+                                                <td width="8%">
+                                                    <input type="text" name="iltne" class="form-control form-control-sm"> 
+                                                </td>
+                                                <td width="8%">
+                                                    <input type="text" name="iltry" class="form-control form-control-sm">
+                                                </td>
+                                                <td width="8%">
+                                                    <input type="text" name="ilthte" class="form-control form-control-sm">
+                                                </td>
+                                                <td width="8%">
+                                                    <input type="text" name="ilthtlt" class="form-control form-control-sm">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="bg-secondary p-10">
@@ -424,17 +348,49 @@
                                     </div>
                                     <div class="form-group mt-4">
                                         <label for="" class="text-info">
-                                            {{ __('lang.applied_electricpower') }}
+                                            {{ __('lang.applied_electricpower') }} <span class="text-danger f-s-15">&#10039;</span>
                                         </label>
                                         <input type="text" name="comsumed_power_amt" id="comsumed_power_amt" class="form-control" required>
                                     </div>
                                     <div class="form-group mt-4">
                                         <label for="" class="text-info">
-                                            {{ __('lang.applied_electricpower_photo') }}
+                                            {{ __('lang.applied_electricpower_photo') }} <span class="text-danger f-s-15">&#10039;</span>
                                         </label>
-                                            {!! Form::file('front[]',['class' => 'form-control', 'accept' => '.jpg,.png,.pdf', 'multiple']) !!}
-                                            <p class="px-1 py-1 text-danger text-capitalize mm">ပုံများကို တပြိုင်နက်ထဲ ရွေးချယ်တင်နိုင်ပါသည်။</p>
+                                        {!! Form::file('front[]',['class' => 'form-control', 'accept' => '.jpg,.png,.pdf', 'multiple',"required"]) !!}
+                                        <p class="px-1 py-1 text-danger text-capitalize mm">ပုံများကို တပြိုင်နက်ထဲ ရွေးချယ်တင်နိုင်ပါသည်။</p>
                                     </div>
+                                    
+                                    <div class="form-group mt-4">
+                                        <label for="" class="text-info">
+                                            {{ __('အဆောက်အဦ ဓါတ်ပုံ') }}
+                                        </label>
+                                        {!! Form::file('building_photos[]',['class' => 'form-control', 'accept' => '.jpg,.png,.pdf', 'multiple']) !!}
+                                        <p class="px-1 py-1 text-danger text-capitalize mm">ပုံများကို တပြိုင်နက်ထဲ ရွေးချယ်တင်နိုင်ပါသည်။</p>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="location_map" class="text-info">
+                                            {{ __('lang.location_map_2') }}
+                                        </label>
+                                        <input type="file" name="location_map" accept=".jpg,.png,.pdf" class="form-control"/>
+                                    </div>
+
+                                    {{-- ဓာတ်အားပေးမည့် ထရန်စဖော်မာ --}}
+                                    <div class="form-group">
+                                        <label for="power_tranformer" class="text-info">
+                                            {{ __('lang.power_tranformer') }}
+                                        </label>
+                                        <input type="text" name="power_tranformer"  class="form-control"/>
+                                    </div>
+
+                                    {{-- ၄၀၀ဗို့ ဓာတ်အားလိုင်းပြမြေပုံ --}}
+                                    <div class="form-group">
+                                        <label for="line_map_400" class="text-info">
+                                            {{ __('lang.line_map_400') }}
+                                        </label>
+                                        <input type="file" name="line_map_400" accept=".jpg,.png,.pdf" class="form-control"/>
+                                    </div>
+
                                     <div class="form-group mt-4">
                                         <label for="allow_p_meter" class="text-info">
                                             {{ __('lang.re_choose_p_meter') }}
@@ -442,7 +398,7 @@
                                         <select name="allow_p_meter" id="allow_p_meter" class="form-control">
                                             <option value="">{{ __('lang.choose1') }}</option>
                                             @foreach ($pm_list as $pm)
-                                            <option value="{{ $pm->sub_type }}">{{ __('lang.'.$pm->slug) }}</option>
+                                            <option value="{{ $pm->sub_type }}"{{ $pm->sub_type == $data->apply_sub_type ? ' selected' : '' }}>{{ __('lang.'.$pm->slug) }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -468,25 +424,26 @@
                             <h5 class="mb-0 text-info">{{ __('lang.choose_engineer') }}</h5>
                         </div>
                         <div class="card-body">
+                            <h5 class="py-2 text-danger text-center ">{{ __('lang.required_msg') }}</h5>
+                            <br/>
                             {!! Form::open(['route' => 'commercialPowerMeterGroundCheckChoose.store']) !!}
                             {!! Form::hidden('form_id', $data->id) !!}
                             <div class="row justify-content-center">
                                 <div class="col-md-8">
                                     <div class="form-group p-20">
                                         <label for="engineer_id" class="text-info">
-                                            {{ __('lang.eng_choose') }}
+                                            {{ __('lang.eng_choose') }} <span class="text-danger f-s-15">&#10039;</span>
                                         </label>
-                                        <select required name="engineer_id" id="engineer_name" class="form-control inner-form {{ checkMM() }}" required>
-                                                <option value="">{{ __('lang.choose1') }}</option>
-                                                 @foreach ($engineerLists as $list) 
-                                                 @if($list->hasRole('Junior Engineer'))
-                                                 <option value="{{ $list->id }}">{{ checkMM() == 'mm' ? $list->name : $list->name }}</option> 
-                                                 @endif 
-                                                 @endforeach 
-                                                {{-- <option value="4">{{ 'အင်ယာ၁' }}</option>
-                                                <option value="5">{{ 'အင်ယာ၂' }}</option>
-                                                <option value="6">{{ 'အင်ယာ၃' }}</option> --}}
-                                            </select>
+                                        <select required name="engineer_id" id="engineer_name" class="form-control inner-form" required>
+                                            <option value="">{{ __('lang.choose1') }}</option>
+                                            @isset($engineerLists)
+                                            @foreach ($engineerLists as $list) 
+                                            @if($list->hasRole('အငယ်တန်းအင်ဂျင်နီယာ'))
+                                            <option value="{{ $list->id }}">{{ checkMM() == 'mm' ? $list->name : $list->name }}</option> 
+                                            @endif 
+                                            @endforeach
+                                            @endisset
+                                        </select>
                                     </div>
                                 </div>
                                 

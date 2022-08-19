@@ -2,22 +2,24 @@
 
 @section('content')
 <div class="row justify-content-center py-5">
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
-            <div class="card-header bg-primary">
-                <h5 class="card-title text-center text-white">{{ __('lang.'.$heading) }}</h5>
+            <div class="card-header bg-success">
+                <h5 class="card-title text-center text-white m-0">{{ __('lang.'.$heading) }}</h5>
             </div>
             <div class="card-body">
+                <h5 class="py-2 text-danger text-center ">{{ __('lang.required_msg') }}</h5><br/>
+
                 <div class="container">
                 {!! Form::open(['route' => 'tsf_electricpower_store', 'files' => true]) !!}
                 {!! Form::hidden('form_id', $form_id, ['id' => 'form_id']) !!}
                 <div class="row">
                     <div class="col-12">
-                        <h4 class="card-title">{{ __('lang.dc_recomm') }}</h4>
+                        <h4 class="card-title">{{ __('lang.dc_recomm') }} <span class="text-danger f-s-15">&#10039;</span></h4>
                     </div>
                 </div>
                 <div class="row3">
-                    <div class="col-6">
+                    <div class="col-md-6">
                         {!! Form::file('front[]', ['class' => 'cursor-p front', 'accept' => '.jpg,.png', 'id' => 'uploadFile', 'multiple', 'required']) !!}
                         <p class="px-1 py-1 text-danger">{{ __('lang.owner_photo_msg') }}</p>
                     </div>

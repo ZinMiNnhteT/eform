@@ -16,7 +16,10 @@
 
                 <div class="container-fluid">
                     <div id="app_show" class="accordion" role="tablist" aria-multiselectable="true">
-                        <div class="card mb-1">
+
+                        @include('layouts.user_apply_form')
+
+                        {{-- <div class="card mb-1">
                             <div class="card-header d-flex" role="tab" id="headingOne">
                                 <h5 class="mb-0">
                                     <a data-toggle="collapse" data-parent="#app_show" href="#info" aria-expanded="true" aria-controls="collapseOne">{{ __('lang.user_info') }}</a>
@@ -488,7 +491,7 @@
                                 </div>
                             </div>
                         </div>
-                        @endif
+                        @endif --}}
                     </div>
                 </div>
 

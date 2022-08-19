@@ -2,10 +2,10 @@
 
 @section('content')
 <div class="row justify-content-center py-5">
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
             <div class="card-header bg-primary">
-                <h4 class="card-title text-center text-white">{{ __('lang.'.$heading) }}</h4>
+                <h4 class="card-title text-center text-white m-0">{{ __('lang.'.$heading) }}</h4>
             </div>
             <div class="card-body">
                 @php
@@ -19,16 +19,27 @@
                     } else {
                         $data1 = $data2 = NULL;
                     }
+                    if($data1 == NULL && $data2 == NULL){
+                        $required = 'required';
+                        $star = '<span class="text-danger f-s-15">&#10039;</span>';
+                    }else{
+                        $required = '';
+                        $star = '';
+                    }
                 @endphp
+                @if($required == 'required')
+                    <h5 class="py-2 text-danger text-center ">{{ __('lang.required_msg') }}</h5>
+                    <br/>
+                @endif
                 {!! Form::open(['route' => 'tsf_nrc_update_ygn', 'method' => 'PATCH', 'files' => true]) !!}
                 {!! Form::hidden('form_id', $form_id) !!}
                 <div class="row justify-content-center">
                     <div class="col-md-6">
                         <div class="form-group m-0">
-                            <p class="card-title ">{{ __('lang.nrc_front') }}</p>
+                            <p class="card-title ">{{ __('lang.nrc_front') }} {!! $star !!}</p>
                         </div>
                         <div class="form-group">
-                            {!! Form::file('front', ['class' => 'cursor-p front', 'accept' => '.jpg,.png', 'onchange' => 'readURL(this, "front")']) !!}
+                            {!! Form::file('front', ['class' => 'cursor-p front', 'accept' => '.jpg,.png', 'onchange' => 'readURL(this, "front")', $required]) !!}
                             @if ($data1)
                             {!! Form::hidden('old_front', $data1) !!}
                             @endif
@@ -47,10 +58,10 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group m-0">
-                            <p class="card-title ">{{ __('lang.nrc_back') }}</p>
+                            <p class="card-title ">{{ __('lang.nrc_back') }} {!! $star !!}</p>
                         </div>
                         <div class="form-group">
-                            {!! Form::file('back', ['class' => 'cursor-p back', 'accept' => '.jpg,.png', 'onchange' => 'readURL(this, "back")']) !!}
+                            {!! Form::file('back', ['class' => 'cursor-p back', 'accept' => '.jpg,.png', 'onchange' => 'readURL(this, "back")', $required]) !!}
                             @if ($data2)
                             {!! Form::hidden('old_back', $data2) !!}
                             @endif

@@ -36,6 +36,7 @@ class CreateFormSurveysTable extends Migration
             $table->integer('allow_p_meter')->nullable();
             $table->string('transmit')->nullable();
             $table->text('r_power_files')->nullable();
+            $table->text('r_building_files')->nullable();
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();
             $table->text('remark')->nullable();
@@ -64,12 +65,15 @@ class CreateFormSurveysTable extends Migration
             $table->integer('bq_cost')->nullable();
             $table->text('bq_cost_files')->nullable();
             $table->text('remark_tsp')->nullable();
+            $table->string('tsp_recomm')->nullable(); // add new
             $table->integer('bq_cost_dist')->nullable();
             $table->text('bq_cost_dist_files')->nullable();
             $table->text('remark_dist')->nullable();
+            $table->string('dist_recomm')->nullable();// add new
             $table->integer('bq_cost_div_state')->nullable();
             $table->text('bq_cost_div_state_files')->nullable();
             $table->text('remark_div_state')->nullable();
+            $table->string('div_state_recomm')->nullable();// add new
             $table->text('budget_name')->nullable();
             $table->text('location_files')->nullable();
             $table->timestamps();

@@ -105,7 +105,8 @@
                                 <select name="group_lvl" id="group_lvl" class="form-control {{ checkMM() }}" required>
                                     <option value="">{{ __('lang.choose1') }}</option>
                                     @foreach (groupDropDown() as $key => $value)
-                                    <option value="{{ $key }}" {{ $key == $account->group_lvl ? 'selected' : '' }}>{{ $value }}</option>
+                                        
+                                            <option value="{{ $key }}" {{ $key == $account->group_lvl ? 'selected' : '' }}>{{ $value }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -123,7 +124,7 @@
                                         }
                                     @endphp
                                     @foreach (roleDropdown() as $key => $value)
-                                    <option value="{{ $key }}" {{ $key == $role ? 'selected' : '' }}>{{ $value }}</option>
+                                        <option value="{{ $key }}" {{ $key == $role ? 'selected' : '' }}>{{ $value }}</option>
                                     @endforeach
                                 </select>
                             </div>

@@ -2,10 +2,10 @@
 
 @section('content')
 <div class="row justify-content-center py-5">
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
-            <div class="card-header bg-primary">
-                <h4 class="card-title text-center text-white">{{ __('lang.'.$heading) }}</h4>
+            <div class="card-header bg-success">
+                <h4 class="card-title text-center text-white m-0">{{ __('lang.'.$heading) }}</h4>
             </div>
             <div class="card-body">
                 <br/>
@@ -25,16 +25,27 @@
                     } else {
                         $data1 = $data2 = NULL;
                     }
+                    if($data1 == NULL){
+                        $required = 'required';
+                        $star = '<span class="text-danger f-s-15">&#10039;</span>';
+                    }else{
+                        $required = '';
+                        $star = '';
+                    }
                 @endphp
+                @if($required == 'required')
+                    <h5 class="py-2 text-danger text-center ">{{ __('lang.required_msg') }}</h5>
+                    <br/>
+                @endif
                 {!! Form::open(['route' => ['resident_power_form10_update'], 'method' => 'PATCH', 'files' => true]) !!}
                 {!! Form::hidden('form_id', $form_id) !!}
                 <div class="row justify-content-center">
                     <div class="col-md-6">
                         <div class="form-group m-0">
-                            <p class="card-title">{{ __('lang.form10_front') }}</p>
+                            <p class="card-title">{{ __('lang.form10_front') }} {!! $star !!}</p>
                         </div>
                         <div class="form-group">
-                            {!! Form::file('front', ['class' => 'cursor-p front', 'accept' => '.jpg,.png', 'onchange' => 'readURL(this, "front")']) !!}
+                            {!! Form::file('front', ['class' => 'cursor-p front', 'accept' => '.jpg,.png', 'onchange' => 'readURL(this, "front")', $required]) !!}
                             @if ($data1)
                             {!! Form::hidden('old_front', $data1) !!}
                             @endif
@@ -51,7 +62,7 @@
                         </div>
                         @endif
                     </div>
-                    <div class="col-6">
+                    <div class="col-md-6">
                         <div class="form-group m-0">
                             <p class="card-title">{{ __('lang.form10_back') }}</p>
                         </div>
@@ -68,16 +79,14 @@
                         {!! Form::hidden('old_back', $data2, ['id' => 'old_back']) !!}
                         <div class="p-t-20 text-center preview_old_back">
                             <img src="{{ asset('storage/user_attachments/'.$form_id.'/'.$data2) }}" alt="{{ $data2 }}"  width="175" height="150" class="img-responsive">
-                            <p class="text-muted">{{ __('lang.prve_photo') }}</p>
-                            <p class="m-t-10"><a href="" class="delete_old_back text-danger" data-id="{{ $form_id }}">Remove</a></p>
                         </div>
                         @endif
                     </div>
                 </div>
             </div>
             <div class="card-footer text-center">
-                <a href="{{ route('resident_power_applied_form', $form_id) }}" class="col-3 btn btn-rounded btn-secondary">{{ __('lang.cancel') }}</a>
-                <button type="submit" class="col-3 btn btn-rounded btn-primary">{{ __('lang.submit') }}</button>
+                <a href="{{ route('resident_power_applied_form', $form_id) }}" class="col-md-3 btn btn-rounded btn-secondary">{{ __('lang.cancel') }}</a>
+                <button type="submit" class="col-md-3 btn btn-rounded btn-primary">{{ __('lang.submit') }}</button>
             </div>
             {!! Form::close() !!}
         </div>

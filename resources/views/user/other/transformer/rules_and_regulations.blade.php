@@ -2,10 +2,10 @@
 
 @section('content')
 <div class="row justify-content-center py-5">
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
-            <div class="card-header bg-primary">
-                <h4 class="card-title text-center text-white">{{ __('lang.'.$heading) }}</h4>
+            <div class="card-header bg-success">
+                <h4 class="card-title text-center text-white m-0">{{ __('lang.'.$heading) }}</h4>
             </div>
             <div class="card-body">
                 <div class="container">

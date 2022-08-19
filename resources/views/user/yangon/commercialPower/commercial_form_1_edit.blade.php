@@ -3,10 +3,10 @@
 @section('content')
 {{--  {{ dd($tbl_col_name) }}  --}}
 <div class="row justify-content-center py-5">
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
             <div class="card-header bg-primary">
-                <h4 class="text-white text-center">{{__('lang.meter_apply_type')}}</h4>
+                <h4 class="text-white text-center m-0">{{__('lang.meter_apply_type')}}</h4>
             </div>
             <div class="container">
                 <div class="card-body">
@@ -89,7 +89,7 @@
                 </div>
             </div>
             <div class="card-footer text-center">
-                <a href="{{ route('commercial_applied_form_ygn', $form->id) }}" class="col-3 waves-effect waves-light btn btn-rounded btn-secondary">@lang('lang.cancel')</a>
+                <a href="{{ route('commercial_applied_form_ygn', $form->id) }}" class="col-md-3 waves-effect waves-light btn btn-rounded btn-secondary">@lang('lang.cancel')</a>
             </div>
         </div>
     </div>

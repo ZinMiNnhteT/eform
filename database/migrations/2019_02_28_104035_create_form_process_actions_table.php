@@ -42,6 +42,8 @@ class CreateFormProcessActionsTable extends Migration
             $table->timestamp('user_paid_date')->nullable();
             $table->boolean('payment_accept')->default(0);
             $table->timestamp('payment_accepted_date')->nullable();
+            $table->text('payment_accepted_slip_nos')->nullable();
+            $table->text('payment_accepted_slips')->nullable();
             $table->boolean('install_accept')->default(0);
             $table->timestamp('install_accepted_date')->nullable();
             $table->boolean('install_confirm')->default(0);

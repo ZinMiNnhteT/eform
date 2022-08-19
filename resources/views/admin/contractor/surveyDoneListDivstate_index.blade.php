@@ -53,10 +53,10 @@
                         
                         @if ($form->count() > 0)
                         @foreach ($form as $data)
-                            {{--  chk same div/state  --}}
-                            @if (admin()->div_state == $data->div_state_id || admin()->group_lvl <= 1)
-
+                        
                             @if (chk_send($data->id)) {{--  chk user send already  --}}
+
+                            @if (check_div_dist_town($data->div_state_id, $data->district_id, $data->township_id) || admin()->group_lvl <= 2) {{--  chk permissions  --}}
                             <tr>
                                 <td class="align-middle text-center">{{ checkMM() == 'mm' ? mmNum(++$i) : (++$i) }}</td>
                                 <td class="align-middle text-danger">{{ $data->serial_code }}</td>
@@ -87,8 +87,7 @@
                             </tr>
                             @endif {{--  end chk user send already  --}}
 
-                            @endif
-                            {{--  end chk same div/state  --}}
+                            @endif {{--  end chk same div/state  --}}
 
                         @endforeach
                         @else
@@ -98,6 +97,9 @@
                         @endif
                         </tbody>
                     </table>
+                </div>
+                <div class="pull-right m-b-30">
+                    {{ $form->links() }}
                 </div>
             </div>
         </div>

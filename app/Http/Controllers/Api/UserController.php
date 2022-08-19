@@ -17,8 +17,8 @@ public $successStatus = 200;
     public function login(){ 
         if(Auth::guard('admin')->attempt(['email' => request('email'), 'password' => request('password')])){ 
             $user = Auth::guard('admin')->user(); 
-            $success['token'] =  $user->createToken('MyApp')-> accessToken; 
-            return response()->json(['success' => $success], $this-> successStatus); 
+            $success['token'] =  $user->createToken('MyApp')->accessToken; 
+            return response()->json(['success' => $success], $this->successStatus); 
         } 
         else{ 
             return response()->json(['error'=>'Unauthorised'], 401); 
@@ -43,9 +43,9 @@ public $successStatus = 200;
         $input = $request->all(); 
         $input['password'] = bcrypt($input['password']); 
         $user = Admin::create($input); 
-        $success['token'] =  $user->createToken('MyApp')-> accessToken; 
+        $success['token'] =  $user->createToken('MyApp')->accessToken; 
         $success['name'] =  $user->name;
-        return response()->json(['success'=>$success], $this-> successStatus); 
+        return response()->json(['success'=>$success], $this->successStatus); 
     }
 /** 
      * details api 
@@ -55,6 +55,6 @@ public $successStatus = 200;
     public function details() 
     { 
         $user = Auth::guard('admin')->user(); 
-        return response()->json(['success' => $user], $this-> successStatus); 
+        return response()->json(['success' => $user], $this->successStatus); 
     } 
 }

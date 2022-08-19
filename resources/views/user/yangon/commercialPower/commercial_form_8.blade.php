@@ -2,10 +2,10 @@
 
 @section('content')
 <div class="row justify-content-center py-5">
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
             <div class="card-header bg-primary">
-                <h4 class="card-title text-center text-white">{{ __('lang.'.$heading) }}</h4>
+                <h4 class="card-title text-center text-white m-0">{{ __('lang.'.$heading) }}</h4>
             </div>
             <div class="card-body">
                 <br/>
@@ -28,9 +28,9 @@
                 </div>
             </div>
             <div class="card-footer text-center">
-                <a href="" onclick="event.preventDefault();" class="col-3 waves-effect waves-light btn btn-rounded btn-warning btn-remove d-none">{{ __('lang.remove') }}</a>
-                <a href="{{ route('all_meter_forms') }}" class="col-3 waves-effect waves-light btn btn-rounded btn-secondary">{{ __('lang.cancel') }}</a>
-                <button type="submit" class="col-3 waves-effect waves-light btn btn-rounded btn-info" name='submitImage'>{{ __('lang.submit') }}</button>
+                <a href="" onclick="event.preventDefault();" class="col-md-3 waves-effect waves-light btn btn-rounded btn-warning btn-remove d-none">{{ __('lang.remove') }}</a>
+                <a href="{{ route('all_meter_forms') }}" class="col-md-3 waves-effect waves-light btn btn-rounded btn-secondary">{{ __('lang.cancel') }}</a>
+                <button type="submit" class="col-md-3 waves-effect waves-light btn btn-rounded btn-info" name='submitImage'>{{ __('lang.submit') }}</button>
             </div>
             {!! Form::close() !!}
         </div>

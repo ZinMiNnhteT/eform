@@ -48,13 +48,17 @@
 
                             <div class="col-md-6">
                                 <input id="phone" type="text" class="form-control {{ __('lang.en') }} {{ $errors->has('phone') ? 'is-invalid' : '' }}" name="phone" value="{{ old('phone') }}" required>
-                                <span class="ph-chk-reg" role="alert">
-                                    <strong>Fill your valid mobile phone number.</strong>
-                                </span>
+                                
                                 @if ($errors->has('phone'))
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $errors->first('phone') }}</strong>
                                     </span>
+                                @else
+                                    <small class="text-danger">
+                                        <span class="ph-chk-reg" role="alert">
+                                            @lang('lang.phone_msg')
+                                        </span>
+                                    </small>
                                 @endif
                             </div>
                         </div>
@@ -64,11 +68,17 @@
 
                             <div class="col-md-6">
                                 <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required>
-
+                                
                                 @if ($errors->has('password'))
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $errors->first('password') }}</strong>
                                     </span>
+                                @else
+                                    <small class="text-danger">
+                                        <span class="ph-chk-reg" role="alert">
+                                            @lang('lang.password_msg')
+                                        </span>
+                                    </small>
                                 @endif
                             </div>
                         </div>
@@ -90,7 +100,7 @@
                                         <img src="{{ captcha_src('flat') }}" alt="captcha" class="captcha_src">
                                     </div>
                                     <div class="col-6 py-2 px-4">
-                                        <a class="refresh_captcha"><i class="fa fa-refresh fa-fw fa-2x"></i></a>
+                                        <a class="refresh_captcha" style="cursor: pointer;"><i class="fa fa-refresh fa-fw fa-2x"></i></a>
                                     </div>
                                     <div class="col-12">
                                         {{--  <a class="refresh_captcha">refresh</i></a>  --}}

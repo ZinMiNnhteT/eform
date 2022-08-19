@@ -39,6 +39,10 @@ class CreateApplicationFormsTable extends Migration
             $table->integer('div_state_id')->nullable();
             $table->date('date')->nullable();
             $table->timestamps();
+
+            // new
+            $table->string('business_name')->nullable();
+            $table->integer('is_light')->nullable()->default(0);
         });
     }
 

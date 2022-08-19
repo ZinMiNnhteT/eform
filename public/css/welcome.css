@@ -28,6 +28,10 @@
 .custom-text {
     line-height: 1.8;
 }
+
+.jstf {
+    text-align: justify !important;
+}
 /* html, body {
     background-color: #fff;
     color: #636b6f;

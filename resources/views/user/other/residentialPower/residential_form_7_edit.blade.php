@@ -2,10 +2,10 @@
 
 @section('content')
 <div class="row justify-content-center py-5">
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
-            <div class="card-header bg-primary">
-                <h5 class="card-title text-center text-white">{{ __('lang.'.$heading) }}</h5>
+            <div class="card-header bg-success">
+                <h5 class="card-title text-center text-white m-0">{{ __('lang.'.$heading) }}</h5>
             </div>
             <div class="card-body">
                 <div class="container">
@@ -28,7 +28,7 @@
                             @if ($file->electric_power)
                         @php $data = explode(',', $file->electric_power); @endphp
                                 @foreach ($data as $item)
-                        <div class="col-2 text-center">
+                        <div class="col-md-2 col-sm-3 text-center">
                             <img src="{{ asset('storage/user_attachments/'.$form->id.'_'.$form->serial_code.'/'.$item) }}" alt="{{ $item }}"  width="175" height="150" alt="" class="img-thumbnail custom-img-thumbnail">
                         </div>
                                 @endforeach
@@ -38,9 +38,9 @@
                 </div>
             </div>
             <div class="card-footer text-center">
-                <a href="" onclick="event.preventDefault();" class="col-3 btn btn-rounded btn-warning btn-remove d-none">{{ __('lang.remove') }}</a>
-                <a href="{{ route('resident_power_applied_form', $form->id) }}" class="col-3 btn btn-rounded btn-secondary">{{ __('lang.cancel') }}</a>
-                <input type="submit" class="col-3 btn btn-rounded btn-primary" name='submitImage' value="{{ __('lang.submit') }}"/>
+                <a href="" onclick="event.preventDefault();" class="col-md-3 btn btn-rounded btn-warning btn-remove d-none">{{ __('lang.remove') }}</a>
+                <a href="{{ route('resident_power_applied_form', $form->id) }}" class="col-md-3 btn btn-rounded btn-secondary">{{ __('lang.cancel') }}</a>
+                <input type="submit" class="col-md-3 btn btn-rounded btn-primary" name='submitImage' value="{{ __('lang.submit') }}"/>
             </div>
             {!! Form::close() !!}
         </div>

@@ -4,7 +4,7 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header text-white bg-info d-flex">
+            <div class="card-header text-white bg-info d-flex display-flex">
                 <h5 class="card-title m-0 ">{{ __('lang.'.$heading) }}</h5>
                 <div class="ml-auto">
                     <a href="{{route('overall_process')}}" class="btn btn-rounded btn-info text-white l-h-ini p-t-5 p-b-5 "><i class="fa-fw fa fa-angle-double-left"></i>{{ __('lang.back') }}</a>
@@ -32,6 +32,8 @@
                 
                 <div class="container-fluid">
                     <div id="app_show" class="accordion" role="tablist" aria-multiselectable="true">
+
+                        {{-- applicant's info --}}
                         <div class="card mb-1">
                             <div class="card-header d-flex" role="tab" id="headingOne">
                                 <h5 class="mb-0 ">
@@ -54,14 +56,36 @@
                             <div id="info" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
                                 <div class="container">
                                     <div class="card-body mm">
-                                        <h5 class="text-center"><b>ထရန်စဖော်မာ လျှောက်လွှာပုံစံ</b></h5>
+                                        <h5 class="text-center"><b>
+                                        @if($form->apply_tsf_type == '1')
+                                            အိမ်သုံး
+                                        @elseif($form->apply_tsf_type == '2')
+                                            လုပ်ငန်းသုံး
+                                        @endif
+                                        ထရန်စဖော်မာ လျှောက်လွှာပုံစံ </b></h5>
                                         <h6 class="text-right">အမှတ်စဥ် - <b>{{ $form->serial_code }}</b></h6>
+                                        @if ($form->div_state_id == 2)
+                                        <div class="p-t-10 p-b-10">
+                                            <h6>သို့</h6>
+                                            <h6 class="p-l-30 p-t-10">မြို့နယ်လျှပ်စစ်မန်နေဂျာ</h6>
+                                            <h6 class="p-l-30 p-t-10">ရန်ကုန်လျှပ်စစ်ဓာတ်အားပေးရေးကော်ပိုရေးရှင်း</h6>
+                                            <h6 class="p-l-30 p-t-10">{{ township_mm($form->township_id) }}</h6>
+                                        </div>
+                                        @elseif ($form->div_state_id == 3)
+                                        <div class="p-t-10 p-b-10">
+                                            <h6>သို့</h6>
+                                            <h6 class="p-l-30 p-t-10">မြို့နယ်လျှပ်စစ်မန်နေဂျာ</h6>
+                                            <h6 class="p-l-30 p-t-10">မန္တလေးလျှပ်စစ်ဓာတ်အားပေးရေးကော်ပိုရေးရှင်း</h6>
+                                            <h6 class="p-l-30 p-t-10">{{ township_mm($form->township_id) }}</h6>
+                                        </div>
+                                        @else
                                         <div class="p-t-10 p-b-10">
                                             <h6>သို့</h6>
                                             <h6 class="p-l-30 p-t-10">မြို့နယ်လျှပ်စစ်မှူး/မြို့နယ်လျှပ်စစ်အင်ဂျင်နီယာ</h6>
                                             <h6 class="p-l-30 p-t-10">လျှပ်စစ်ဓာတ်အားဖြန့်ဖြူးရေးလုပ်ငန်း</h6>
                                             <h6 class="p-l-30 p-t-10">{{ township_mm($form->township_id) }}</h6>
                                         </div>
+                                        @endif
                                         <div class="text-right p-t-10">
                                             <h6>ရက်စွဲ။<span class="p-l-20">။</span> {{ mmNum(date('d-m-Y', strtotime($form->date))) }}</h6>
                                         </div>
@@ -71,7 +95,7 @@
                                         <div class="p-t-10">
                                             <h6 class="l-h-35">
                                                 <span class="p-l-40"></span><span class="p-l-40"></span>
-                                                အထက်ပါကိစ္စနှင့်ပတ်သက်၍ {{ address($form->id) }}နေ ကျွန်တော်/ကျွန်မ၏ <b>{{ $form->applied_building_type ? $form->applied_building_type : '<span class="p-l-40"></span>' }}</b> တွင် {{ tsf_type($form->id) }} တပ်ဆင်သုံးစွဲခွင့်ပြုပါရန် လျှောက်ထားအပ်ပါသည်။
+                                                အထက်ပါကိစ္စနှင့်ပတ်သက်၍ {{ address($form->id) }}နေ ကျွန်တော်/ကျွန်မ၏ <b>{!! $form->applied_building_type ? $form->applied_building_type : '<span class="p-l-40"></span>' !!}</b> တွင် {{ tsf_type($form->id) }} တပ်ဆင်သုံးစွဲခွင့်ပြုပါရန် လျှောက်ထားအပ်ပါသည်။
                                             </h6>
                                             <h6 class="l-h-35">
                                                 <span class="p-l-40"></span><span class="p-l-40"></span> တပ်ဆင်သုံးစွဲခွင့်ပြုပါက လျှပ်စစ်ဓာတ်အားဖြန့်ဖြူးရေးလုပ်ငန်းမှ သတ်မှတ်ထားသော အခွန်အခများကို အကြေပေးဆောင်မည့်အပြင် တည်ဆဲဥပဒေများအတိုင်း လိုက်နာဆောင်ရွက်မည်ဖြစ်ပါကြောင်းနှင့် အိမ်တွင်းဝါယာသွယ်တန်းခြင်းလုပ်ငန်းများကို လျှပ်စစ်ကျွမ်းကျင်လက်မှတ်ရှိသူများနှင့်သာ ဆောင်ရွက်မည်ဖြစ်ကြောင်း ဝန်ခံကတိပြုလျှောက်ထားအပ်ပါသည်။
@@ -99,6 +123,8 @@
                                 </div>
                             </div>
                         </div>
+
+                        {{-- meter type --}}
                         <div class="card mb-1">
                             <div class="card-header d-flex" role="tab" id="headingOne">
                                 <h5 class="mb-0 ">
@@ -114,7 +140,19 @@
                             </div>
                             <div id="typeOfMeter" class="collapse" role="tabpanel" aria-labelledby="headingOne">
                                 <div class="container">
+                                    
                                     <div class="talbe-responsive p-20">
+                                        <div class="alert alert-info">
+                                            <strong>
+                                                @if($form->pole_type == '1')
+                                                    One Pole Type
+                                                @elseif($form->pole_type == '2')
+                                                    Two Pole Type
+                                                @elseif($form->pole_type == '3')
+                                                    Package Type
+                                                @endif
+                                            </strong>
+                                        </div>
                                         <table class="table table-bordered">
                                             <thead>
                                                 <tr class="text-center">
@@ -128,7 +166,7 @@
                                             <tbody>
                                                 @php $total = 0; @endphp
                                                 @foreach ($tbl_col_name as $col_name)
-                                                @if ($col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'composit_box' && $col_name != 'sub_type' && $col_name != 'incheck_fee')
+                                                @if ($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'composit_box' && $col_name != 'sub_type' && $col_name != 'incheck_fee')
                                                 <tr>
                                                     <td class="">{{ __('lang.'.$col_name) }}</td>
                                                     <td class="text-center">{{ checkMM() === 'mm' ? mmNum(number_format($fee->$col_name)) : number_format($fee->$col_name) }}</td>
@@ -147,6 +185,8 @@
                                 </div>
                             </div>
                         </div>
+
+                        {{-- nrc --}}
                         <div class="card mb-1">
                             <div class="card-header d-flex" role="tab" id="headingOne">
                                 <h5 class="mb-0 ">
@@ -201,7 +241,9 @@
                                 @endif
                             </div>
                         </div>
+
                         @if (!$form->is_religion)
+                        {{-- form 10 --}}
                         <div class="card mb-1">
                             <div class="card-header d-flex" role="tab" id="headingOne">
                                 <h5 class="mb-0 ">
@@ -225,20 +267,41 @@
                                 @if ($files->count() > 0)
                                     @foreach ($files as $file)
                                         @if ($file->form_10_front)
-                                <div class="row text-center mt-2">
-                                    <div class="col-md-6">
-                                        <img src="{{ asset('storage/user_attachments/'.$form->id.'/'.$file->form_10_front) }}" alt="{{ __('lang.form10_front') }}" class="img-thumbnail" width="150" height="150" data-toggle="modal" data-target="#myImg">
-                                        <p class=" m-t-10 m-b-10">{{ __('lang.form10_front') }}</p>
-                                    </div>
-                                            @if ($file->form_10_back)
-                                    <div class="col-md-6">
-                                        <img src="{{ asset('storage/user_attachments/'.$form->id.'/'.$file->form_10_back) }}" alt="{{ __('lang.form10_back') }}" class="img-thumbnail" width="150" height="150" data-toggle="modal" data-target="#myImg">
-                                        <p class=" m-t-10 m-b-10">{{ __('lang.form10_back') }}</p>
-                                    </div>
-                                            @endif
-                                </div>
+                                            <div class="row text-center mt-2">
+                                                @php
+                                                    $fronts = explode(',', $file->form_10_front);
+                                                    $i = 1;
+                                                @endphp
+                                                
+                                                <div class="col-md-6 text-center">
+                                                    @foreach ($fronts as $foto)
+                                                        <img src="{{ asset('storage/user_attachments/'.$form->id.'/'.$foto) }}" alt="{{ __('lang.form10_front') }} ({{ checkMM()=='mm'?mmNum($i):$i }})" class="img-thumbnail" width="150" height="150" data-toggle="modal" data-target="#myImg">
+                                                            <p class=" m-t-10 m-b-10">{{ __('lang.form10_front') }} ({{ checkMM()=='mm'?mmNum($i):$i }})</p>
+                                                        
+                                                        @php
+                                                            $i++;
+                                                        @endphp
+                                                    @endforeach
+                                                </div>
+                            
+                                                @if ($file->form_10_back)
+                                                    @php
+                                                        $fronts = explode(',', $file->form_10_back);
+                                                        $i = 1;
+                                                    @endphp
+                                                    <div class="col-md-6 text-center">
+                                                    @foreach ($fronts as $foto)
+                                                        <img src="{{ asset      ('storage/user_attachments/'.$form->id.'/'.$foto) }}" alt="{{ __('lang.form10_back') }} ({{ checkMM()=='mm'?mmNum($i):$i }})" class="img-thumbnail" width="150" height="150" data-toggle="modal" data-target="#myImg">
+                                                        <p class=" m-t-10 m-b-10">{{ __('lang.form10_back') }} ({{ checkMM()=='mm'?mmNum($i):$i }})</p>
+                                                        @php
+                                                            $i++;
+                                                        @endphp
+                                                    @endforeach
+                                                </div>
+                                                @endif  
+                                            </div>
                                         @else
-                                <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                            <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
                                         @endif
                                     @endforeach
                                 @else
@@ -246,6 +309,7 @@
                                 @endif
                             </div>
                         </div>
+                        {{-- recommanded --}}
                         <div class="card mb-1">
                             <div class="card-header d-flex" role="tab" id="headingOne">
                                 <h5 class="mb-0 ">
@@ -289,6 +353,8 @@
                             </div>
                         </div>
                         @endif
+
+                        {{-- ownership --}}
                         <div class="card mb-1">
                             <div class="card-header d-flex" role="tab" id="headingOne">
                                 <h5 class="mb-0 ">
@@ -336,7 +402,9 @@
                                 @endif
                             </div>
                         </div>
+
                         @if (!$form->is_religion)
+                        {{-- transaction license လုပ်ငန်းလိုင်စင်(သက်တမ်းရှိ/မူရင်း) --}}
                         <div class="card mb-1">
                             <div class="card-header d-flex" role="tab" id="headingOne">
                                 <h5 class="mb-0">
@@ -379,6 +447,8 @@
                             </div>
                         </div>
                         @endif
+
+                        {{-- dc recomanded စည်ပင်ထောက်ခံစာဓါတ်ပုံ --}}
                         <div class="card mb-1">
                             <div class="card-header d-flex" role="tab" id="headingOne">
                                 <h5 class="mb-0">
@@ -420,11 +490,145 @@
                                 @endif
                             </div>
                         </div>
+
+                        {{-- farmland --}}
+                        <div class="card mb-1">
+                            <div class="card-header d-flex" role="tab" id="headingOne">
+                                <h5 class="mb-0">
+                                    <a data-toggle="collapse" data-parent="#app_show" href="#farmland" aria-expanded="true" aria-controls="collapseOne">{{ __('lang.farmland_permit') }}</a>
+                                </h5>
+                                @if (chk_send($form->id) !== 'first')
+                                    @if (chk_form_finish($form->id, $form->apply_type)['farmland'])
+                                <div class="ml-auto">
+                                    <a href="{{ route('tsf_farmland_edit_ygn', $form->id) }}" class="btn-edit text-info ">{{ __('lang.create') }}</a>
+                                </div>
+                                    @else
+                                <div class="ml-auto">
+                                    <a href="{{ route('tsf_farmland_edit_ygn', $form->id) }}" class="btn-edit text-danger">{{ __('lang.edit') }}</a>
+                                </div>
+                                    @endif
+                                @endif
+                            </div>
+                            <div id="farmland" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                                @if ($files->count() > 0)
+                                    @foreach ($files as $file)
+                                        @if ($file->farmland)
+                                <div class="row text-center mt-2">
+                                        @php
+                                            $fotos = explode(',', $file->farmland);
+                                        @endphp
+                                            @foreach ($fotos as $foto)
+                                    <div class="col-md-6 text-center">
+                                        <img src="{{ asset('storage/user_attachments/'.$form->id.'/'.$foto) }}" alt="{{ __('lang.permit') }}" class="img-thumbnail" width="150" height="150" data-toggle="modal" data-target="#myImg">
+                                        <p class="m-t-10 m-b-10">{{ __('lang.permit') }}</p>
+                                    </div>
+                                            @endforeach
+                                </div>
+                                        @else
+                                <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                        @endif
+                                    @endforeach
+                                @else
+                                <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                @endif
+                            </div>
+                        </div>
+
+                        {{-- Industry --}}
+                        <div class="card mb-1">
+                            <div class="card-header d-flex" role="tab" id="headingOne">
+                                <h5 class="mb-0">
+                                    <a data-toggle="collapse" data-parent="#app_show" href="#industry" aria-expanded="true" aria-controls="collapseOne">{{ __('lang.industry_zone') }}</a>
+                                </h5>
+                                @if (chk_send($form->id) !== 'first')
+                                    @if (chk_form_finish($form->id, $form->apply_type)['industry'])
+                                <div class="ml-auto">
+                                    <a href="{{ route('tsf_industry_edit_ygn', $form->id) }}" class="btn-edit text-info ">{{ __('lang.create') }}</a>
+                                </div>
+                                    @else
+                                <div class="ml-auto">
+                                    <a href="{{ route('tsf_industry_edit_ygn', $form->id) }}" class="btn-edit text-danger">{{ __('lang.edit') }}</a>
+                                </div>
+                                    @endif
+                                @endif
+                            </div>
+                            <div id="industry" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                                @if ($files->count() > 0)
+                                    @foreach ($files as $file)
+                                        @if ($file->industry)
+                                <div class="row text-center mt-2">
+                                        @php
+                                            $fotos = explode(',', $file->industry);
+                                        @endphp
+                                            @foreach ($fotos as $foto)
+                                    <div class="col-md-6 text-center">
+                                        <img src="{{ asset('storage/user_attachments/'.$form->id.'/'.$foto) }}" alt="{{ __('lang.industry_zone_header') }}" class="img-thumbnail" width="150" height="150" data-toggle="modal" data-target="#myImg">
+                                        <p class="m-t-10 m-b-10">{{ __('lang.industry_zone_header') }}</p>
+                                    </div>
+                                            @endforeach
+                                </div>
+                                        @else
+                                <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                        @endif
+                                    @endforeach
+                                @else
+                                <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                @endif
+                            </div>
+                        </div>
+
+                        {{-- electric power --}}
+                        <div class="card mb-1">
+                            <div class="card-header d-flex" role="tab" id="headingOne">
+                                <h5 class="mb-0 ">
+                                    <a data-toggle="collapse" data-parent="#app_show" href="#electricpower" aria-expanded="true" aria-controls="collapseOne">{{ __('lang.applied_electricpower_photo') }}</a>
+                                </h5>
+                                @if (chk_send($form->id) !== 'first')
+                                    @if (chk_form_finish($form->id, $form->apply_type)['electric'])
+                                <div class="ml-auto">
+                                    <a href="{{ route('tsf_electricpower_edit_ygn', $form->id) }}" class="btn-edit text-info">{{ __('lang.create') }}</a>
+                                </div>
+                                    @else
+                                <div class="ml-auto">
+                                    <a href="{{ route('tsf_electricpower_edit_ygn', $form->id) }}" class="btn-edit text-danger ">{{ __('lang.edit') }}</a>
+                                </div>
+                                    @endif
+                                @endif
+                                {{-- @if (chk_send($form->id) !== 'first')
+                                <div class="ml-auto">
+                                    <a href="{{ route('resident_power_electricpower_edit_ygn', $form->id) }}" class="btn-edit text-danger ">{{ __('lang.edit') }}</a>
+                                </div>
+                                @endif --}}
+                            </div>
+                            <div id="electricpower" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                                @foreach ($files as $file)
+                                @if( $file->electric_power != "")
+                                <div class="row text-center mt-2">
+                                    @php
+                                        $fotos = explode(',', $file->electric_power);
+                                        $i = 1;
+                                    @endphp
+                                    @foreach ($fotos as $foto)
+                                    <div class="col-md-6 text-center">
+                                        <img src="{{ asset('storage/user_attachments/'.$form->id.'/'.$foto) }}" alt="{{ $foto }}" class="img-thumbnail" width="150" height="150">
+                                        <p class=" m-t-10 m-b-10">{{ __('lang.electricpower_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})</p>
+                                    </div>
+                                    @php
+                                        $i++;
+                                    @endphp
+                                    @endforeach
+                                </div>
+                                @else
+                                    <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                @endif
+                                @endforeach
+                            </div>
+                        </div> 
                     </div>
                 </div>
 
                 @if (chk_form_finish($form->id, $form->apply_type)['state'])
-                    @if (chk_send($form->id) !== 'first')
+                    @if (chk_send($form->id) !== 'first' && $form->serial_code)
                 <div class="m-t-30 m-b-10 row justify-content-center">
                     <div class="col-6" id="btn_send">
                         <button class="btn btn-block btn-lg btn-success" data-toggle="modal" data-target="#sendForm" data-backdrop="static" data-keyboard="false">{{ __('lang.send') }}</button>

@@ -2,10 +2,10 @@
 
 @section('content')
 <div class="row justify-content-center py-5">
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
-            <div class="card-header bg-primary">
-                <h4 class="card-title text-center text-white">{{ __('lang.'.$heading) }}</h4>
+            <div class="card-header bg-success">
+                <h4 class="card-title text-center text-white m-0">{{ __('lang.'.$heading) }}</h4>
             </div>
             <div class="card-body">
                 <div class="container">
@@ -38,8 +38,8 @@
                         </label>
                     </div>
                     <p class="text-danger mm"></p>
-                    <a href="{{ route('all_meter_forms') }}" class="col-3 btn btn-rounded btn-secondary">{{ __('lang.cancel') }}</a>
-                    <a href="{{ route('commercial_meter_type') }}" class="col-3 btn btn-rounded btn-info rr-accept disabled">{{ __('lang.continue') }}</a>
+                    <a href="{{ route('all_meter_forms') }}" class="col-md-3 btn btn-rounded btn-secondary">{{ __('lang.cancel') }}</a>
+                    <a href="{{ route('commercial_agreement') }}" class="col-md-3 btn btn-rounded btn-info rr-accept disabled">{{ __('lang.continue') }}</a>
                 </div>
             </div>
         </div>

@@ -15,13 +15,15 @@
                         <table class="table table-bordered">
                             <thead class="text-center">
                                 <tr>
+                                    <th></th>
                                     <th width="30%" class="align-middle ">{{ __('lang.descriptions') }}</th>
                                     <th colspan="8">{{ '၁၁/၀.၄ ကေဗွီ ထရန်စဖော်မာ Rating အလိုက်' }} {{ __('lang.initial_cost') }}</th>
                                 </tr>
                                 <tr>
+                                    <th></th>
                                     <th>{{ __('lang.types') }} ({{ __('lang.kva') }})</th>
                                     @foreach ($tbl_col_name as $col_name)
-                                        @if ($col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'composit_box' && $col_name != 'sub_type' && $col_name != 'incheck_fee')
+                                        @if ($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'composit_box' && $col_name != 'sub_type' && $col_name != 'incheck_fee')
                                     <th>{{ __('lang.'.$col_name) }}</th>
                                         @endif
                                     @endforeach
@@ -30,6 +32,7 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @php $i=1; @endphp
                                 @foreach ($fee_names as $fee)
                                     @php $t_count = 0;
                                         $bg = '';
@@ -40,8 +43,10 @@
                                         }
                                     @endphp
                                 <tr>
+                                    <td>{{ checkMM() === 'mm' ? mmNum(number_format($i)) : number_format($i) }}<?php $i++;?></td>
+
                                     @foreach($tbl_col_name as $col_name)
-                                        @if ($col_name != 'id' && $col_name != 'type' && $col_name != 'incheck_fee' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'composit_box' && $col_name != 'sub_type')
+                                        @if ($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'incheck_fee' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'composit_box' && $col_name != 'sub_type')
                                     <td class="text-center {{ $bg }}">
                                             @if ($col_name == 'name')
                                         <strong>{{ checkMM() === 'mm' ? mmNum($fee->$col_name) : $fee->$col_name }}</strong>

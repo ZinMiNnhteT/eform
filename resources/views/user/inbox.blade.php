@@ -52,15 +52,35 @@
                                     </div>
                                 </div>
                                 <div class="mail_uname">
-                                    <span>{{ 'Dear '.$form->fullname }},</span>
+                                    <span>{{ $form->fullname }},</span>
                                 </div>
                                 <div class="mail_body">
                                     <div>
                                         @php echo $mail_data->mail_body; @endphp
                                     </div>
+                                    {{-- <div class="row"> --}}
+                                    <?php 
+                                        // $fpa = DB::table("form_process_actions")->where("application_form_id", $form->id)->first();
+                                        // $files = explode(",",$fpa->payment_accepted_slips);
+                                        // foreach ($files as $file) {
+                                        //     $filename = asset('storage/user_attachments/'.$form->id.'/'.$file);
+                                        //     $ext = pathinfo($filename, PATHINFO_EXTENSION);
+                                        //     ;
+                                        ?>
+                                            {{-- @if($ext != 'pdf')
+                                            <div class="col-md-2">
+                                                <img src="{{ asset('storage/user_attachments/'.$form->id.'/'.$file) }}" alt="{{ $file }}" class="img-thumbnail"  data-toggle="modal" data-target="#myImg">
+                                            </div>
+                                            @else
+                                                <a href="{{ asset('storage/user_attachments/'.$form->id.'/'.$file) }}" target="_blank" class="pdf-block">{{ $file }}</a>
+                                            @endif --}}
+                                        <?php //}
+                                    ?>
+                                    {{-- </div> --}}
                                 </div>
+                                
                                 <div class="text-right">
-                                    <span>လျှပ်စစ်နှင့်စွမ်းအင် ဝန်ကြီးဌာန</span><br/>
+                                    <span>{{divType($form->div_state_id)}}</span><br/>
                                     <span>e-Meter Support Team</span><br/>
                                     <span><a href="http://www.moee.gov.mm">www.moee.gov.mm</a></span>
                                 </div>
@@ -69,7 +89,13 @@
                     </div>
                     @else
                     <div class="col-lg-9 col-md-8 bg-light border-left mail-detail-div">
-                        <div class="card mb-0 mail-view d-none m-l-10 m-r-10">
+                        <div class="card mb-0 select-to-read-view m-l-10 m-r-10 min-h-100p">
+                            <div class="card-body text-center p-t-100">
+                                <i class="ti-email size-lg text-fade"></i>
+                                <p class="text-fade">{{ __('lang.select_to_read')}}</p>
+                            </div>
+                        </div>
+                        <div class="card mb-0 mail-view m-l-10 m-r-10 d-none">
                             <div class="card-body">
                                 <h3 class="card-title send_type m-b-0"></h3>
                             </div>
@@ -103,4 +129,21 @@
 
         </div>
     </div>
+
+    <div class="modal" id="myImg" tabindex="-1" role="dialog" aria-labelledby="myLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header text-right">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="" alt="" width="700">
+                    <p class="mt-5"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection

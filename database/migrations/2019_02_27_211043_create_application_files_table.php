@@ -30,8 +30,11 @@ class CreateApplicationFilesTable extends Migration
             $table->text('dc_recomm')->nullable();
             $table->text('prev_bill')->nullable();
             $table->timestamps();
-
             $table->foreign('application_form_id')->references('id')->on('application_forms')->onDelete('cascade');
+
+            // new
+            $table->text('farmland')->nullable();
+            $table->text('building')->nullable();
         });
     }
 

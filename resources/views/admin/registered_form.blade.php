@@ -79,9 +79,10 @@
                         @foreach ($form as $data)
 
                             {{--  chk same div/state | same district | same township | system --}}
-                            @if ((admin()->div_state == $data->div_state_id && admin()->district == $data->district_id && admin()->township == $data->township_id) || admin()->group_lvl <= 2)
 
                             @if (chk_send($data->id)) {{--  chk user send already  --}}
+                            @if (check_div_dist_town($data->div_state_id, $data->district_id, $data->township_id) || admin()->group_lvl <= 2)
+                            
                             <tr>
                                 <td class="align-middle text-center">{{ checkMM() == 'mm' ? mmNum(++$i) : (++$i) }}</td>
                                 <td class="align-middle">{{ $data->serial_code }}</td>
@@ -93,7 +94,7 @@
                                     {{ sent_date($data->id) }}
                                 </td>
                                 <td class="align-middle">
-                                    {{ apply_meter_type($data->apply_type) }}
+                                    {{ apply_meter_type($data->apply_type, $data->apply_tsf_type) }}
                                 </td>
 
                                 @if (hasPermissions(['registeredForm-show']))

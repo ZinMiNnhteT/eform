@@ -1,6 +1,5 @@
 <?php
 
-use App\Setting\Town;
 use Illuminate\Database\Seeder;
 
 class TownsTableSeeder extends Seeder

@@ -65,7 +65,19 @@
                     {{--  show data  --}}
                     <div class="col-md-10 border-left border-info">
                         <div class="float-right">{{ $accounts->links() }}</div>
-                        <div class="table-reponsive">
+                        {!! Form::open(['route' => 'users.index', 'method' => 'get']) !!}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <input type="text" name="name" value="" placeholder="{{ __('lang.account') }} {{ __('lang.name') }}" id="serial" class="form-control inner-form">
+                                </div>
+                                <div class="col-md-9">
+                                    <button type="submit" class="btn btn-rounded btn-info"><i class="fa fa-search"></i></button>
+                                    <button type="reset" class="btn btn-rounded btn-danger"><i class="fa fa-ban text-white"></i></button>
+                                    <a href="{{ route('users.index') }}" class="btn btn-rounded btn-warning"><i class="fa fa-refresh text-white"></i></a>
+                                </div>
+                            </div>
+                        {!! Form::close() !!}
+                        <div class="table-reponsive m-t-10">
                             <table class="table table-hover">
                                 <thead>
                                     <tr class="text-capitalize">

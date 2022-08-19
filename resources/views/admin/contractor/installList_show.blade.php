@@ -242,6 +242,157 @@
                                 @endforeach
                             </div>
                         </div>
+                        {{-- bq --}}
+                        <div class="card mb-1">
+                            <div class="card-header d-flex" role="tab" id="headingOne">
+                                <h5 class="mb-0 ">
+                                    <a data-toggle="collapse" data-parent="#app_show" href="#bq" aria-expanded="true" aria-controls="collapseOne">
+                                    {{ __('lang.bq_photo') }}
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="bq" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                                @if ($files->count() > 0)
+                                    @foreach ($files as $file)
+                                        @if ($file->bq)
+                                <div class="row text-center mt-2">
+                                    @php
+                                        $fotos = explode(',', $file->bq);
+                                        $i = 1;
+                                    @endphp
+                                            @foreach ($fotos as $foto)
+                                    <div class="col-md-6 text-center">
+                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ __('lang.building_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})" class="img-thumbnail imgViewer" width="150" height="150">
+                                        <p class=" m-t-10 m-b-10">{{ __('lang.bq_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})</p>
+                                    </div>
+                                    @php
+                                        $i++;
+                                    @endphp
+                                            @endforeach
+                                </div>
+                                        @else
+                                <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                        @endif
+                                    @endforeach
+                                @else
+                                <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                @endif
+                            </div>
+                        </div>
+
+                        {{-- drawing --}}
+                        <div class="card mb-1">
+                            <div class="card-header d-flex" role="tab" id="headingOne">
+                                <h5 class="mb-0 ">
+                                    <a data-toggle="collapse" data-parent="#app_show" href="#drawing" aria-expanded="true" aria-controls="collapseOne">
+                                    {{ __('lang.drawing_photo') }}
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="drawing" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                                @if ($files->count() > 0)
+                                    @foreach ($files as $file)
+                                        @if ($file->drawing)
+                                <div class="row text-center mt-2">
+                                    @php
+                                        $fotos = explode(',', $file->drawing);
+                                        $i = 1;
+                                    @endphp
+                                            @foreach ($fotos as $foto)
+                                    <div class="col-md-6 text-center">
+                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ __('lang.building_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})" class="img-thumbnail imgViewer" width="150" height="150">
+                                        <p class=" m-t-10 m-b-10">{{ __('lang.drawing_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})</p>
+                                    </div>
+                                    @php
+                                        $i++;
+                                    @endphp
+                                            @endforeach
+                                </div>
+                                        @else
+                                <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                        @endif
+                                    @endforeach
+                                @else
+                                <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                @endif
+                            </div>
+                        </div>
+
+                        {{-- map --}}
+                        <div class="card mb-1">
+                            <div class="card-header d-flex" role="tab" id="headingOne">
+                                <h5 class="mb-0 ">
+                                    <a data-toggle="collapse" data-parent="#app_show" href="#map" aria-expanded="true" aria-controls="collapseOne">
+                                    {{ __('lang.map_photo') }}
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="map" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                                @if ($files->count() > 0)
+                                    @foreach ($files as $file)
+                                        @if ($file->map)
+                                <div class="row text-center mt-2">
+                                    @php
+                                        $fotos = explode(',', $file->map);
+                                        $i = 1;
+                                    @endphp
+                                            @foreach ($fotos as $foto)
+                                    <div class="col-md-6 text-center">
+                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ __('lang.building_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})" class="img-thumbnail imgViewer" width="150" height="150">
+                                        <p class=" m-t-10 m-b-10">{{ __('lang.map_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})</p>
+                                    </div>
+                                    @php
+                                        $i++;
+                                    @endphp
+                                            @endforeach
+                                </div>
+                                        @else
+                                <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                        @endif
+                                    @endforeach
+                                @else
+                                <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                @endif
+                            </div>
+                        </div>
+
+                        {{-- ရေစက်မီတာလျှောက်ထားရာတွင် ကန်ထရိုက်ရှိ အခန်းစေ့နေသူများ၏ ကန့်ကွက်မှုမရှိကြောင်း လက်မှတ်ရေးထိုးထားမှုစာ (မူရင်း)  --}}
+                        <div class="card mb-1">
+                            <div class="card-header d-flex" role="tab" id="headingOne">
+                                <h5 class="mb-0 ">
+                                    <a data-toggle="collapse" data-parent="#app_show" href="#sign" aria-expanded="true" aria-controls="collapseOne">
+                                    {{ __('lang.sign_header') }}
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="sign" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                                @if ($files->count() > 0)
+                                    @foreach ($files as $file)
+                                        @if ($file->sign)
+                                <div class="row text-center mt-2">
+                                    @php
+                                        $sign_photo = explode(',', $file->sign);
+                                        $i = 1;
+                                    @endphp
+                                            @foreach ($sign_photo as $foto)
+                                    <div class="col-md-6 text-center">
+                                        <img src="{{ asset('storage/user_attachments/'.$data->id.'/'.$foto) }}" alt="{{ __('lang.building_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})" class="img-thumbnail imgViewer" width="150" height="150">
+                                        <p class=" m-t-10 m-b-10">{{ __('lang.building_photo') }} ({{ checkMM()=='mm'?mmNum($i):$i }})</p>
+                                    </div>
+                                    @php
+                                        $i++;
+                                    @endphp
+                                            @endforeach
+                                </div>
+                                        @else
+                                <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                        @endif
+                                    @endforeach
+                                @else
+                                <h4 class="mt-5 mb-5 text-center text-danger">{{ __('ဓါတ်ပုံတင်ထားခြင်း မရှိပါ') }}</h4>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                     @if ($error->count() > 0)
                     <div class="card mb-1">
@@ -284,7 +435,7 @@
                         <div class="card-header d-flex" role="tab" id="headingOne">
                             <h5 class="mb-0">
                                 <a data-toggle="collapse" data-parent="#app_show" href="#technical" aria-expanded="true" aria-controls="collapseOne">{{ __('
-                                မြေင်စစ်ဆေးချက်များ') }}</a>
+                                မြေပြင်စစ်ဆေးချက်များ') }}</a>
                             </h5>
                             @if (chk_userForm($data->id)['to_confirm_survey'])
                                 @if (hasPermissionsAndGroupLvl(['residentialChkGrdDone-create'], admin()->group_lvl))

@@ -2,10 +2,10 @@
 
 @section('content')
 <div class="row justify-content-center py-5">
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
             <div class="card-header bg-primary">
-                <h4 class="card-title text-center text-white">{{ __('lang.'.$heading) }}</h4>
+                <h4 class="card-title text-center text-white m-0">{{ __('lang.'.$heading) }}</h4>
             </div>
             <div class="card-body">
                 <h5 class="py-2 text-danger text-center ">{{ __('lang.required_msg') }}</h5>
@@ -41,7 +41,7 @@
                     <div class="col-md-8">
                         <div class="form-group">
                             <input type="checkbox" name="religion" class="check" id="flat-checkbox-1" data-checkbox="icheckbox_flat-red">
-                            <label for="flat-checkbox-1">{{ __('lang.tsf_religion_msg') }}</label>
+                            <label for="flat-checkbox-1" class="text-info">{{ __('lang.tsf_religion_msg') }}</label>
                         </div>
                         {{--  Fullname  --}}
                         <div class="form-group">
@@ -53,7 +53,7 @@
                         {{--  NRC  --}}
                         <div class="form-group">
                             <label for="nrc" class="text-info">
-                                {{ __('lang.nrc') }} {{ '(ဘာသာ/သာသနာအတွက် ဖြစ်ပါက သာသနာရေးကဒ်အမှတ်)' }} <span class="text-danger f-s-15">&#10039;</span>
+                                {{ __('lang.nrc') }} ( {{ __('lang.religion_card') }} ) <span class="text-danger f-s-15">&#10039;</span>
                             </label>
                             <input type="text" name="nrc" value="{{ $nrc }}" id="nrc" class="form-control {{ $errors->has('nrc') ? 'is-invalid' : '' }}" required>
                         </div>
@@ -67,13 +67,13 @@
                         {{--  Work  --}}
                         <div class="form-group">
                             <label for="jobType" class="text-info">
-                                {{ __('lang.job_type') }} {{ '(ဘာသာ/သာသနာအတွက် ဖြစ်ပါက ဖြည့်ရန်မလိုပါ)' }}
+                                {{ __('lang.job_type') }} ( {{ __('lang.no_need_for_religion') }} )
                             </label>
                             <select name="jobType" class="form-control" id="jobType">
                                 <option value="">{{ __('lang.choose1') }}</option>
-                                <option value="gstaff" {{ $job_type != 'gstaff' ? : 'selected' }}>အစိုးရဝန်ထမ်း</option>
-                                <option value="staff" {{ $job_type != 'staff' ? : 'selected' }}>ဝန်ထမ်း</option>
-                                <option value="other" {{ $job_type != 'other' ? : 'selected' }}>အခြား</option>
+                                <option value="gstaff" {{ $job_type != 'gstaff' ? : 'selected' }}>{{ __('lang.civil_servant') }}</option>
+                                <option value="staff" {{ $job_type != 'staff' ? : 'selected' }}>{{ __('lang.staff') }}</option>
+                                <option value="other" {{ $job_type != 'other' ? : 'selected' }}>{{ __('lang.other') }}</option>
                             </select>
                         </div>
                         {{--  Wrapper div for govStaff  --}}
@@ -94,7 +94,7 @@
                                 </div>
                                 <div class="form-group m-t-20">
                                     <label for="salary" class="text-info">{{ __('lang.avg_salary') }}</label>
-                                    <input type="number" name="salary" value="{{ $job_type == 'gstaff' || $job_type == 'staff' ? $salary : '' }}" class="form-control" />
+                                    <input type="number" name="salary" value="{{ $job_type == 'gstaff' || $job_type == 'staff' ? $salary : '' }}" class="form-control" max="2147483647" />
                                 </div>
                             </div>
                         </div>
@@ -111,7 +111,7 @@
                         {{--  Building Type  --}}
                         <div class="form-group">
                             <label for="applied_building_type" class="text-info">
-                                {{ __('lang.building_type') }} {{ '(ဘာသာ/သာသနာအတွက် ဖြစ်ပါက နေရာ(သို့)ကျောင်းတိုက်အမည်)' }} <span class="text-danger f-s-15">&#10039;</span>
+                                {{ __('lang.building_type') }} ( {{ __('lang.place_temple') }}) <span class="text-danger f-s-15">&#10039;</span>
                             </label>
                             <textarea name="applied_building_type" class="form-control" required>{{ $applied_building_type }}</textarea>
                         </div>

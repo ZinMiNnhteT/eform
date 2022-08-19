@@ -152,12 +152,18 @@ class SettingController extends Controller
 
     public function choose_region(Request $request) {
         $region_id = $request->get('id');
+        $district =  Auth::guard('admin')->user()->district;
+        $user =  Auth::guard('admin')->user()->group_lvl;
+        if($user >= '5'){
+            $districts = District::where('division_state_id', $region_id)->where('id',$district)->get();
+        }else{
+            $districts = District::where('division_state_id', $region_id)->get();
+        }
         
-        $districts = District::where('division_state_id', $region_id)->get();
         $townships = Township::where('division_state_id', $region_id)->get();
         // district
-        $output1 = '<option value="" selected disabled>';
-        $output1 .= __("lang.choose1");
+        $output1 = '<option value="" selected>';
+        $output1 .= __("lang.district").__("lang.choose1");
         $output1 .= '</option>';
         foreach ($districts as $district) {
             $output1 .= '<option value="'.$district->id.'">';
@@ -168,27 +174,34 @@ class SettingController extends Controller
             }
             $output1 .= '</option>';
         }
-        // township
-        $output2 = '<option value="" selected disabled>';
-        $output2 .= __("lang.choose1");
-        $output2 .= '</option>';
-        foreach ($townships as $township) {
-            $output2 .= '<option value="'.$township->id.'">';
-            if (checkMM() == 'mm') {
-                $output2 .= $township->name;
-            } else {
-                $output2 .= $township->eng;
-            }
-            $output2 .= '</option>';
-        }
-        return ['district' => $output1, 'township' => $output2];
+        // // township
+        // $output2 = '<option value="" selected>';
+        // $output2 .= __("lang.township").__("lang.choose1");
+        // $output2 .= '</option>';
+        // foreach ($townships as $township) {
+        //     $output2 .= '<option value="'.$township->id.'">';
+        //     if (checkMM() == 'mm') {
+        //         $output2 .= $township->name;
+        //     } else {
+        //         $output2 .= $township->eng;
+        //     }
+        //     $output2 .= '</option>';
+        // }
+        // return ['district' => $output1, 'township' => $output2];
+        return ['district' => $output1];
     }
 
     public function choose_district(Request $request) {
         $district_id = $request->get('id');
-        $townships = Township::where('district_id', $district_id)->get();
+        $township =  Auth::guard('admin')->user()->township;
+        $user =  Auth::guard('admin')->user()->group_lvl;
+        if($user >= '6'){
+            $townships = Township::where('district_id', $district_id)->where('id',$township)->get();
+        }else{
+            $townships = Township::where('district_id', $district_id)->get();
+        }
         $output = '<option value="">';
-        $output .= __("lang.choose1");
+        $output .= __("lang.township").__("lang.choose1");
         $output .= '</option>';
         foreach ($townships as $township) {
             $output .= '<option value="'.$township->id.'">';
@@ -238,6 +251,7 @@ class SettingController extends Controller
 
     /* Auto ation for Role in Admin */
     public function role_chk_action(Request $request) {
+        // $e = $y+$c;
         $name = $request->get('name');
         $role = $request->get('role');
         $read_perm = $request->get('read_perm');

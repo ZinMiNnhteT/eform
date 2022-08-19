@@ -63,14 +63,14 @@ function hasUser($id) {
     return User::find($id);
 }
 function hasPermissionsAndGroupLvl($array, $g_lvl) {
-    if (admin()->hasAnyPermission($array, 'admin') && ($g_lvl <= 1)) {
+    if (admin()->hasAnyPermission($array, 'admin') || ($g_lvl <= 2)) {
         return true;
     } else {
         return false;
     }
 }
 function hasPermissionsAndGroupLvlForContractor($array, $g_lvl) {
-    if (admin()->hasAnyPermission($array, 'admin') && ($g_lvl <= 1)) {
+    if (admin()->hasAnyPermission($array, 'admin') || ($g_lvl <= 2)) {
         return true;
     } else {
         return false;
@@ -115,19 +115,46 @@ function same_town($id) {
         return true;
     }
 }
+function check_div_dist_town($div_state, $dist, $town) {
+    if (admin()->group_lvl == 4) {
+        // div_state or MESC or YESC
+        if (admin()->div_state == $div_state) {
+            return true;
+        }
+    } elseif (admin()->group_lvl == 5) {
+        // district
+        if (admin()->div_state == $div_state && admin()->district == $dist) {
+            return true;
+        }
+    } elseif (admin()->group_lvl == 6) {
+        // township
+        if (admin()->div_state == $div_state && admin()->district == $dist && admin()->township == $town) {
+            return true;
+        }
+    }
+}
 /* ================================================== end of chk user lvl ================================================== */
 
 /* ===================================================== chk group lvl ===================================================== */
 // 
 /* ================================================== end of chk group lvl ================================================== */
-function apply_meter_type($value) {
-    switch ($value) {
-        case '1': return checkMM() == 'mm' ? 'အိမ်သုံး မီတာ' : 'Residential Meter'; break;
-        case '2': return checkMM() == 'mm' ? 'အိမ်သုံး ပါဝါ မီတာ' : 'Residential Power Meter'; break;
-        case '3': return checkMM() == 'mm' ? 'စက်မှုသုံး ပါဝါ မီတာ ' : 'Commercial Power Meter'; break;
-        case '4': return checkMM() == 'mm' ? 'ထရန်စဖော်မာ ' : 'Transformer'; break;
-        case '5': return checkMM() == 'mm' ? 'ကန်ထရိုက်တိုက် မီတာ ' : 'Contractor Meter'; break;
-        default: ''; break;
+function apply_meter_type($value, $tsf_type = null) {
+    if($value == 1){
+        return checkMM() == 'mm' ? 'အိမ်သုံး မီတာ' : 'Residential Meter';
+    }elseif($value == 2){
+        return checkMM() == 'mm' ? 'အိမ်သုံး ပါဝါ မီတာ' : 'Residential Power Meter';
+    }elseif($value == 3){
+        return checkMM() == 'mm' ? 'စက်မှုသုံး ပါဝါ မီတာ ' : 'Commercial Power Meter';
+    }elseif($value == 4){
+        if($tsf_type == 1){
+            return checkMM() == 'mm' ? 'အိမ်သုံးထရန်စဖော်မာ ' : 'Home-used Transformer';
+        }elseif($tsf_type == 2){
+            return checkMM() == 'mm' ? 'လုပ်ငန်းသုံးထရန်စဖော်မာ ' : 'Commercial Transformer';
+        }else{
+            return checkMM() == 'mm' ? 'ထရန်စဖော်မာ ' : 'Transformer';
+        }
+    }elseif($value == 5){
+        return checkMM() == 'mm' ? 'ကန်ထရိုက်တိုက် မီတာ ' : 'Contractor Meter'; 
     }
 }
 function group($value) {
@@ -264,42 +291,193 @@ function township_mm($value) {
         return Township::find($value)->name;
     }
 }
+// function roleDropdown() {
+//     $user =  Auth::guard('admin')->user()->group_lvl;
+//     // if ($user == 1) {
+//         // return Role::pluck('name', 'name')->all();
+//     // } elseif ($user == 2) {
+//         return Role::where('id', '>', 1)->pluck('name', 'name')->all();
+//     // }
+// }
 function roleDropdown() {
-    $user =  Auth::guard('admin')->user()->group_lvl;
-    if ($user == 1) {
-        return Role::pluck('name', 'name')->all();
-    } elseif ($user == 2) {
-        return Role::where('id', '>', 1)->pluck('name', 'name')->all();
+    $user =  Auth::guard('admin')->user();
+    $user_gp_lvl =  $user->group_lvl;
+    $user_division = $user->div_state;
+    $user_id = $user->id;
+
+    $roles = Role::select('roles.*')
+    ->where('roles.id', '>', 1);
+
+    if($user_id != 1){
+        $roles = $roles->join('admins','admins.id','=','roles.admin_id');
+        $roles->where('admins.div_state', $user_division); // roles created by same-division-acc
+        if($user_gp_lvl == 2){ // ဝန်ကြီးရုံး gp
+            $roles->orWhere('roles.id','3'); //  ဝန်ကြီးရုံး အဆင့်
+        }elseif($user_gp_lvl == 3){ // နေပြည်တော်ရုံးချုပ် gp
+            $roles->orWhere('roles.id','4'); // နေပြည်တော်ရုံးချုပ် အဆင့်
+        }else{
+            $roles->orWhere('roles.name','အငယ်တန်းအင်ဂျင်နီယာ');
+            if($user_division != '2'){ // other divisions except yangon
+                if($user_gp_lvl == 4){ // တိုင်း gp
+                    $roles->orWhere('roles.id','6');//  ခရိုင်အဆင့်
+                    $roles->orWhere('roles.id','7'); // မြို့နယ် အဆင့်
+                }elseif($user_gp_lvl >= 5){ // ခရိုင် gp
+                    $roles->orWhere('roles.id','7'); // မြို့နယ် အဆင့်
+                }
+            }
+        }
     }
+    
+
+    // if ($user_gp_lvl == 1) { // super admin
+        // return Role::pluck('name', 'name')->all();
+    // } elseif ($user_gp_lvl == 2) { // ဝန်ကြီးရုံး
+        return $roles->pluck('name', 'name')->all();
+    // }
+}
+function roleKeyValueDropdown() {
+    $user =  Auth::guard('admin')->user();
+    $user_gp_lvl =  $user->group_lvl;
+    $user_division = $user->div_state;
+    $user_id = $user->id;
+
+    $roles = Role::select('roles.*')
+    ->where('roles.id', '>', 1);
+
+    if($user_id != 1){
+        $roles = $roles->join('admins','admins.id','=','roles.admin_id');
+        $roles->where('admins.div_state', $user_division);
+        if($user_gp_lvl == 2){ // ဝန်ကြီးရုံး gp
+            $roles->orWhere('roles.id','3'); //  ဝန်ကြီးရုံး အဆင့်
+        }elseif($user_gp_lvl == 3){ // နေပြည်တော်ရုံးချုပ် gp
+            $roles->orWhere('roles.id','4'); // နေပြည်တော်ရုံးချုပ် အဆင့်
+        }else{
+            $roles->orWhere('roles.name','အငယ်တန်းအင်ဂျင်နီယာ');
+            if($user_division != '2'){ // other division
+                if($user_gp_lvl == 4){ // တိုင်း gp
+                    $roles->orWhere('roles.id','6');//  ခရိုင်အဆင့်
+                    $roles->orWhere('roles.id','7'); // မြို့နယ် အဆင့်
+                }elseif($user_gp_lvl >= 5){ // ခရိုင် gp
+                    $roles->orWhere('roles.id','7'); // မြို့နယ် အဆင့်
+                }
+            }
+        }
+    }
+
+    // if ($user_gp_lvl == 1) { // super admin
+        // return Role::pluck('name', 'name')->all();
+    // } elseif ($user_gp_lvl == 2) { // ဝန်ကြီးရုံး
+        return $roles->pluck('name', 'id')->all();
+    // }
 }
 function groupDropDown() {
-    return [
-        '2' => checkMM() == 'mm' ? 'ဝန်ကြီးရုံး' : 'Ministry',
-        '3' => checkMM() == 'mm' ? 'ရုံးချုပ်' : 'Head Office',
-        '4' => checkMM() == 'mm' ? 'တိုင်း' : 'Divsion/State',
-        '5' => checkMM() == 'mm' ? 'ခရိုင်' : 'District',
-        '6' => checkMM() == 'mm' ? 'မြို့နယ်' : 'Township',
-    ];
-}
-function regionsDropdown() {
-    if (checkMM() == 'mm') {
-        return DivisionState::pluck('name', 'id')->all();
-    } else {
-        return DivisionState::pluck('eng', 'id')->all();
+    $user_gp =  Auth::guard('admin')->user()->group_lvl;
+    if($user_gp == 1){
+        return [
+            '2' => checkMM() == 'mm' ? 'ဝန်ကြီးရုံး' : 'Ministry',
+            '3' => checkMM() == 'mm' ? 'နေပြည်တော်ရုံးချုပ်' : 'Head Office',
+            '4' => checkMM() == 'mm' ? 'တိုင်း(MESCရုံးချုပ် / YESCရုံးချုပ်)' : 'Divsion/State(MESC/YESC)',
+            '5' => checkMM() == 'mm' ? 'ခရိုင်' : 'District',
+            '6' => checkMM() == 'mm' ? 'မြို့နယ်' : 'Township',
+        ];
+    }else if($user_gp == 2){
+        return [
+            '2' => checkMM() == 'mm' ? 'ဝန်ကြီးရုံး' : 'Ministry'
+        ];
+    }else if($user_gp == 3){
+        return [
+            '3' => checkMM() == 'mm' ? 'နေပြည်တော်ရုံးချုပ်' : 'Head Office',
+        ];
+    }else if($user_gp == 4){
+        return [
+            '5' => checkMM() == 'mm' ? 'ခရိုင်' : 'District',
+            '6' => checkMM() == 'mm' ? 'မြို့နယ်' : 'Township',
+        ];
+    }else{
+        return [
+            '6' => checkMM() == 'mm' ? 'မြို့နယ်' : 'Township',
+        ];
     }
 }
-function districtsDropdown() {
+function regionsDropdown() {
+
+    // if (checkMM() == 'mm') {
+    //     return DivisionState::pluck('name', 'id')->all();
+    // } else {
+    //     return DivisionState::pluck('eng', 'id')->all();
+    // }
+
+    $user =  Auth::guard('admin')->user();
+    $user_gp_lvl =  $user->group_lvl;
+    $user_division = $user->div_state;
+
+    $div_st = DivisionState::select('*');
+
+    if($user_gp_lvl >= 4){ // တိုင်း ခရိုင် မြို့နယ်
+        $div_st->where('id', $user_division);
+    }
+
     if (checkMM() == 'mm') {
-        return District::pluck('name', 'id')->all();
+        return $div_st->pluck('name', 'id')->all();
     } else {
-        return District::pluck('eng', 'id')->all();
+        return $div_st->pluck('eng', 'id')->all();
+    }
+
+    
+}
+function districtsDropdown() {
+    // if (checkMM() == 'mm') {
+    //     return District::pluck('name', 'id')->all();
+    // } else {
+    //     return District::pluck('eng', 'id')->all();
+    // }
+
+    $user =  Auth::guard('admin')->user();
+    $user_gp_lvl =  $user->group_lvl;
+    $user_division = $user->div_state;
+    $user_district = $user->district;
+
+    $district = District::select('*');
+
+    if($user_gp_lvl == 4){ //  တိုင်း
+        $district->where('division_state_id', $user_division);
+    }elseif($user_gp_lvl >= 5){ //  ခရိုင် မြို့နယ်
+        $district->where('id', $user_district);
+    }
+
+    if (checkMM() == 'mm') {
+        return $district->pluck('name', 'id')->all();
+    } else {
+        return $district->pluck('eng', 'id')->all();
     }
 }
 function townshipsDropdown() {
+    // if (checkMM() == 'mm') {
+    //     return Township::pluck('name', 'id')->all();
+    // } else {
+    //     return Township::pluck('eng', 'id')->all();
+    // }
+
+    $user =  Auth::guard('admin')->user();
+    $user_gp_lvl =  $user->group_lvl;
+    $user_division = $user->div_state;
+    $user_district = $user->district;
+    $user_township = $user->township;
+
+    $township = Township::select('*');
+
+    if($user_gp_lvl == 4){ //  တိုင်း
+        $township->where('division_state_id', $user_division);
+    }elseif($user_gp_lvl == 5){ //  ခရိုင် 
+        $township->where('id', $user_district);
+    }elseif($user_gp_lvl >= 5){ //  မြို့နယ်
+        $township->where('id', $user_township);
+    }
+
     if (checkMM() == 'mm') {
-        return Township::pluck('name', 'id')->all();
+        return $township->pluck('name', 'id')->all();
     } else {
-        return Township::pluck('eng', 'id')->all();
+        return $township->pluck('eng', 'id')->all();
     }
 }
 function chkbox_name($value) {
@@ -354,7 +532,14 @@ function address_mm($value) {
     $street = $form->applied_street ? $form->applied_street.'၊' : '';
     $quarter = $form->applied_quarter ? $form->applied_quarter.'၊' : '';
     $town = $form->applied_town ? $form->applied_town.'၊' : '';
-    return $home_no.' '.$building.' '.$lane.' '.$street.' '.$quarter.' '.$town.' '.township_mm($form->township_id).'၊ '.district_mm($form->district_id).'၊ '.div_state_mm($form->div_state_id);
+    $township = $form->township_id ? township_mm($form->township_id).'၊' : '';
+    $district = $form->district_id ? district_mm($form->district_id).'၊' : '';
+    $div_state = $form->div_state_id ? div_state_mm($form->div_state_id).'၊' : '';
+    if ($form->applied_home_no) {
+        return $home_no.' '.$building.' '.$lane.' '.$street.' '.$quarter.' '.$town.' '.$township.' '.$district.' '.$div_state;
+    } else {
+        return null;
+    }
 }
 function address($value) {
     $form = ApplicationForm::find($value);
@@ -545,6 +730,8 @@ function chk_cdt($apply_type) {
         } else {
             if ($file->count() > 0) {
                 foreach ($file as $value) {
+
+                    // residential and residential power 
                     if ($apply_type == 1 || $apply_type == 2) {
                         if (!$value->form_10_front) {
                             array_push($unfinished_ID, $key->id);
@@ -559,7 +746,31 @@ function chk_cdt($apply_type) {
                             array_push($unfinished_route, 5); /* owner */
                             $count++;
                         }
-                    } elseif ($apply_type == 3) {
+                        
+                        // if yangon
+                        if ($key->apply_division == 1) {
+                            if (!$value->building) { // အဆောက်အဦ ဓါတ်ပုံ
+                                array_push($unfinished_ID, $key->id);
+                                array_push($unfinished_route, 9); /* bill list */
+                                $count++;
+                            }
+                            if (!$value->electric_power) { // ဝန်အားစာရင်း
+                                array_push($unfinished_ID, $key->id);
+                                array_push($unfinished_route, 9); /* bill list */
+                                $count++;
+                            }
+                        }        
+
+                        // // *** if it's mandalay residential power meter and city or ministry isn't set,
+                        // if((!$value->city_license || !$value->ministry_permit) && $apply_type == 2 && $key->apply_division == 3){  
+                        //     array_push($unfinished_ID, $key->id);
+                        //     array_push($unfinished_route, 9); /* building */
+                        //     $count++;
+                        // }
+                    } 
+
+                    // commercial power
+                    elseif ($apply_type == 3) {
                         if (!$value->form_10_front) {
                             array_push($unfinished_ID, $key->id);
                             array_push($unfinished_route, 3); /* form 10 */
@@ -577,13 +788,35 @@ function chk_cdt($apply_type) {
                             array_push($unfinished_route, 6); /* bussiness lisence */
                             $count++;
                         }
-                    } elseif ($apply_type == 4) {
+                        // *** if it's mandalay residential power meter and city or ministry isn't set,
+                        elseif((!$value->city_license) && $key->apply_division == 3){  
+                            array_push($unfinished_ID, $key->id);
+                            array_push($unfinished_route, 9); /* building */
+                            $count++;
+                        }
+
+                        if($key->apply_division == 1){ // if yangon
+                            if (!$value->building) { // အဆောက်အဦ ဓါတ်ပုံ
+                                array_push($unfinished_ID, $key->id);
+                                array_push($unfinished_route, 9); /* building */
+                                $count++;
+                            }
+                            if (!$value->electric_power) { // ဝန်အားစာရင်း
+                                array_push($unfinished_ID, $key->id);
+                                array_push($unfinished_route, 9); /* building */
+                                $count++;
+                            }
+                        }
+                    } 
+                    
+                    // transformer
+                    elseif ($apply_type == 4) { 
                         if ($key->is_religion) {
                             if (!$value->ownership) {
                                 array_push($unfinished_ID, $key->id);
                                 array_push($unfinished_route, 5); /* owner */
                                 $count++;
-                            } elseif (!$value->electric_power) { /* contractor */
+                            }elseif (!$value->dc_recomm) { /* contractor */
                                 array_push($unfinished_ID, $key->id);
                                 array_push($unfinished_route, 8); /* dc_recomm list */
                                 $count++;
@@ -601,13 +834,38 @@ function chk_cdt($apply_type) {
                                 array_push($unfinished_ID, $key->id);
                                 array_push($unfinished_route, 5); /* owner */
                                 $count++;
-                            } elseif (!$value->electric_power) { /* contractor */
+                            } 
+                            
+                            elseif (!$value->dc_recomm) {
+                                if(!($key->div_state_id == '3' && $key->is_light)){
+                                    array_push($unfinished_ID, $key->id);
+                                    array_push($unfinished_route, 8); /* dc_recomm list */
+                                    $count++;
+                                }
+                            }
+                        }
+
+                        // if yangon commercial transformer
+                        if($key->apply_division == 1 && $key->apply_tsf_type == 2){ 
+                            if (!$value->transaction_licence && !$key->is_religion) {// လုပ်ငန်းလိုင်စင် and ဘာသာ/သာသနာ
                                 array_push($unfinished_ID, $key->id);
                                 array_push($unfinished_route, 8); /* dc_recomm list */
                                 $count++;
                             }
                         }
-                    } elseif ($apply_type == 5) {
+
+                        if($key->apply_division == 1){
+                            if (!$value->electric_power) { // ဝန်အားစာရင်း
+                                array_push($unfinished_ID, $key->id);
+                                array_push($unfinished_route, 8); 
+                                $count++;
+                            }
+                        }
+ 
+                    } 
+                    
+                    // constractor
+                    elseif ($apply_type == 5) {
                         if (!$value->form_10_front) {
                             array_push($unfinished_ID, $key->id);
                             array_push($unfinished_route, 3); /* form 10 */
@@ -636,6 +894,30 @@ function chk_cdt($apply_type) {
                             array_push($unfinished_ID, $key->id);
                             array_push($unfinished_route, 9); /* bill list */
                             $count++;
+                        }
+
+                        // *** if it's yangon,
+                        if($key->apply_division == 1){
+                            if (!$value->building) {
+                                array_push($unfinished_ID, $key->id);
+                                array_push($unfinished_route, 9); /* bill list */
+                                $count++;
+                            }
+                            if (!$value->bq) {
+                                array_push($unfinished_ID, $key->id);
+                                array_push($unfinished_route, 10); /* bq */
+                                $count++;
+                            }
+                            if (!$value->drawing) {
+                                array_push($unfinished_ID, $key->id);
+                                array_push($unfinished_route, 11); /* drawing */
+                                $count++;
+                            }
+                            if (!$value->map) {
+                                array_push($unfinished_ID, $key->id);
+                                array_push($unfinished_route, 12); /* map */
+                                $count++;
+                            }
                         }
 
                     }
@@ -690,7 +972,24 @@ function cdt($form_id) { /* condition */
             $data = chk_cdt(5);
             $route = 'contractor_applied_form';
         }
-    }
+    }elseif ($form->apply_division == 3) {
+        if ($form->apply_type == 1) {
+            $data = chk_cdt(1); /* id and route  || get form_id */
+            $route = 'resident_applied_form_mdy';
+        } elseif ($form->apply_type == 2) {
+            $data = chk_cdt(2); /* id and route  || get form_id */
+            $route = 'resident_power_applied_form_mdy';
+        } elseif ($form->apply_type == 3) {
+            $data = chk_cdt(3); /* id and route  || get form_id */
+            $route = 'commercial_applied_form_mdy';
+        } elseif ($form->apply_type == 4) {
+            $data = chk_cdt(4);
+            $route = 'tsf_applied_form_mdy';
+        } else {
+            $data = chk_cdt(5);
+            $route = 'contractor_applied_form_mdy';
+        }
+    } 
     if (count($data['id']) > 0) {
         $index = array_search($form_id, $data['id'], true);
         if (is_int($index)) {
@@ -720,7 +1019,7 @@ function chk_form_finish($id, $type) {
     $files = $form->application_files;
     /* 1 => nrc, 2 => form 10, 3 => occupy letter, 4 => ownership, 5 => electric power, 6 => building permit, 7 => bcc, 8 => dc recomm, 9 => bill, 10 => license */
     /* state => chk its all true or all false */
-    $type1 = $type2 = $type3 = $type4 = $type5 = $type6 =  $type7 = $type8 = $type9 = $type10 = FALSE;
+    $type1 = $type2 = $type3 = $type4 = $type5 = $type6 =  $type7 = $type8 = $type9 = $type10 = $type11 = $type12 = $type13 = $type14 = $type15 = $type16 = $type17 = $type18 = $type19 = FALSE;
     $state = TRUE;
     if ($type == 1 || $type == 2) { /* residential OR residential Power*/
         if ($files->count() > 0) {
@@ -741,9 +1040,68 @@ function chk_form_finish($id, $type) {
                     $type4 = TRUE;
                     $state = FALSE;
                 }
+                // *** if it's yangon residential meter,
+                if($form->apply_division == 1 && $type == 1){  
+                    if (!$file->farmland) {
+                        $type13 = TRUE;
+                    }
+                    if (!$file->building) {
+                        $type15 = TRUE;
+                        $state = FALSE;
+                    }
+                    if (!$file->electric_power) {
+                        $type5 = TRUE;
+                        $state = FALSE;
+                    }
+                }
+                if($type == 2){ // residential power meter
+
+                    // *** if yangon,
+                    if ($form->apply_division == 1) {
+                        if (!$file->prev_bill) {
+                            $type9 = TRUE;
+                        }
+    
+                        if (!$file->farmland) { // လယ်ယာ
+                            $type13 = TRUE;
+                        }
+                        if (!$file->building) { // အဆောက်အဦ ဓါတ်ပုံ
+                            $type15 = TRUE;
+                            $state = FALSE;
+                        }
+                        if (!$file->electric_power) { // ဝန်အားစာရင်း
+                            $type5 = TRUE;
+                            $state = FALSE;
+                        }
+                    }
+
+                    // *** if other,
+                    if ($form->apply_division == 2) {
+                        // if (!$file->prev_bill) {
+                        //     $type9 = TRUE;
+                        //     $state = FALSE;
+                        // }
+                    }
+                    
+                    
+                    // *** if mandalay,
+                    // if ($form->apply_division == 3) {
+
+                    //     if (!$file->city_license) {
+                    //         $type11 = TRUE;
+                    //         $state = FALSE;
+                    //     }
+
+                    //     if (!$file->ministry_permit) {
+                    //         $type12 = TRUE;
+                    //         $state = FALSE;
+                    //     }
+                    // }
+
+                }
             }
         } else {
-            $type1 = $type2 = $type3 = $type4 = TRUE;
+            $type1 = $type2 = $type3 = $type4 = $type5 = $type6 = $type9 = $type11 = $type12 = $type13 = $type15 = TRUE;
             $state = FALSE;
         }
     } elseif ($type == 3) { /* commercial */
@@ -765,9 +1123,38 @@ function chk_form_finish($id, $type) {
                     $type4 = TRUE;
                     $state = FALSE;
                 }
-                if (!$file->transaction_licence) {
+                if (!$file->transaction_licence) { // လုပ်ငန်းလိုင်စင်
                     $type10 = TRUE;
                     $state = FALSE;
+                }
+                // *** if mandalay,
+                if ($form->apply_division == 3) {
+                    if (!$file->city_license) { // စည်ပင်သာယာလိုင်စင်
+                        $type11 = TRUE;
+                        $state = FALSE;
+                    }
+                    if (!$file->ministry_permit) { // သက်ဆိုင်ရာဝန်ကြီးဌာန် ခွင့်ပြုချက်
+                        $type12 = TRUE;
+                        // $state = FALSE;
+                    }
+                }
+                if($form->apply_division == 1){ // if yangon
+
+                    if (!$file->prev_bill) {
+                        $type9 = TRUE;
+                    }
+
+                    if (!$file->farmland) { // လယ်ယာ
+                        $type13 = TRUE;
+                    }
+                    if (!$file->building) { // အဆောက်အဦ ဓါတ်ပုံ
+                        $type15 = TRUE;
+                        $state = FALSE;
+                    }
+                    if (!$file->electric_power) { // ဝန်အားစာရင်း
+                        $type5 = TRUE;
+                        $state = FALSE;
+                    }
                 }
             }
         } else {
@@ -776,50 +1163,94 @@ function chk_form_finish($id, $type) {
         }
     } elseif ($type == 4) { /* transformer */
         if ($files->count() > 0) {
-            if ($form->is_religion) {
+            if ($form->is_religion) { // ဘာသာ/သာသနာအတွက် ဖြစ်ပါက
                 foreach ($files as $file) {
-                    if (!$file->nrc_copy_fron && !$file->nrc_copy_back) {
+                    if (!$file->nrc_copy_front && !$file->nrc_copy_back) {// မှတ်ပုံတင်အမှတ်
                         $type1 = TRUE;
                         $state = FALSE;
                     }
-                    if (!$file->ownership) {
+                    if (!$file->ownership) {// ပိုင်ဆိုင်မှုစာရွက်စာတမ်း
                         $type4 = TRUE;
                         $state = FALSE;
                     }
-                    if (!$file->dc_recomm) {
-                        $type8 = TRUE;
-                        $state = FALSE;
+                    // *** if it's mandalay and is_light transformer
+                    if($form->div_state_id == '3'){ 
+                        if (!$file->dc_recomm && !$form->is_light) {// စည်ပင်ထောက်ခံစာဓါတ်ပုံ
+                            $type8 = TRUE;
+                            $state = FALSE;
+                        }
+                    }else{
+                        if (!$file->dc_recomm) { // စည်ပင်ထောက်ခံစာဓါတ်ပုံ
+                            $type8 = TRUE;
+                            $state = FALSE;
+                        }
                     }
                 }
             } else {
                 foreach ($files as $file) {
-                    if (!$file->nrc_copy_fron && !$file->nrc_copy_back) {
+                    if (!$file->nrc_copy_fron && !$file->nrc_copy_back) { // မှတ်ပုံတင်အမှတ်
                         $type1 = TRUE;
                         $state = FALSE;
                     }
-                    if (!$file->form_10_front) {
+                    if (!$file->form_10_front) { // အိမ်ထောင်စုစာရင်း
                         $type2 = TRUE;
                         $state = FALSE;
                     }
-                    if (!$file->occupy_letter && !$file->no_invade_letter) {
+                    if (!$file->occupy_letter && !$file->no_invade_letter) { //ထောက်ခံစာ
                         $type3 = TRUE;
                         $state = FALSE;
                     }
-                    if (!$file->ownership) {
+                    if (!$file->ownership) { // ပိုင်ဆိုင်မှုစာရွက်စာတမ်း
                         $type4 = TRUE;
                         $state = FALSE;
                     }
-                    if (!$file->transaction_licence) {
+                    if (!$file->transaction_licence) { // လုပ်ငန်းလိုင်စင်
                         $type10 = TRUE;
+                        if ($form->apply_tsf_type == '2') { // လုပ်ငန်းသုံး transformer
+                            $state = FALSE;
+                        }
                     }
-                    if (!$file->dc_recomm) {
-                        $type8 = TRUE;
+                    // *** if it's mandalay and is_light transformer
+                    if($form->div_state_id == '3'){
+                        if (!$file->dc_recomm  && !$form->is_light) { // စည်ပင်ထောက်ခံစာဓါတ်ပုံ
+                            $type8 = TRUE;
+                            $state = FALSE; 
+                        }
+                    }else{
+                        if (!$file->dc_recomm) { // စည်ပင်ထောက်ခံစာဓါတ်ပုံ
+                            $type8 = TRUE;
+                            $state = FALSE;
+                        }
+                    }
+                }
+            }
+
+            // if yangon commercial transformer
+            if($form->apply_division == 1 && $form->apply_tsf_type == 2){ 
+                if (!$file->transaction_licence) {// လုပ်ငန်းလိုင်စင်
+                    $type10 = TRUE;
+                    if(!$form->is_religion){
                         $state = FALSE;
                     }
                 }
             }
+
+            if($form->apply_division == 1){ // if yangon,
+                if(!$file->industry){ // industry zone
+                    $type14 = TRUE;
+                }
+                if (!$file->farmland) {
+                    $type13 = TRUE;
+                }
+                if (!$file->electric_power) { // ဝန်အားစာရင်း
+                    $type5 = TRUE;
+                    $state = FALSE;
+                }
+            }
+
+
         } else {
-            $type1 = $type2 = $type3 = $type4 = $type8 = $type10 = TRUE;
+            $type1 = $type2 = $type3 = $type4 = $type8 = $type10 = $type13 = $type14 = TRUE;
             $state = FALSE;
         }
     } elseif ($type == 5) { /* contractor */
@@ -845,17 +1276,45 @@ function chk_form_finish($id, $type) {
                     $type6 = TRUE;
                     $state = FALSE;
                 }
-                if (!$file->bcc) {
+                if (!$file->bcc) { // လူနေထိုင်ခွင့်
                     $type7 = TRUE;
                     $state = FALSE;
                 }
-                if (!$file->dc_recomm) {
+                if (!$file->dc_recomm) {  // စည်ပင်ထောက်ခံစာ
                     $type8 = TRUE;
                     $state = FALSE;
                 }
-                if (!$file->prev_bill) {
+                if (!$file->prev_bill) { // ယာယီမီတာ ချလံ
                     $type9 = TRUE;
                     $state = FALSE;
+                }
+
+
+                // *** if it's yangon,
+                if($form->apply_division == 1){  
+                    if (!$file->farmland) {
+                        $type13 = TRUE;
+                    }
+                    if (!$file->building) {
+                        $type15 = TRUE;
+                        $state = FALSE;
+                    }
+                    if (!$file->bq) {
+                        $type16 = TRUE;
+                        $state = FALSE;
+                    }
+                    if (!$file->drawing) {
+                        $type17 = TRUE;
+                        $state = FALSE;
+                    }
+                    if (!$file->map) {
+                        $type18 = TRUE;
+                        $state = FALSE;
+                    }
+                    if (!$file->sign) {
+                        $type19 = TRUE;
+                    }
+                    
                 }
             }
         } else {
@@ -863,7 +1322,7 @@ function chk_form_finish($id, $type) {
             $state = FALSE;
         }
     }
-    $chk_state = ['nrc' => $type1, 'form10' => $type2, 'occupy' => $type3, 'ownership' => $type4, 'electric' => $type5, 'permit' => $type6, 'bcc' => $type7,  'dc' => $type8,  'bill' => $type9, 'license' => $type10, 'state' => $state];
+    $chk_state = ['nrc' => $type1, 'form10' => $type2, 'occupy' => $type3, 'ownership' => $type4, 'farmland'=>$type13, 'building'=>$type15,'electric' => $type5, 'permit' => $type6, 'bcc' => $type7,  'dc' => $type8,  'bill' => $type9, 'license' => $type10, 'city_license'=>$type11,'ministry_permit'=>$type12,'industry'=>$type14, 'building' => $type15, 'bq' => $type16, 'drawing' => $type17, 'map' => $type18, 'sign' => $type19, 'state' => $state];
     return $chk_state;
 }
 function chk_send_count() {
@@ -920,18 +1379,18 @@ function chk_userForm($form_id) {
     
     foreach ($f_action as $action) {
         if (! $action->form_reject && ! $action->form_pending) {
-            if ($action->register_meter) {
+            if ($action->register_meter) { // if register finished
                 $msg = 'successfully_finished';
                 $color = 'text-success';
                 $finish = true;
             } else {
-                if (($form->apply_type == 5 || $form->apply_type == 4) && $action->install_confirm) {
+                if (($form->apply_type == 5 || $form->apply_type == 4 || $form->apply_type == 3 || $form->apply_type == 2 ) && $action->install_confirm) { // if (power or constructor or transformer) and Ei finished
                     $msg = 'to_register';
                     $color = 'text-info';
                     $to_register = true;
                 } else {
-                    if ($action->install_accept) {
-                        if ($form->apply_type == 5 || $form->apply_type == 4) {
+                    if ($action->install_accept) { // if apployed finished
+                        if ($form->apply_type == 5 || $form->apply_type == 4|| $form->apply_type == 3 || $form->apply_type == 2 ) {
                             $msg = 'to_ei_confirm_div_state';
                             $ei_confirm = true;
                         } else {
@@ -1144,7 +1603,14 @@ function all_mail() {
 }
 function contrator_meter_count($form_id) {
     $c_form = ApplicationFormContractor::where('application_form_id', $form_id)->first();
-    $meter_count = 'ကန်ထရိုက်တိုက် ('.mmNum($c_form->room_count).' ခန်း) အတွက် ';
+
+    if($c_form->apartment_count != "" && $c_form->floor_count != ""){
+        $apartment_into_floor = mmNum($c_form->apartment_count) . " ခန်းတွဲ x ". mmNum($c_form->floor_count). " ထပ် = ";
+    }else{
+        $apartment_into_floor = null;
+    }
+
+    $meter_count = 'ကန်ထရိုက်တိုက် ('.$apartment_into_floor.mmNum($c_form->room_count).' ခန်း) အတွက် ';
     $meter_count .= 'အိမ်သုံးမီတာ ('.mmNum($c_form->meter).') လုံး';
     if ($c_form->pMeter10 || $c_form->pMeter20 || $c_form->pMeter30) {
         $meter_count .= '၊ ပါဝါမီတာ ('.mmNum($c_form->pMeter10 + $c_form->pMeter20 + $c_form->pMeter30).') လုံး';
@@ -1182,14 +1648,19 @@ function confirm_contractor_meter_count($form_id) {
     }
     return $meter_count;
 }
-function tsf_kva($value) {
-    return initialCost::where([['type', 4], ['sub_type', $value]])->first()->name.' KVA';
+function r_meter($value) {
+    return initialCost::where([['type', 1], ['sub_type', $value]])->first()->name;
 }
 function p_meter($value) {
-    return initialCost::where([['type', 2], ['sub_type', $value]])->first()->name.' KW';
+    return initialCost::where([['type', 2], ['sub_type', $value]])->first()->name;
 }
 function cp_meter($value) {
     return initialCost::where([['type', 3], ['sub_type', $value]])->first()->name.' KW';
+}
+function tsf_kva($value) {
+    if ($value) {
+        return initialCost::where([['type', 4], ['sub_type', $value]])->first()->name.' KVA';
+    }
 }
 function confirm_meter_price($form_id) {
     $form = ApplicationForm::find($form_id);
@@ -1316,3 +1787,64 @@ function chk_ygn_mdy($value) {
     }
     return $data;
 }
+
+function divType($type){
+    if($type == '2'){
+        return trans('lang.ygn_office');
+    }elseif($type == '3'){
+        return trans('lang.mdy_office');
+    }else{
+        return trans('lang.other_office');
+    }
+}
+function user() {
+    return Auth::guard('web')->user();
+}
+
+function districts($region_id) {
+    $district =  Auth::guard('admin')->user()->district;
+    $user =  Auth::guard('admin')->user()->group_lvl;
+    if($user >= '5'){
+        $districts = District::where('division_state_id', $region_id)->where('id',$district)->get();
+    }else{
+        $districts = District::where('division_state_id', $region_id)->get();
+    }
+    $output[""] = trans('lang.choose1');
+    foreach ($districts as $district) {
+        if (checkMM() == 'mm') {
+            $output[$district->id] = $district->name;
+        } else {
+            $output[$district->id] = $district->eng;
+        }
+    }
+    return $output;
+}
+
+function townships($district_id){
+    $township =  Auth::guard('admin')->user()->township;
+    $user =  Auth::guard('admin')->user()->group_lvl;
+    if($user >= '6'){
+        $townships = Township::where('district_id', $district_id)->where('id',$township)->get();
+    }else{
+        $townships = Township::where('district_id', $district_id)->get();
+    }
+    $output[""] = trans('lang.choose1');
+    foreach ($townships as $township) {
+        if (checkMM() == 'mm') { 
+            $output[$township->id] = $township->name; 
+        } else { 
+            $output[$township->id] = $township->eng; 
+        }
+    }
+    return $output;
+}
+function space($number){
+    $space = "";
+    while($number > 0){
+        $space .= "&nbsp;";
+        $number --;
+    }
+    return $space;
+}
+
+

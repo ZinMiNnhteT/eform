@@ -4,7 +4,7 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header text-white bg-info d-flex">
+            <div class="card-header text-white bg-success d-flex display-flex">
                 <h5 class="card-title m-0 ">{{ __('lang.'.$heading) }}</h5>
                 <div class="ml-auto">
                     <a href="{{ route('overall_process') }}" class="btn btn-rounded btn-info text-white l-h-ini p-t-5 p-b-5 "><i class="fa-fw fa fa-angle-double-left"></i>{{ __('lang.back') }}</a>
@@ -28,6 +28,29 @@
                 @endif
 
                 @include('layouts.form-progressbar')
+
+                {{--  ကတိဝန်ခံချက်  --}}
+                {{--  <div class="card mb-3 mx-3" style="border-radius: 5px; background-color: #e0edf0;">
+                    <div class="card-body">
+                        <ul class="list-icons my-0">
+                            <li style="list-style: none; line-height: 30px; margin: 5px 0; transition: 0.2s ease-in;"><i class="ti-angle-right pr-2"></i>
+                                {{ __('lang.pm_promise_1') }}
+                            </li>
+                            <li style="list-style: none; line-height: 30px; margin: 5px 0; transition: 0.2s ease-in;"><i class="ti-angle-right pr-2"></i>
+                                {{ __('lang.pm_promise_2') }}
+                            </li>
+                            <li style="list-style: none; line-height: 30px; margin: 5px 0; transition: 0.2s ease-in;"><i class="ti-angle-right pr-2"></i>
+                                {{ __('lang.pm_promise_3') }}
+                            </li>
+                            <li style="list-style: none; line-height: 30px; margin: 5px 0; transition: 0.2s ease-in;"><i class="ti-angle-right pr-2"></i>
+                                {{ __('lang.pm_promise_4') }}
+                            </li>
+                            <li style="list-style: none; line-height: 30px; margin: 5px 0; transition: 0.2s ease-in;"><i class="ti-angle-right pr-2"></i>
+                                {{ __('lang.pm_promise_5') }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>  --}}
                 
                 <div class="container-fluid">
                     <div id="app_show" class="accordion" role="tablist" aria-multiselectable="true">
@@ -53,12 +76,28 @@
                                     <div class="card-body mm">
                                         <h5 class="text-center"><b>အိမ်သုံးပါ၀ါမီတာလျှောက်လွှာပုံစံ</b></h5>
                                         <h6 class="text-right">အမှတ်စဥ် - <b>{{ $form->serial_code }}</b></h6>
+                                        @if ($form->div_state_id == 2)
+                                        <div class="p-t-10 p-b-10">
+                                            <h6>သို့</h6>
+                                            <h6 class="p-l-30 p-t-10">မြို့နယ်လျှပ်စစ်မန်နေဂျာ</h6>
+                                            <h6 class="p-l-30 p-t-10">ရန်ကုန်လျှပ်စစ်ဓာတ်အားပေးရေးကော်ပိုရေးရှင်း</h6>
+                                            <h6 class="p-l-30 p-t-10">{{ township_mm($form->township_id) }}</h6>
+                                        </div>
+                                        @elseif ($form->div_state_id == 3)
+                                        <div class="p-t-10 p-b-10">
+                                            <h6>သို့</h6>
+                                            <h6 class="p-l-30 p-t-10">မြို့နယ်လျှပ်စစ်မန်နေဂျာ</h6>
+                                            <h6 class="p-l-30 p-t-10">မန္တလေးလျှပ်စစ်ဓာတ်အားပေးရေးကော်ပိုရေးရှင်း</h6>
+                                            <h6 class="p-l-30 p-t-10">{{ township_mm($form->township_id) }}</h6>
+                                        </div>
+                                        @else
                                         <div class="p-t-10 p-b-10">
                                             <h6>သို့</h6>
                                             <h6 class="p-l-30 p-t-10">မြို့နယ်လျှပ်စစ်မှူး/မြို့နယ်လျှပ်စစ်အင်ဂျင်နီယာ</h6>
                                             <h6 class="p-l-30 p-t-10">လျှပ်စစ်ဓာတ်အားဖြန့်ဖြူးရေးလုပ်ငန်း</h6>
                                             <h6 class="p-l-30 p-t-10">{{ township_mm($form->township_id) }}</h6>
                                         </div>
+                                        @endif
                                         <div class="text-right p-t-10">
                                             <h6>ရက်စွဲ။<span class="p-l-20">။</span> {{ mmNum(date('d-m-Y', strtotime($form->date))) }}</h6>
                                         </div>
@@ -68,7 +107,7 @@
                                         <div class="p-t-10">
                                             <h6 class="l-h-35">
                                                 <span class="p-l-40"></span><span class="p-l-40"></span>
-                                                အထက်ပါကိစ္စနှင့်ပတ်သက်၍ {{ address_mm($form->id) }}နေ ကျွန်တော်/ကျွန်မ၏ <b>{{ $form->applied_building_type ? $form->applied_building_type : '<span class="p-l-40"></span>' }}</b> တွင် {{ power_meter_type($form->id) }} တပ်ဆင်သုံးစွဲခွင့်ပြုပါရန် လျှောက်ထားအပ်ပါသည်။
+                                                အထက်ပါကိစ္စနှင့်ပတ်သက်၍ {{ address_mm($form->id) }}နေ ကျွန်တော်/ကျွန်မ၏ <b>{!! $form->applied_building_type ? $form->applied_building_type : '<span class="p-l-40"></span>' !!}</b> တွင် {{ power_meter_type($form->id) }} တပ်ဆင်သုံးစွဲခွင့်ပြုပါရန် လျှောက်ထားအပ်ပါသည်။
                                             </h6>
                                             <h6 class="l-h-35">
                                                 <span class="p-l-40"></span><span class="p-l-40"></span> တပ်ဆင်သုံးစွဲခွင့်ပြုပါက လျှပ်စစ်ဓာတ်အားဖြန့်ဖြူးရေးလုပ်ငန်းမှ သတ်မှတ်ထားသော အခွန်အခများကို အကြေပေးဆောင်မည့်အပြင် တည်ဆဲဥပဒေများအတိုင်း လိုက်နာဆောင်ရွက်မည်ဖြစ်ပါကြောင်းနှင့် အိမ်တွင်းဝါယာသွယ်တန်းခြင်းလုပ်ငန်းများကို လျှပ်စစ်ကျွမ်းကျင်လက်မှတ်ရှိသူများနှင့်သာ ဆောင်ရွက်မည်ဖြစ်ကြောင်း ဝန်ခံကတိပြုလျှောက်ထားအပ်ပါသည်။
@@ -127,7 +166,7 @@
                                             <tbody>
                                                 @php $total = 0; @endphp
                                                 @foreach ($tbl_col_name as $col_name)
-                                                @if ($col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'service_fee' && $col_name != 'incheck_fee' && $col_name != 'sub_type')
+                                                @if ($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'service_fee' && $col_name != 'incheck_fee' && $col_name != 'sub_type')
                                                 <tr>
                                                     <td>{{ __('lang.'.$col_name) }}</td>
                                                     @foreach ($fee_names as $fee)

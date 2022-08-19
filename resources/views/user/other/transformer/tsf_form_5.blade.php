@@ -2,19 +2,21 @@
 
 @section('content')
 <div class="row justify-content-center py-5">
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
-            <div class="card-header bg-primary">
-                <h4 class="card-title text-center text-white mb-0">{{ __('lang.'.$heading) }}</h4>
+            <div class="card-header bg-success">
+                <h4 class="card-title text-center text-white mb-0 m-0">{{ __('lang.'.$heading) }}</h4>
             </div>
             <div class="card-body">
+                <h5 class="py-2 text-danger text-center ">{{ __('lang.required_msg') }}</h5><br/>
+
                 {!! Form::open(['route' => 'tsf_recomm_store', 'files' => true]) !!}
                 {!! Form::hidden('form_id', $form_id, ['id' => 'form_id']) !!}
                     <div class="row justify-content-center">
                         <div class="col-md-6">
                             <div class="form-group m-0">
                                 <div class="col-8">
-                                    <p class="card-title ">{{ __('lang.occupy_letter') }}</p>
+                                    <p class="card-title ">{{ __('lang.occupy_letter') }} <span class="text-danger f-s-15">&#10039;</span></p>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -33,7 +35,7 @@
                         <div class="col-md-6">
                             <div class="form-group row m-0">
                                 <div class="col-8">
-                                    <p class="card-title ">{{ __('lang.noinvade_letter') }}</p>
+                                    <p class="card-title ">{{ __('lang.noinvade_letter') }} <span class="text-danger f-s-15">&#10039;</span></p>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -49,7 +51,7 @@
                             </div>
                         </div>
                         <div class="col-md-6 alert alert-danger text-center m-t-20">
-                            <p class="card-title text-danger font-weight-bold"><i class="fa fa-certificate"></i> {{ __('ဘာသာ/သာသနာအတွက် ဖြစ်ပါက ဆက်လက်လုပ်ဆောင်မည်ကို နှိပ်ပါ။') }}</p>
+                            <p class="card-title text-danger font-weight-bold"><i class="fa fa-certificate"></i> {{ __('lang.continue_if_religion') }}</p>
                         </div>
                     </div>
             </div>

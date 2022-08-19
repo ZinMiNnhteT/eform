@@ -22,7 +22,7 @@
                                 <tr class="text-center">
                                     @foreach ($fee_names as $item)
                                         @if ($item->id === 3)
-                                    <th class="">{{ __('lang.'.$item->slug) }}</th>
+                                            <th class="">{{ __('lang.'.$item->slug."_yangon") }}</th>
                                         @endif
                                     @endforeach
                                 </tr>
@@ -30,18 +30,17 @@
                             <tbody>
                                 @php $country = 0; $small = 0; $city = 0; @endphp
                                 @foreach ($tbl_col_name as $col_name)
-                                @if ($col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'composit_box' && $col_name != 'sub_type')
-                                <tr>
-                                    <td class="">{{ __('lang.'.$col_name) }}</td>
-                                    @foreach ($fee_names as $fee)
-                                        @if ($fee->slug == 'type_three')
-                                    <td class="text-center">{{ checkMM() === 'mm' ? mmNum(number_format($fee->$col_name)) : number_format($fee->$col_name) }}</td>
-                                        @php $city += $fee->$col_name @endphp
-                                        @endif
-                                    @endforeach
-
-                                </tr>
-                                @endif
+                                    @if ($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'composit_box' && $col_name != 'sub_type' && $col_name != 'electric_join_fee')
+                                    <tr>
+                                        <td class="">{{ __('lang.'.$col_name) }}</td>
+                                        @foreach ($fee_names as $fee)
+                                            @if ($fee->slug == 'type_three')
+                                                <td class="text-center">{{ checkMM() === 'mm' ? mmNum(number_format($fee->$col_name)) : number_format($fee->$col_name) }}</td>
+                                                @php $city += $fee->$col_name @endphp
+                                            @endif
+                                        @endforeach
+                                    </tr>
+                                    @endif
                                 @endforeach
                                 <tr class="text-center">
                                     <td class="">{{ __('lang.total') }}</td>

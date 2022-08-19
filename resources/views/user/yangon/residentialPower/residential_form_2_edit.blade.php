@@ -2,10 +2,10 @@
 
 @section('content')
 <div class="row justify-content-center py-5">
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div class="card">
             <div class="card-header bg-primary">
-                <h5 class="card-title text-center text-white">{{ __('lang.'.$heading) }}</h5>
+                <h5 class="card-title text-center text-white m-0">{{ __('lang.'.$heading) }}</h5>
             </div>
             <div class="card-body">
                 <h5 class="py-2 text-danger text-center">{{ __('lang.required_msg') }}</h5>
@@ -27,6 +27,7 @@
                                {{ __('lang.nrc') }} <span class="text-danger f-s-15">&#10039;</span>
                            </label>
                            {!! Form::text('nrc', null, ['id' => 'nrc', 'class' => 'form-control inner-form', 'required']) !!}
+                           <small class="text-danger"> {{ __('lang.nrc_help') }}</small>
                        </div>
                        {{--  Mobile Phone  --}}
                        <div class="form-group">
@@ -34,50 +35,51 @@
                                {{ __('lang.contact_phone') }} <span class="text-danger f-s-15">&#10039;</span>
                            </label>
                            {!! Form::text('applied_phone', null, ['id' => 'phone', 'class' => 'form-control inner-form', 'required']) !!}
+                           <small class="text-danger"> {{ __('lang.phone_help') }}</small>
                        </div>
                        {{--  Work  --}}
                        <div class="form-group">
                            <label for="jobType" class="text-primary m-b-10">
-                               အလုပ်အကိုင် <span class="text-danger f-s-15">&#10039;</span>
+                            {{ __('lang.job_type') }}   <span class="text-danger f-s-15">&#10039;</span>
                            </label>
                            <select name="jobType" class="form-control" id="jobType" required>
-                               <option value="">ရွေးချယ်ရန်</option>
-                               <option value="gstaff" {{ 'gstaff' == $form->job_type ? 'selected' : '' }}>အစိုးရဝန်ထမ်း</option>
-                               <option value="staff" {{ 'staff' == $form->job_type ? 'selected' : '' }}>ဝန်ထမ်း</option>
-                               <option value="other" {{ 'other' == $form->job_type ? 'selected' : '' }}>အခြား</option>
+                               <option value="">{{ __('lang.choose1') }}</option>
+                               <option value="gstaff" {{ 'gstaff' == $form->job_type ? 'selected' : '' }}>{{ __('lang.civil_servant') }}</option>
+                               <option value="staff" {{ 'staff' == $form->job_type ? 'selected' : '' }}>{{ __('lang.staff') }}</option>
+                               <option value="other" {{ 'other' == $form->job_type ? 'selected' : '' }}>{{ __('lang.other') }}</option>
                            </select>
                        </div>
                        {{--  Wrapper div for govStaff  --}}
                        <div class="gStaff-wrapper {{ $form->job_type == 'gstaff' || $form->job_type == 'staff' ? : 'd-none' }}" id="gStaff-wrap">
                            <div class="form-group m-t-20">
-                               <div class="row">
+                               <div class="row input-required">
                                    <div class="col-md-6">
                                        {{--  Position  --}}
-                                       <label for="pos" class="text-primary m-b-10">ရာထူး <span class="text-danger f-s-15">&#10039;</span></label> 
-                                       <input type="text" name="pos" value="{{ $form->job_type == 'gstaff' || $form->job_type == 'staff' ? $form->position : ''}}" class="form-control"/>
+                                       <label for="pos" class="text-primary m-b-10">{{ __('lang.position') }} <span class="text-danger f-s-15">&#10039;</span></label> 
+                                       <input type="text" name="pos" value="{{ $form->job_type == 'gstaff' || $form->job_type == 'staff' ? $form->position : ''}}" class="form-control" {{ $form->job_type != 'other' ? 'required' : '' }}/>
                                    </div>
                                    <div class="col-md-6">
                                        {{--  Department  --}}
-                                       <label for="dep" class="text-primary m-b-10">ဌာန / ကုမ္ပဏီ <span class="text-danger f-s-15">&#10039;</span></label>
-                                       <input type="text" name="dep" value="{{ $form->job_type == 'gstaff' || $form->job_type == 'staff' ? $form->department : '' }}" class="form-control"/>
+                                       <label for="dep" class="text-primary m-b-10">{{ __('lang.mini_comp') }} <span class="text-danger f-s-15">&#10039;</span></label>
+                                       <input type="text" name="dep" value="{{ $form->job_type == 'gstaff' || $form->job_type == 'staff' ? $form->department : '' }}" class="form-control" {{ $form->job_type != 'other' ? 'required' : '' }}/>
 
                                    </div>
                                    <div class="clearfix"></div>
                                </div>
                                <div class="form-group m-t-20">
-                                   <label for="salary" class="text-primary m-b-10">ပျမ်းမျှလစာ</label>
-                                   <input type="number" name="salary" value="{{ $form->job_type == 'gstaff' && $form->job_type == 'staff' ? $form->salary : '' }}" id="salary" class="form-control" />
+                                   <label for="salary" class="text-primary m-b-10">{{ __('lang.avg_salary') }}</label>
+                                   <input type="number" name="salary" value="{{ $form->job_type == 'gstaff' && $form->job_type == 'staff' ? ($form->salary > 0 ? $form->salary : '') : '' }}" id="salary" class="form-control" />
                                </div>
                            </div>
                        </div>
                        <div class="otherWrapper {{ $form->job_type == 'other' ? : 'd-none' }}" id="otherWrap">
-                           <div class="form-group">
-                               <label for="other" class="text-primary m-b-10">အခြား <span class="text-danger f-s-15">&#10039;</span></label>
-                               <input type="text" name="other" value="{{ $form->job_type == 'other' ? $form->position : '' }}" class="form-control" />
+                           <div class="form-group input-required">
+                               <label for="other" class="text-primary m-b-10">{{ __('lang.other') }} <span class="text-danger f-s-15">&#10039;</span></label>
+                               <input type="text" name="other" value="{{ $form->job_type == 'other' ? $form->position : '' }}" class="form-control" {{ $form->job_type == 'other' ? 'required' : '' }} />
                            </div>
                            <div class="form-group">
-                               <label for="otherSalary" class="text-primary m-b-10">ပျမ်းမျှလစာ
-                               <input type="number" name="otherSalary" value="{{ $form->job_type == 'other' ? $form->salary : '' }}" id="otherSalary" class="form-control" />
+                               <label for="otherSalary" class="text-primary m-b-10">{{ __('lang.avg_salary') }}</label>
+                               <input type="number" name="otherSalary" value="{{ $form->job_type == 'other' ? ($form->salary > 0 ? $form->salary : '') : '' }}" id="otherSalary" class="form-control" />
                            </div>
                        </div>
                        {{--  Building Type  --}}
@@ -165,8 +167,8 @@
 
             </div>
             <div class="card-footer text-center">
-                <a href="{{ route('resident_power_applied_form_ygn', $form->id) }}" class="col-3 waves-effect waves-light btn btn-block btn-rounded btn-secondary ">{{ __('lang.cancel') }}</a>
-                <button type="submit" class="col-3 waves-effect waves-light btn btn-block btn-rounded btn-primary ">{{ __('lang.submit') }}</button>
+                <a href="{{ route('resident_power_applied_form_ygn', $form->id) }}" class="col-md-3 waves-effect waves-light btn btn-block btn-rounded btn-secondary ">{{ __('lang.cancel') }}</a>
+                <button type="submit" class="col-md-3 waves-effect waves-light btn btn-block btn-rounded btn-primary ">{{ __('lang.submit') }}</button>
             </div>
             {!! Form::close() !!}
         </div>

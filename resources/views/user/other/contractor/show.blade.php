@@ -4,7 +4,7 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header text-white bg-info d-flex">
+            <div class="card-header text-white bg-success d-flex display-flex">
                 <h5 class="card-title m-0">{{ __('lang.'.$heading) }}</h5>
                 <div class="ml-auto">
                     <a href="{{route('overall_process')}}" class="btn btn-rounded btn-info text-white l-h-ini p-t-5 p-b-5"><i class="fa-fw fa fa-angle-double-left"></i>{{ __('lang.back') }}</a>
@@ -53,19 +53,35 @@
                             <div id="info" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
                                 <div class="container">
                                     <div class="card-body mm">
-                                        <h5 class="text-center"><b>ကန်ထရိုက်တိုက် အိမ်သုံးမီတာ လျှောက်လွှာပုံစံ</b></h5>
+                                        <h5 class="text-center"><b>ကန်ထရိုက်တိုက်မီတာ လျှောက်လွှာပုံစံ</b></h5>
                                         <h6 class="text-right">အမှတ်စဥ် - <b>{{ $form->serial_code }}</b></h6>
+                                        @if ($form->div_state_id == 2)
+                                        <div class="p-t-10 p-b-10">
+                                            <h6>သို့</h6>
+                                            <h6 class="p-l-30 p-t-10">မြို့နယ်လျှပ်စစ်မန်နေဂျာ</h6>
+                                            <h6 class="p-l-30 p-t-10">ရန်ကုန်လျှပ်စစ်ဓာတ်အားပေးရေးကော်ပိုရေးရှင်း</h6>
+                                            <h6 class="p-l-30 p-t-10">{{ township_mm($form->township_id) }}</h6>
+                                        </div>
+                                        @elseif ($form->div_state_id == 3)
+                                        <div class="p-t-10 p-b-10">
+                                            <h6>သို့</h6>
+                                            <h6 class="p-l-30 p-t-10">မြို့နယ်လျှပ်စစ်မန်နေဂျာ</h6>
+                                            <h6 class="p-l-30 p-t-10">မန္တလေးလျှပ်စစ်ဓာတ်အားပေးရေးကော်ပိုရေးရှင်း</h6>
+                                            <h6 class="p-l-30 p-t-10">{{ township_mm($form->township_id) }}</h6>
+                                        </div>
+                                        @else
                                         <div class="p-t-10 p-b-10">
                                             <h6>သို့</h6>
                                             <h6 class="p-l-30 p-t-10">မြို့နယ်လျှပ်စစ်မှူး/မြို့နယ်လျှပ်စစ်အင်ဂျင်နီယာ</h6>
                                             <h6 class="p-l-30 p-t-10">လျှပ်စစ်ဓာတ်အားဖြန့်ဖြူးရေးလုပ်ငန်း</h6>
                                             <h6 class="p-l-30 p-t-10">{{ township_mm($form->township_id) }}</h6>
                                         </div>
+                                        @endif
                                         <div class="text-right p-t-10">
                                             <h6>ရက်စွဲ။<span class="p-l-20">။</span> {{ mmNum(date('d-m-Y', strtotime($form->date))) }}</h6>
                                         </div>
                                         <div class="p-t-10">
-                                            <h6>အကြောင်းအရာ။<span class="p-l-40">။</span> <b>ကန်ထရိုက်တိုက် အိမ်သုံးမီတာ တပ်ဆင်ခွင့်ပြုပါရန် လျှောက်ထားခြင်း။</b></h6>
+                                            <h6>အကြောင်းအရာ။<span class="p-l-40">။</span> <b>ကန်ထရိုက်တိုက်မီတာ တပ်ဆင်ခွင့်ပြုပါရန် လျှောက်ထားခြင်း။</b></h6>
                                         </div>
                                         <div class="p-t-10">
                                             <h6 class="l-h-35">

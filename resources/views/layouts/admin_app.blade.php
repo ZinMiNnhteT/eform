@@ -27,6 +27,7 @@
     <link rel="stylesheet" href="{{ asset('css/bootstrap-wysihtml5.css') }}">
     <link rel="stylesheet" href="{{ asset('css/waitMe.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/bootstrap-datepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/jquery.timepicker.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/css-chart.css') }}">
     <link rel="stylesheet" href="{{ asset('css/skins/all.css') }}">
     <link rel="stylesheet" href="{{ asset('css/form-icheck.css') }}">
@@ -167,8 +168,9 @@
                                         <p class=" m-b-0">{{ Auth::guard('admin')->user()->email }}</p>
                                     </div>
                                 </div>
-                                <a class="dropdown-item" href="javascript:void(0)"><i class="ti-user m-r-5 m-l-5"></i> {{ __('lang.profile') }}</a>
+                                <a class="dropdown-item" href="{{ route('admin_profile_edit') }}"><i class="ti-user m-r-5 m-l-5"></i> {{ __('lang.profile') }}</a>
                                 <a class="dropdown-item" href="javascript:void(0)"><i class="ti-email m-r-5 m-l-5"></i> {{ __('lang.inbox') }}</a>
+                                <a class="dropdown-item" href="{{ route('admin_password_edit') }}"><i class="ti-key m-r-5 m-l-5"></i> {{ __('lang.change_password') }}</a>  
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="ti-power-off m-r-5 m-l-5"></i> {{ __('lang.logout') }}</a>
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -196,14 +198,14 @@
                     <li><a class="waves-effet waves-dark {{ $active == 'dash' ? 'active' : '' }}" href="{{ route('dashboard') }}"><i class="custom-fa fa fa-dashboard"></i>{{ __('lang.dashboard') }}</a></li>
 
                     {{--  inbox  --}}
-                    @if (hasPermissions(['inbox-view']))
+                    {{--  @if (hasPermissions(['inbox-view']))
 
                         @if (Auth::guard('admin')->user()->id == 1)
                     <li><a class="waves-effet waves-dark {{ $active == 'mailbox' ? 'active' : '' }}" href="{{ route('mailbox') }}"><i class="custom-fa fa fa-envelope-o"></i>{{ __('lang.inbox') }}</a></li>
                         @else
                     <li><a class="waves-effet waves-dark {{ $active == 'mailbox' ? 'active' : '' }}" href="javascript:void(0)"><i class="custom-fa fa fa-envelope-o"></i>{{ __('lang.inbox') }}</a></li>
                         @endif
-                    @endif
+                    @endif  --}}
                     
                     {{--  @if (hasPermissions(['applyingForm-view']))
                     <li><a class="waves-effet waves-dark {{ $active == 'applying_form' ? 'active' : '' }}" href="javascript:void(0)"><i class="custom-fa fa fa-bars"></i>{{ __('lang.applying_form_list') }}</a></li>
@@ -214,12 +216,12 @@
                     @if (hasPermissions(['registeredForm-view']))
                     <li><a class="waves-effet waves-dark {{ $active == 'registered_form' ? 'active' : '' }}" href="{{ route('registered_form.index') }}"><i class="custom-fa fa fa-bookmark"></i>{{ __('lang.registered_form_list') }}</a></li>
                     @endif
-                    @if (hasPermissions(['rejectForm-view']))
+                    {{--  @if (hasPermissions(['rejectForm-view']))
                     <li><a class="waves-effet waves-dark {{ $active == 'reject_form' ? 'active' : '' }}" href="javascript:void(0)"><i class="custom-fa fa fa-ban"></i>{{ __('lang.reject_form_list') }}</a></li>
                     @endif
                     @if (hasPermissions(['pendingForm-view']))
                     <li><a class="waves-effet waves-dark {{ $active == 'pending_form' ? 'active' : '' }}" href="javascript:void(0)"><i class="custom-fa fa fa-clock-o"></i>{{ __('lang.pending_form_list') }}</a></li>
-                    @endif
+                    @endif  --}}
                     
                     {{--  residential  --}}
                     @if (hasPermissions(['residential-view']))
@@ -290,9 +292,15 @@
                             @if (hasPermissions(['residentialPowerConfirmPayment-view']))
                             <li><a class="waves-effet waves-dark {{ $active == 'resident_power_app_payment' ? 'active' : '' }}" href="{{ route('residentialPowerMeterPaymentList.index') }}"><i class="custom-fa fa fa-file-text-o"></i>{{ __('lang.residentConfrimPayment') }}</a></li>
                             @endif
+
                             @if (hasPermissions(['residentialPowerChkInstall-view']))
                             <li><a class="waves-effet waves-dark {{ $active == 'resident_power_app_chk_install' ? 'active' : '' }}" href="{{ route('residentialPowerMeterCheckInstallList.index') }}"><i class="custom-fa fa fa-file-text-o"></i>{{ __('lang.chk_install') }}</a></li>
                             @endif
+
+                            @if (hasPermissions(['residentialPowerInstallDone-view']))
+                            <li><a class="waves-effet waves-dark {{ $active == 'resident_power_app_install_done' ? 'active' : '' }}" href="{{ route('residentialPowerMeterInstallationDoneList.index') }}"><i class="custom-fa fa fa-file-text-o"></i>{{ __('lang.ei_chk_install') }}</a></li>
+                            @endif
+
                             @if (hasPermissions(['residentialPowerRegisteredMeter-view']))
                             <li><a class="waves-effet waves-dark {{ $active == 'resident_power_app_reg_meter' ? 'active' : '' }}" href="{{ route('residentialPowerMeterRegisterMeterList.index') }}"><i class="custom-fa fa fa-file-text-o"></i>{{ __('lang.reg_meter') }}</a></li>
                             @endif
@@ -334,6 +342,9 @@
                             @if (hasPermissions(['commercialPowerChkInstall-view']))
                             <li><a class="waves-effet waves-dark {{ $active == 'commercial_app_chk_install' ? 'active' : '' }}" href="{{ route('commercialPowerMeterCheckInstallList.index') }}"><i class="custom-fa fa fa-file-text-o"></i>{{ __('lang.chk_install') }}</a></li>
                             @endif
+                            @if (hasPermissions(['commercialPowerInstallDone-view']))
+                            <li><a class="waves-effet waves-dark {{ $active == 'commercial_app_install_done' ? 'active' : '' }}" href="{{ route('commercialPowerMeterInstallationDoneList.index') }}"><i class="custom-fa fa fa-file-text-o"></i>{{ __('lang.ei_chk_install') }}</a></li>
+                            @endif
                             @if (hasPermissions(['commercialPowerRegisteredMeter-view']))
                             <li><a class="waves-effet waves-dark {{ $active == 'commercial_app_reg_meter' ? 'active' : '' }}" href="{{ route('commercialPowerMeterRegisterMeterList.index') }}"><i class="custom-fa fa fa-file-text-o"></i>{{ __('lang.reg_meter') }}</a></li>
                             @endif
@@ -361,7 +372,15 @@
                             <li><a class="waves-effet waves-dark {{ $active == 'contractor_app_gnd_done_dist' ? 'active' : '' }}" href="{{ route('contractorMeterGroundCheckDoneListByDistrict.index') }}"><i class="custom-fa fa fa-file-text-o"></i>{{ __('lang.residentSurveyDoneDist') }}</a></li>
                             @endif
                             @if (hasPermissions(['contractorDivStateChkGrd-view']))
-                            <li><a class="waves-effet waves-dark {{ $active == 'contractor_app_gnd_done_div_state' ? 'active' : '' }}" href="{{ route('contractorMeterGroundCheckDoneListByDivisionState.index') }}"><i class="custom-fa fa fa-file-text-o"></i>{{ __('lang.residentSurveyDoneDivstate') }}</a></li>
+                            <li><a class="waves-effet waves-dark {{ $active == 'contractor_app_gnd_done_div_state' ? 'active' : '' }}" href="{{ route('contractorMeterGroundCheckDoneListByDivisionState.index') }}"><i class="custom-fa fa fa-file-text-o"></i>
+                            @if (admin()->div_state == 2)
+                            {{ __('YESC ရုံးချုပ်') }}
+                            @elseif (admin()->div_state == 3)
+                            {{ __('MESC ရုံးချုပ်') }}
+                            @else
+                            {{ __('lang.residentSurveyDoneDivstate') }}
+                            @endif
+                            </a></li>
                             @endif
                             @if (hasPermissions(['contractorPending-view']))
                             <li><a class="waves-effet waves-dark {{ $active == 'contractor_app_pending' ? 'active' : '' }}" href="{{ route('contractorMeterPendingForm.index') }}"><i class="custom-fa fa fa-file-text-o"></i>{{ __('lang.residentPending') }}</a></li>
@@ -396,7 +415,7 @@
                     @endif
 
                     {{-- transformer --}}
-                    @if (hasPermissions(['contractor-view']))
+                    @if (hasPermissions(['transformer-view']))
                     <li>
                         <a class="waves-effet waves-dark cursor-p" data-toggle=".custom_dropdown5" onclick="event.preventDefault();" aria-haspopup="true" aria-expanded="false">
                             <i class="custom-fa fa fa-bolt text-primary"></i>{{ __('lang.transformer') }} <i class="fa-fw fa fa-angle-right"></i>
@@ -415,7 +434,15 @@
                             <li><a class="waves-effet waves-dark {{ $active == 'tsf_app_gnd_done_dist' ? 'active' : '' }}" href="{{ route('transformerGroundCheckDoneListByDistrict.index') }}"><i class="custom-fa fa fa-file-text-o"></i>{{ __('lang.residentSurveyDoneDist') }}</a></li>
                             @endif
                             @if (hasPermissions(['transformerDivStateChkGrd-view']))
-                            <li><a class="waves-effet waves-dark {{ $active == 'tsf_app_gnd_done_div_state' ? 'active' : '' }}" href="{{ route('transformerGroundCheckDoneListByDivisionState.index') }}"><i class="custom-fa fa fa-file-text-o"></i>{{ __('lang.residentSurveyDoneDivstate') }}</a></li>
+                            <li><a class="waves-effet waves-dark {{ $active == 'tsf_app_gnd_done_div_state' ? 'active' : '' }}" href="{{ route('transformerGroundCheckDoneListByDivisionState.index') }}"><i class="custom-fa fa fa-file-text-o"></i>
+                            @if (admin()->div_state == 2)
+                            {{ __('YESC ရုံးချုပ်') }}
+                            @elseif (admin()->div_state == 3)
+                            {{ __('MESC ရုံးချုပ်') }}
+                            @elseif (admin()->group_lvl < 3)
+                            {{ __('lang.residentSurveyDoneDivstate') }}
+                            @endif
+                            </a></li>
                             @endif
                             @if (hasPermissions(['transformerHeadChkGrd-view']))
                             <li><a class="waves-effet waves-dark {{ $active == 'tsf_app_gnd_done_head_office' ? 'active' : '' }}" href="{{ route('transformerGroundCheckDoneListByHeadOffice.index') }}"><i class="custom-fa fa fa-file-text-o"></i>{{ __('lang.residentSurveyDoneHeadOffice') }}</a></li>
@@ -451,7 +478,7 @@
                         <a class="waves-effet waves-dark cursor-p" data-toggle=".custom_dropdown6" onclick="event.preventDefault();" aria-haspopup="true" aria-expanded="false">
                             <i class="custom-fa ti-settings text-danger"></i>{{ __('lang.setting') }} <i class="fa-fw fa fa-angle-right"></i>
                         </a>
-                        <ul class="custom_dropdown6 {{ ($active == 'accounts' || $active == 'roles') ? 'd-block' : '' }}">
+                        <ul class="custom_dropdown6 {{ ($active == 'accounts' || $active == 'roles' || $active == 'users') ? 'd-block' : '' }}">
                             {{--  account  --}}
                             @if (hasPermissions(['accountSetting-view']))
                             <li><a class="waves-effet waves-dark {{ $active == 'accounts' ? 'active' : '' }}" href="{{ route('accounts.index') }}"><i class="custom-fa fa fa fa-address-book-o"></i>{{ __('lang.accountSetting') }}</a></li>
@@ -478,9 +505,27 @@
             <div class="custom-container-fluid">
                 
                 @yield('content')
-                
+
+                <div class="modal" id="imgViewer">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                    
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                    
+                            <!-- Modal body -->
+                            <div class="modal-body text-center">
+                            <img src="" class="img-responsive" id="imgViewerSrc">
+                            <p class="text-center" style="font-weight: 600; padding-top:30px;" id="imgViewerAlt"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+        
 
         {{--  footer  --}}
         <footer class="footer text-right">
@@ -488,6 +533,8 @@
         </footer>
         {{--  End footer  --}}
     </div>
+
+    
 
     {{--  Scripts  --}}
     <script src="{{ asset('js/app.js') }}"></script>
@@ -498,13 +545,14 @@
     <script src="{{ asset('js/bootstrap-wysihtml5.js') }}"></script>
     <script src="{{ asset('js/waitMe.min.js') }}"></script>
     <script src="{{ asset('js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('js/jquery.timepicker.min.js') }}"></script>
     <script src="{{ asset('js/select2.min.js') }}"></script>
     <script src="{{ asset('js/icheck.min.js')}}"></script>
     <script src="{{ asset('js/icheck.init.js')}}"></script>
     <script src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
-    <script src="{{ asset('js/echarts-all.js') }}"></script>
-    <script src="{{ asset('js/echarts-init.js') }}"></script>
+    {{-- <script src="{{ asset('js/echarts-all.js') }}"></script> --}}
+    {{-- <script src="{{ asset('js/echarts-init.js') }}"></script> --}}
     <script src="{{ asset('js/sweetalert.min.js') }}"></script>
     <script src="{{ asset('js/jquery.sweet-alert.custom.js') }}"></script>
     <script src="{{ asset('js/myjs.js') }}"></script>

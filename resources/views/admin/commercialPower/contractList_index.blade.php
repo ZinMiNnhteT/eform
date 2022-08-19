@@ -106,6 +106,9 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="pull-right m-b-30">
+                    {{ $form->links() }}
+                </div>
             </div>
         </div>
     </div>
