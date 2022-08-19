@@ -587,8 +587,11 @@ class ResidentialController extends Controller
 
         return response()->json([
             'success'    => false,
-            'message'    => 'This form can\'t sent!'
+            'title'     => 'Can\'t Sent',
+            'message'    => 'This form is already sent!',
+
         ]);
+
         // if ($form->apply_division == 1) { // yangon
         //     if ($form->apply_type == 1) {
         //         return redirect()->route('resident_applied_form_ygn', $form_id);

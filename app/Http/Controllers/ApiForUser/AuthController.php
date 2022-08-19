@@ -32,24 +32,38 @@ class AuthController extends Controller
         $input = $request->only('email', 'password');
         $jwt_token = null;
 
-        try{
-            if (!$jwt_token = JWTAuth::attempt($input)) {
+        $user = User::where('email', $request->email)->first();
+        if(Hash::check(request('password'), $user->password)){  
+            try{
+                if (!$jwt_token = JWTAuth::attempt($input)) {
+                    return response()->json([
+                        'success' => false,
+                        'title' => 'Login Invalid!',
+                        'message' => 'Invalid Email or Password',
+                    ], 401);
+                }
+            }catch(JWTException  $e){
                 return response()->json([
                     'success' => false,
-                    'message' => 'Invalid Email or Password',
-                ], 401);
+                    'title' => 'Login Failed!',
+                    'message' => 'can not login to server. try again'
+                ], 500);
             }
-        }catch(JWTException  $e){
+            $user = JWTAuth::authenticate($jwt_token);
+            return response()->json([
+                'success' => true,
+                'token' => $jwt_token,
+                'user' => $user
+            ]);
+        }else{
             return response()->json([
                 'success' => false,
-                'message' => 'can not login to server. try again'
-            ], 500);
+                'title' => 'Login Invalid!',
+                'message' => 'Invalid Email or Password',
+            ], 401);
         }
- 
-        return response()->json([
-            'success' => true,
-            'token' => $jwt_token,
-        ]);
+
+        // hello
     }
 
     public function register(Request $request){
