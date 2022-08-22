@@ -32,38 +32,46 @@ class AuthController extends Controller
         $input = $request->only('email', 'password');
         $jwt_token = null;
 
-        $user = User::where('email', $request->email)->first();
-        if(Hash::check(request('password'), $user->password)){  
-            try{
-                if (!$jwt_token = JWTAuth::attempt($input)) {
+        $user_data = User::where('email', $request->email)->first();
+        if(Hash::check($request->password, $user_data->password)){  
+            if($user_data->email_verified_at != null){
+                try{
+                    if (!$jwt_token = JWTAuth::attempt($input)) {
+                        return response()->json([
+                            'success' => false,
+                            'title' => 'Login Invalid!',
+                            'message' => 'Invalid Email or Password',
+                        ], 401);
+                    }
+                }catch(JWTException  $e){
                     return response()->json([
                         'success' => false,
-                        'title' => 'Login Invalid!',
-                        'message' => 'Invalid Email or Password',
-                    ], 401);
+                        'title' => 'Login Failed!',
+                        'message' => 'Currently, you can not login to server.'
+                    ], 500);
                 }
-            }catch(JWTException  $e){
+    
+                $login_user = JWTAuth::user();
+                
                 return response()->json([
-                    'success' => false,
-                    'title' => 'Login Failed!',
-                    'message' => 'can not login to server. try again'
-                ], 500);
+                    'success'   => true,
+                    'token'     => $jwt_token,
+                    'user'      => $login_user
+                ]);
+            }else{
+                return response()->json([
+                    'success'   => false,
+                    'title'     => 'Login Invalid!',
+                    'message'   => 'PLease verify your email first.',
+                ], 401);
             }
-            $user = JWTAuth::authenticate($jwt_token);
-            return response()->json([
-                'success' => true,
-                'token' => $jwt_token,
-                'user' => $user
-            ]);
         }else{
             return response()->json([
-                'success' => false,
-                'title' => 'Login Invalid!',
-                'message' => 'Invalid Email or Password',
+                'success'       => false,
+                'title'         => 'Login Invalid!',
+                'message'       => 'Invalid Email or Password',
             ], 401);
         }
-
-        // hello
     }
 
     public function register(Request $request){
