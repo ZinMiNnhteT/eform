@@ -10164,7 +10164,8 @@ class HomeController extends Controller {
             }
             $path = public_path('storage/user_attachments/'.$form->id);
             $old_front = $request->old_front;
-
+            
+            $dc_recomm = null;
             if ($request->hasFile('front')) {
                 $front_ext = $request->file('front')->getClientOriginalExtension();
                 $front_img = Image::make($request->file('front'));
@@ -11092,7 +11093,7 @@ class HomeController extends Controller {
             $heading = '';
             $tbl_col_name = Schema::getColumnListing('initial_costs');
             $fee_names = InitialCost::whereNotIn('name',['630','800','1500'])->where('type', 4)->get();
-            return view('user.yangon.transformer.commercial.tsf_form_1', compact('active', 'fee_names', 'tbl_col_name'));
+            return view('user/yangon/transformer/commercial/tsf_form_1', compact('active', 'fee_names', 'tbl_col_name'));
         } else {
             return redirect()->route('home');
         }

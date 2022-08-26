@@ -176,34 +176,24 @@ class ResidentialController extends Controller
             });
         $back_img->save($path.'/'.$back_nrc);
 
-        // removing old files
-        $path = public_path('storage/user_attachments/'.$form->id);
-        $olds = ApplicationFile::where('application_form_id', $form->id)->get();
-        foreach($olds as $old){
-            $old_front     = $old->nrc_copy_front;
-            $old_back      = $old->nrc_copy_back;
-
-            // delete file from folder
-            if (file_exists($path.'/'.$old_front)) {
-                File::delete($path.'/'.$old_front);
-            }
-            if (file_exists($path.'/'.$old_back)) {
-                File::delete($path.'/'.$old_back);
-            }
-
-            // delete file from database
-            $old_file = ApplicationFile::find($old->id);
-            $old_file->nrc_copy_front = null;
-            $old_file->nrc_copy_back = null;
-            $form->application_files()->save($old_file);
-        }
-
         /* retreive data from table to check */
         $form_files = $form->application_files; 
         if ($form_files->count() > 0) {
             $new = $form->application_files()->first();
-            $new->nrc_copy_front = $front_nrc;
-            $new->nrc_copy_back = $back_nrc;
+            if($front_nrc != ''){
+                $old_front = $new->nrc_copy_front;
+                if (file_exists($path.'/'.$old_front)) {
+                    File::delete($path.'/'.$old_front);
+                }
+                $new->nrc_copy_front = $front_nrc;
+            }
+            if($back_nrc != ''){
+                $old_back = $new->nrc_copy_back;
+                if (file_exists($path.'/'.$old_back)) {
+                    File::delete($path.'/'.$old_back);
+                }
+                $new->nrc_copy_back = $back_nrc;
+            }
             $form->application_files()->save($new);
         } else {
             $new = new ApplicationFile();
@@ -276,11 +266,39 @@ class ResidentialController extends Controller
         }else{
             $back_form_10 = null;
         }
-        
-        $new = $form->application_files()->first();
-        $new->form_10_front = $front_form_10;
-        $new->form_10_back = $back_form_10;
-        $form->application_files()->save($new);
+
+        $form_files = $form->application_files; /* retreive data from table to check */
+        if ($form_files->count() > 0) {
+            $new = $form->application_files()->first();
+            if($front_form_10 != ""){
+                // delete old files
+                $olds = explode(',',$new->form_10_front);
+                foreach($olds as $old){
+                    if (file_exists($path.'/'.$old)) {
+                        File::delete($path.'/'.$old);
+                    }
+                }
+                // update new
+                $new->form_10_front = $front_form_10;
+            }
+            if($back_form_10 != ""){
+                // delete old files
+                $olds = explode(',',$new->back_form_10);
+                foreach($olds as $old){
+                    if (file_exists($path.'/'.$old)) {
+                        File::delete($path.'/'.$old);
+                    }
+                }
+                // update new
+                $new->form_10_back = $back_form_10;
+            }
+            $form->application_files()->save($new);
+        } else {
+            $new = new ApplicationFile();
+            $new->form_10_front = $front_form_10;
+            $new->form_10_back = $back_form_10;
+            $new->save();
+        }
 
         return response()->json([
             'success'    => true,
@@ -328,11 +346,34 @@ class ResidentialController extends Controller
                 $constraint->aspectRatio();
             });
         $no_invade_img->save($path.'/'.$no_invade);
-        
-        $new = $form->application_files()->first();
-        $new->occupy_letter = $occupy;
-        $new->no_invade_letter = $no_invade;
-        $form->application_files()->save($new);
+
+        $form_files = $form->application_files; /* retreive data from table to check */
+        if ($form_files->count() > 0) {
+            $new = $form->application_files()->first();
+            // delete old files
+            if($occupy != ""){
+                $old = $new->occupy_letter;
+                if (file_exists($path.'/'.$old)) {
+                    File::delete($path.'/'.$old);
+                }
+                $new->occupy_letter = $occupy;
+            }
+            // delete old files
+            if($no_invade != ""){
+                $old = $new->no_invade_letter;
+                if (file_exists($path.'/'.$old)) {
+                    File::delete($path.'/'.$old);
+                }
+                $new->no_invade_letter = $no_invade;
+            }
+            $form->application_files()->save($new);
+        } else {
+            $new = new ApplicationFile();
+            $new->application_form_id = $form->id;
+            $new->occupy_letter = $occupy;
+            $new->no_invade_letter = $no_invade;
+            $new->save();
+        }
 
         return response()->json([
             'success'    => true,
@@ -439,11 +480,28 @@ class ResidentialController extends Controller
             $save_file_img->save($path.'/'.$save_db_img);
             array_push($tmp_arr, $save_db_img);
         }
-        $img_str = implode(',', $tmp_arr);
+        $img_str = count($tmp_arr) > 0 ? implode(',', $tmp_arr) : null;
 
-        $new = $form->application_files()->first();
-        $new->farmland = $img_str;
-        $form->application_files()->save($new);
+        $form_files = $form->application_files; /* retreive data from table to check */
+        if ($form_files->count() > 0) {
+            $new = $form->application_files()->first();
+            // delete old files
+            if($img_str != ""){
+                $olds = explode(',',$new->farmland);
+                foreach($olds as $old){
+                    if (file_exists($path.'/'.$old)) {
+                        File::delete($path.'/'.$old);
+                    }
+                }
+            }
+            $new->farmland = $img_str;
+            $form->application_files()->save($new);
+        } else {
+            $new = new ApplicationFile();
+            $new->application_form_id = $form->id;
+            $new->farmland = $img_str;
+            $new->save();
+        }
 
         return response()->json([
             'success'    => true,
@@ -485,11 +543,29 @@ class ResidentialController extends Controller
             $save_file_img->save($path.'/'.$save_db_img);
             array_push($tmp_arr, $save_db_img);
         }
-        $img_str = implode(',', $tmp_arr);
+        $img_str = count($tmp_arr) > 0 ? implode(',', $tmp_arr) : null;
 
-        $new = $form->application_files()->first();
-        $new->building = $img_str;
-        $form->application_files()->save($new);
+        $form_files = $form->application_files; /* retreive data from table to check */
+        if ($form_files->count() > 0) {
+            $new = $form->application_files()->first();
+            // delete old files
+            if($img_str != ""){
+                $olds = explode(',',$new->building);
+                foreach($olds as $old){
+                    if (file_exists($path.'/'.$old)) {
+                        File::delete($path.'/'.$old);
+                    }
+                }
+            }
+            $new->building = $img_str;
+            $form->application_files()->save($new);
+        } else {
+            $new = new ApplicationFile();
+            $new->application_form_id = $form->id;
+            $new->building = $img_str;
+            $new->save();
+        }
+
         return response()->json([
             'success'    => true,
             'token'     => $this->refresh_token($request->token),
@@ -530,11 +606,29 @@ class ResidentialController extends Controller
             $save_file_img->save($path.'/'.$save_db_img);
             array_push($tmp_arr, $save_db_img);
         }
-        $img_str = implode(',', $tmp_arr);
+        $img_str = count($tmp_arr) > 0 ? implode(',', $tmp_arr) : null;
 
-        $new = $form->application_files()->first();
-        $new->electric_power = $img_str;
-        $form->application_files()->save($new);
+        $form_files = $form->application_files; /* retreive data from table to check */
+        if ($form_files->count() > 0) {
+            $new = $form->application_files()->first();
+            // delete old files
+            if($img_str != ""){
+                $olds = explode(',',$new->electric_power);
+                foreach($olds as $old){
+                    if (file_exists($path.'/'.$old)) {
+                        File::delete($path.'/'.$old);
+                    }
+                }
+            }
+            $new->electric_power = $img_str;
+            $form->application_files()->save($new);
+        } else {
+            $new = new ApplicationFile();
+            $new->application_form_id = $form->id;
+            $new->electric_power = $img_str;
+            $new->save();
+        }
+
         return response()->json([
             'success'    => true,
             'token'     => $this->refresh_token($request->token),
@@ -591,52 +685,14 @@ class ResidentialController extends Controller
             'message'    => 'This form is already sent!',
 
         ]);
+    }
 
-        // if ($form->apply_division == 1) { // yangon
-        //     if ($form->apply_type == 1) {
-        //         return redirect()->route('resident_applied_form_ygn', $form_id);
-        //     } elseif ($form->apply_type == 2) {
-        //         return redirect()->route('resident_power_applied_form_ygn', $form_id);
-        //     } elseif ($form->apply_type == 3) {
-        //         return redirect()->route('commercial_applied_form_ygn', $form_id);
-        //     } elseif ($form->apply_type == 4) {
-        //         return redirect()->route('tsf_applied_form_ygn', $form_id);
-        //     } elseif ($form->apply_type == 5) {
-        //         return redirect()->route('contractor_applied_form_ygn', $form_id);
-        //     }
-        // }elseif ($form->apply_division == 2) {
-        //     if ($form->apply_type == 1) {
-        //         return redirect()->route('resident_applied_form', $form_id);
-        //     } elseif ($form->apply_type == 2) {
-        //         return redirect()->route('resident_power_applied_form', $form_id);
-        //     } elseif ($form->apply_type == 3) {
-        //         return redirect()->route('commercial_applied_form', $form_id);
-        //     } elseif ($form->apply_type == 4) {
-        //         return redirect()->route('tsf_applied_form_ygn', $form_id);                    
-        //     } elseif ($form->apply_type == 5) {
-        //         return redirect()->route('contractor_applied_form', $form_id);
-        //     }
-        // }elseif ($form->apply_division == 3) {
-        //     if ($form->apply_type == 1) {
-        //         return redirect()->route('resident_applied_form_mdy', $form_id);
-        //     } elseif ($form->apply_type == 2) {
-        //         return redirect()->route('resident_power_applied_form_mdy', $form_id);
-        //     } elseif ($form->apply_type == 3) {
-        //         return redirect()->route('commercial_applied_form_mdy', $form_id);
-        //     } elseif ($form->apply_type == 4) {
-        //         return redirect()->route('tsf_applied_form_mdy', $form_id);
-        //     } elseif ($form->apply_type == 5) {
-        //         return redirect()->route('contractor_applied_form_mdy', $form_id);
-        //     }
+    function refresh_token($token){
+        try{
+            $new_token = JWTAuth::refresh($token);
+            return $new_token;
+        }catch(TokenInvalidException $e){
+            return $token;
         }
-
-        function refresh_token($token){
-            try{
-                $new_token = JWTAuth::refresh($token);
-                return $new_token;
-            }catch(TokenInvalidException $e){
-                return $token;
-            }
-        }
-        
+    }    
 }

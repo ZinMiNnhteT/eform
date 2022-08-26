@@ -79,6 +79,7 @@
                                             {{ checkMM() === 'mm' ? mmNum(number_format($fee->$col_name)) : number_format($fee->$col_name) }}/-
                                                 @php $t_count += $fee->$col_name; @endphp
                                                 @endif
+                                                {{ $fee->sub_type }}
                                         </td>
                                             @endif
                                         @endforeach
@@ -86,7 +87,7 @@
                                             {{ checkMM() === 'mm' ? mmNum(number_format($t_count)) : number_format($t_count) }}/-
                                         </td>
                                         <td class="text-center">
-                                            <button type="submit" class="btn btn-rounded btn-outline-info tsf-meter-type-choose" subtype="{{ $fee->sub_type }}">{{ __('lang.choose') }}</button>
+                                            <button type="submit" class="btn btn-rounded btn-outline-info tsf-meter-type-choose" subtype="{{ $fee->sub_type }}">{{ $fee->sub_type }} {{ __('lang.choose') }}</button>
                                         </td>
                                     </tr>
                                     @endforeach

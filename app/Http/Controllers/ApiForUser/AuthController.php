@@ -22,7 +22,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(),[
             'email' => 'required|email',
             // 'password' => 'required|string|min:6',
-            'password' => 'required|string|min:6'
+            'password' => 'required|string'
         ]);
 
         if($validator->fails()){
@@ -33,39 +33,47 @@ class AuthController extends Controller
         $jwt_token = null;
 
         $user_data = User::where('email', $request->email)->first();
-        if(Hash::check($request->password, $user_data->password)){  
-            if($user_data->email_verified_at != null){
-                try{
-                    if (!$jwt_token = JWTAuth::attempt($input)) {
+        if(isset($user_data)){
+            if(Hash::check($request->password, $user_data->password)){  
+                if($user_data->email_verified_at != null){
+                    try{
+                        if (!$jwt_token = JWTAuth::attempt($input)) {
+                            return response()->json([
+                                'success' => false,
+                                'title' => 'Login Invalid!',
+                                'message' => 'Invalid Email or Password',
+                            ], 401);
+                        }
+                    }catch(JWTException  $e){
                         return response()->json([
                             'success' => false,
-                            'title' => 'Login Invalid!',
-                            'message' => 'Invalid Email or Password',
-                        ], 401);
+                            'title' => 'Login Failed!',
+                            'message' => 'Currently, you can not login to server.'
+                        ], 500);
                     }
-                }catch(JWTException  $e){
+        
+                    $login_user = JWTAuth::user();
+                    
                     return response()->json([
-                        'success' => false,
-                        'title' => 'Login Failed!',
-                        'message' => 'Currently, you can not login to server.'
-                    ], 500);
+                        'success'   => true,
+                        'token'     => $jwt_token,
+                        'user'      => $login_user
+                    ]);
+                }else{
+                    return response()->json([
+                        'success'   => false,
+                        'title'     => 'Login Invalid!',
+                        'message'   => 'PLease verify your email first.',
+                    ], 401);
                 }
-    
-                $login_user = JWTAuth::user();
-                
-                return response()->json([
-                    'success'   => true,
-                    'token'     => $jwt_token,
-                    'user'      => $login_user
-                ]);
             }else{
                 return response()->json([
-                    'success'   => false,
-                    'title'     => 'Login Invalid!',
-                    'message'   => 'PLease verify your email first.',
+                    'success'       => false,
+                    'title'         => 'Login Invalid!',
+                    'message'       => 'Invalid Email or Password',
                 ], 401);
             }
-        }else{
+        } else{
             return response()->json([
                 'success'       => false,
                 'title'         => 'Login Invalid!',
@@ -159,7 +167,8 @@ class AuthController extends Controller
         $user = JWTAuth::authenticate($request->token);
 
         if(isset($user)){
-            return response()->json(['success' => true]);
+            $new_token = $this->refresh_token($request->token);
+            return response()->json(['success' => true, 'token' => $new_token]);
         }else{
             return response()->json(['success' => false]);
         }
@@ -196,5 +205,14 @@ class AuthController extends Controller
 
     protected function guard(){
         return Auth::guard();
+    }
+
+    public function refresh_token($token){
+        try{
+            $new_token = JWTAuth::refresh($token);
+            return $new_token;
+        }catch(TokenInvalidException $e){
+            return $token;
+        }
     }
 }
