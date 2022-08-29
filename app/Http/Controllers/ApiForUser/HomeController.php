@@ -12,6 +12,8 @@ use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 // Database Models
 use App\User;
@@ -20,6 +22,7 @@ use App\User\ApplicationFile;
 use App\Admin\FormProcessAction;
 use App\Admin\AdminAction;
 use App\Admin\ApplicationFormContractor;
+use App\Setting\InitialCost;
 
 
 class HomeController extends Controller
@@ -1609,6 +1612,91 @@ class HomeController extends Controller
             'success'  => true,
             'token'    => $this->refresh_token($request->token),
             'form'     => $form
+        ]);
+    }
+
+
+    // save city_license
+    public function overall_process(Request $request){
+        $validator = Validator::make($request->all(),[
+            'token'     => 'required',
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors(), 400);
+        }
+        $user = JWTAuth::authenticate($request->token);
+
+        $user_data = ApplicationForm::select('application_forms.*', 'division_states.name as div_name', DB::raw('DATE_FORMAT(application_forms.date, "%d-%b-%Y") as date_f'))->where('user_id', $user->id)->orderBy('date', 'desc')->orderBy('id', 'asc')->leftJoin('division_states',function($join){
+            $join->on('application_forms.div_state_id','=','division_states.id');
+        })->get();
+        
+        $result = [];
+        foreach ($user_data as $data){
+            $state = cdt($data->id)[0];
+
+            if($state){
+                if($state == 'unfinished_form'){
+                    $state_name = "မပြီးသေးပါ";
+                }else if($state == 'finished_form'){
+                    $state_name = "ရုံးသို့ပို့ရန် အဆင်သင့်";
+                }else if($state == 'send_form'){
+                    $state_name = "ရုံးတွင်းလုပ်ဆောင်နေပါပြီ";
+                }else if($state == 'resend_form'){
+                    $state_name = "ပြင်ဆင်ရန်";
+                }else if($state == 'send_to_user'){
+                    $state_name = "လိုအပ်ချက်ရှိပါ၍ ပြန်လည်ပေးပို့ရန်";
+                }else if($state == 'send_to_pending'){
+                    $state_name = "ခေတ္တစောင့်ဆိုင်းစာရင်းသို့ ပို့ရန်";
+                }else if($state == 'form_accept'){
+                    $state_name = "လျှောက်လွှာလက်ခံရန်";
+                }
+            }
+            $data->state = $state_name;
+            array_push($result, $data);
+        }
+
+        return response()->json([
+            'success'  => true,
+            'token'    => $this->refresh_token($request->token),
+            'count'     => count($user_data),
+            'forms'     => $result
+        ]);
+    }
+
+    public function ygn_r_show(Request $request){
+        $validator = Validator::make($request->all(),[
+            'token'     => 'required',
+            'form_id'   => 'required',
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors(), 400);
+        }
+        $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
+        $files = $form->application_files;
+        $tbl_col_name = Schema::getColumnListing('initial_costs');
+        $fee_names = InitialCost::where([['type', 1], ['id', $form->apply_sub_type]])->get();
+
+        $chk_send = false;
+        if (chk_form_finish($form->id, $form->apply_type)['state']){
+            if (chk_send($form->id) !== 'first' && $form->serial_code){
+                $chk_send = true;
+            }
+        }
+                   
+        return response()->json([
+            'success'       => true,
+            'token'         => $this->refresh_token($request->token),
+            'form'          => $form,
+            'files'         => $files,
+            'tbl_col_name'  => $tbl_col_name,
+            'fee_names'     => $fee_names,
+            'chk_send'      => $chk_send,
+
+            'township_name' => township_mm($form->township_id),
+            'address'       => address_mm($form->id),
+            'date'          => mmNum(date('d-m-Y', strtotime($form->date))),
+
+            'path'          => 'http://192.168.99.124/eform/public/storage/user_attachments/'.$form->id.'/',
         ]);
     }
 

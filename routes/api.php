@@ -187,4 +187,10 @@ Route::group([
     Route::post('ministry_permit', 'HomeController@ministry_permit');
     // send form
     Route::post('send_form', 'HomeController@send_form');
+
+    // form preview
+    Route::post('ygn_r_show','HomeController@ygn_r_show');
+
+    // overall process
+    Route::post('overall_process', 'HomeController@overall_process');
 });

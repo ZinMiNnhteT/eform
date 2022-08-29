@@ -6409,7 +6409,7 @@ class HomeController extends Controller {
         $tbl_col_name = Schema::getColumnListing('initial_costs');
         $fee_names = InitialCost::where([['type', 1], ['id', $form->apply_sub_type]])->get();
         $draft_data = FormDraft::where('application_form_id', $form_id)->first();
-        return view('user.yangon.residential.show', compact('active', 'heading', 'tbl_col_name', 'fee_names', 'form', 'files', 'draft_data'));
+        return view('user/yangon/residential/show', compact('active', 'heading', 'tbl_col_name', 'fee_names', 'form', 'files', 'draft_data'));
     }
     
     /* ------------------------------------------------------------------------ */
