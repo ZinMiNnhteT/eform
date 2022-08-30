@@ -1662,7 +1662,8 @@ class HomeController extends Controller
             'forms'     => $result
         ]);
     }
-
+    
+    // yangon residential meter
     public function ygn_r_show(Request $request){
         $validator = Validator::make($request->all(),[
             'token'     => 'required',
