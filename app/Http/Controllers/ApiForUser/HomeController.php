@@ -1634,26 +1634,16 @@ class HomeController extends Controller
         
         $result = [];
         foreach ($user_data as $data){
-            $state = cdt($data->id)[0];
+            $status = cdt($data->id)[0];
 
-            if($state){
-                if($state == 'unfinished_form'){
-                    $state_name = "မပြီးသေးပါ";
-                }else if($state == 'finished_form'){
-                    $state_name = "ရုံးသို့ပို့ရန် အဆင်သင့်";
-                }else if($state == 'send_form'){
-                    $state_name = "ရုံးတွင်းလုပ်ဆောင်နေပါပြီ";
-                }else if($state == 'resend_form'){
-                    $state_name = "ပြင်ဆင်ရန်";
-                }else if($state == 'send_to_user'){
-                    $state_name = "လိုအပ်ချက်ရှိပါ၍ ပြန်လည်ပေးပို့ရန်";
-                }else if($state == 'send_to_pending'){
-                    $state_name = "ခေတ္တစောင့်ဆိုင်းစာရင်းသို့ ပို့ရန်";
-                }else if($state == 'form_accept'){
-                    $state_name = "လျှောက်လွှာလက်ခံရန်";
-                }
+            if (chk_send($data->id) == 'first'){
+                $state_name = 'lang.'.chk_userForm($data->id)['msg'];
+            }elseif (chk_send($data->id) == 'second'){
+                $state_name = 'lang.resend_form';
+            }else{
+                $state_name = 'lang.'.$status;
             }
-            $data->state = $state_name;
+            $data->state = trans($state_name);
             array_push($result, $data);
         }
 
@@ -1685,6 +1675,21 @@ class HomeController extends Controller
                 $chk_send = true;
             }
         }
+
+        if(chk_send($form->id) == 'first'){
+            $msg = 'သင့်လျှောက်လွှာအား ရုံးသို့ပေးပို့ပြီးဖြစ်ပါသည်။ ';
+            $state = 'send';
+        }else{
+            if(chk_form_finish($form->id, $form->apply_type)['state']){
+                $msg = " သင့်လျှောက်လွှာအား ရုံးသို့ မပို့ရသေးပါ။ သေချာစွာစစ်ဆေး၍ ပေးပို့မည် အားနှိပ်ပါ။";
+                $state = 'finish';
+            }else{
+                $msg="သင့်လျှောက်လွှာ ဖြည့်သွင်းခြင်း မပြီးသေးပါ။";
+                $state = 'no-finish';
+            }
+        }
+
+        
                    
         return response()->json([
             'success'       => true,
@@ -1694,6 +1699,8 @@ class HomeController extends Controller
             'tbl_col_name'  => $tbl_col_name,
             'fee_names'     => $fee_names,
             'chk_send'      => $chk_send,
+            'msg'           => $msg,
+            'state'         => $state,
 
             'township_name' => township_mm($form->township_id),
             'address'       => address_mm($form->id),
