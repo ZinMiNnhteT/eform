@@ -5446,7 +5446,7 @@ class HomeController extends Controller {
                     $form->id = $form_id;
                 }
             }
-            return view('user.yangon.residential.residential_form_2_edit', compact('active', 'form_id', 'heading', 'regions', 'districts', 'townships', 'form'));
+            return view('user/yangon/residential/residential_form_2_edit', compact('active', 'form_id', 'heading', 'regions', 'districts', 'townships', 'form'));
         } else {
             return redirect()->route('home');
         }

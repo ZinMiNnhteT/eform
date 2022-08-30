@@ -23,6 +23,8 @@ use App\Admin\FormProcessAction;
 use App\Admin\AdminAction;
 use App\Admin\ApplicationFormContractor;
 use App\Setting\InitialCost;
+use App\Setting\District;
+use App\Setting\Township;
 
 
 class HomeController extends Controller
@@ -1662,7 +1664,7 @@ class HomeController extends Controller
             'forms'     => $result
         ]);
     }
-    
+
     // yangon residential meter
     public function ygn_r_show(Request $request){
         $validator = Validator::make($request->all(),[
