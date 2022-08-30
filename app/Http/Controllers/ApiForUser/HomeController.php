@@ -1414,7 +1414,7 @@ class HomeController extends Controller
         $form_files = $form->application_files; /* retreive data from table to check */
         if ($form_files->count() > 0) {
             $new = $form->application_files()->first();
-            $this->deleteMulipleFiles($new->map, $path);
+            $this->deleteMulipleFiles($new->sign, $path);
             $new->sign = $img_str;
             $form->application_files()->save($new);
         } else {
@@ -1688,9 +1688,7 @@ class HomeController extends Controller
                 $state = 'no-finish';
             }
         }
-
-        
-                   
+         
         return response()->json([
             'success'       => true,
             'token'         => $this->refresh_token($request->token),
@@ -1708,6 +1706,58 @@ class HomeController extends Controller
 
             'path'          => 'http://192.168.99.124/eform/public/storage/user_attachments/'.$form->id.'/',
         ]);
+    }
+
+    public function ygn_c_show(Request $request){
+        $validator = Validator::make($request->all(),[
+            'token'     => 'required',
+            'form_id'   => 'required',
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors(), 400);
+        }
+
+        $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
+        $c_form = ApplicationFormContractor::where('application_form_id', $request->form_id)->first();
+        $files = $form->application_files;
+
+        $chk_send = false;
+        if (chk_form_finish($form->id, $form->apply_type)['state']){
+            if (chk_send($form->id) !== 'first' && $form->serial_code){
+                $chk_send = true;
+            }
+        }
+
+        if(chk_send($form->id) == 'first'){
+            $msg = 'သင့်လျှောက်လွှာအား ရုံးသို့ပေးပို့ပြီးဖြစ်ပါသည်။ ';
+            $state = 'send';
+        }else{
+            if(chk_form_finish($form->id, $form->apply_type)['state']){
+                $msg = " သင့်လျှောက်လွှာအား ရုံးသို့ မပို့ရသေးပါ။ သေချာစွာစစ်ဆေး၍ ပေးပို့မည် အားနှိပ်ပါ။";
+                $state = 'finish';
+            }else{
+                $msg="သင့်လျှောက်လွှာ ဖြည့်သွင်းခြင်း မပြီးသေးပါ။";
+                $state = 'no-finish';
+            }
+        }
+
+        return response()->json([
+            'success'       => true,
+            'token'         => $this->refresh_token($request->token),
+            'form'          => $form,
+            'c_form'        => $c_form,
+            'files'         => $files,
+            'chk_send'      => $chk_send,
+            'msg'           => $msg,
+            'state'         => $state,
+
+            'township_name' => township_mm($form->township_id),
+            'address'       => address_mm($form->id),
+            'date'          => mmNum(date('d-m-Y', strtotime($form->date))),
+
+            'path'          => 'http://192.168.99.124/eform/public/storage/user_attachments/'.$form->id.'/',
+        ]);
+
     }
 
     public function refresh_token($token){

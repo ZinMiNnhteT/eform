@@ -190,7 +190,10 @@ Route::group([
 
     // form preview
     Route::post('ygn_r_show','HomeController@ygn_r_show');
+    Route::post('ygn_c_show','HomeController@ygn_c_show');
+    
 
     // overall process
     Route::post('overall_process', 'HomeController@overall_process');
+
 });
