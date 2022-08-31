@@ -29,6 +29,11 @@ use App\Setting\Township;
 
 class HomeController extends Controller
 {
+
+    public function __construct() {
+        $this->storagePath = 'http://192.168.99.124/eform/public/storage/user_attachments/';
+    }
+
     // save meter type
     public function meter_type(Request $request){
         $validator = Validator::make($request->all(),[
@@ -222,6 +227,7 @@ class HomeController extends Controller
         $form->job_type      = $request->jobType;
         $form->position      = $position;
         $form->department    = $department;
+        $form->business_name = $request->other;
         $form->salary        = $salary ? $salary : 0;
         $form->applied_building_type = $applied_building_type;
         $form->applied_home_no       = $applied_home_no;
@@ -329,7 +335,7 @@ class HomeController extends Controller
         $job_type   = $request->jobType;
         if ($job_type == 'other') {
             $position = $request->other;
-            $salary = $request->otherSalary ?? $request;
+            $salary = $request->otherSalary ?? $request->salary;
         } else {
             $position = $request->pos;
             $salary = $request->salary;
@@ -358,6 +364,7 @@ class HomeController extends Controller
         $form->job_type                 = $request->jobType;
         $form->position                 = $position;
         $form->department               = $department;
+        $form->business_name            = $request->other;
         $form->salary                   = $salary ? $salary : 0;
         $form->applied_building_type    = $applied_building_type;
         $form->applied_home_no          = $applied_home_no;
@@ -1704,10 +1711,11 @@ class HomeController extends Controller
             'address'       => address_mm($form->id),
             'date'          => mmNum(date('d-m-Y', strtotime($form->date))),
 
-            'path'          => 'http://192.168.99.124/eform/public/storage/user_attachments/'.$form->id.'/',
+            'path'          => $this->storagePath.$form->id.'/',
         ]);
     }
 
+    // yangon constructor meter show
     public function ygn_c_show(Request $request){
         $validator = Validator::make($request->all(),[
             'token'     => 'required',
@@ -1755,7 +1763,77 @@ class HomeController extends Controller
             'address'       => address_mm($form->id),
             'date'          => mmNum(date('d-m-Y', strtotime($form->date))),
 
-            'path'          => 'http://192.168.99.124/eform/public/storage/user_attachments/'.$form->id.'/',
+            'path'          => $this->storagePath.$form->id.'/',
+        ]);
+
+    }
+
+    //yangon transformer (residential transformer) show
+    public function ygn_tr_show(Request $request){
+        $validator = Validator::make($request->all(),[
+            'token'     => 'required',
+            'form_id'   => 'required',
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors(), 400);
+        }
+
+        $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
+        $files = $form->application_files;
+        $tbl_col_name = Schema::getColumnListing('initial_costs');
+        $fee = InitialCost::whereNotIn('name',['630','800','1500'])->where([['type', 4], ['sub_type', $form->apply_sub_type]])->first();
+
+        $chk_send = false;
+        if (chk_form_finish($form->id, $form->apply_type)['state']){
+            if (chk_send($form->id) !== 'first' && $form->serial_code){
+                $chk_send = true;
+            }
+        }
+
+        if(chk_send($form->id) == 'first'){
+            $msg = 'သင့်လျှောက်လွှာအား ရုံးသို့ပေးပို့ပြီးဖြစ်ပါသည်။ ';
+            $state = 'send';
+        }else{
+            if(chk_form_finish($form->id, $form->apply_type)['state']){
+                $msg = " သင့်လျှောက်လွှာအား ရုံးသို့ မပို့ရသေးပါ။ သေချာစွာစစ်ဆေး၍ ပေးပို့မည် အားနှိပ်ပါ။";
+                $state = 'finish';
+            }else{
+                $msg="သင့်လျှောက်လွှာ ဖြည့်သွင်းခြင်း မပြီးသေးပါ။";
+                $state = 'no-finish';
+            }
+        }
+
+        $total = 0; $feeMap = [];
+        foreach ($tbl_col_name as $col_name){
+            if ($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'composit_box' && $col_name != 'sub_type' && $col_name != 'incheck_fee'){
+                $name = $col_name;
+                $value = mmNum(number_format($fee->$col_name));
+                $feeMap[$name] = $value;
+                $total += $fee->$col_name;
+            }
+        }
+        $feeMap['total'] = mmNum(number_format($total));
+        $feeMap['name'] = $fee->name;
+
+
+        return response()->json([
+            'success'       => true,
+            'token'         => $this->refresh_token($request->token),
+            'form'          => $form,
+            'files'         => $files,
+            'tbl_col_name'  => $tbl_col_name,
+            'fee'           => $feeMap,
+            
+            'chk_send'      => $chk_send,
+            'msg'           => $msg,
+            'state'         => $state,
+
+            'township_name' => township_mm($form->township_id),
+            'address'       => address_mm($form->id),
+            'date'          => mmNum(date('d-m-Y', strtotime($form->date))),
+            'tsf_type'      => tsf_type($form->id),
+
+            'path'          => $this->storagePath.$form->id.'/',
         ]);
 
     }

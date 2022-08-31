@@ -5252,7 +5252,7 @@ class HomeController extends Controller {
         $tbl_col_name = Schema::getColumnListing('initial_costs');
         $fee = InitialCost::whereNotIn('name',['630','800','1500'])->where([['type', 4], ['sub_type', $form->apply_sub_type]])->first();
         // dd($fee);
-        return view('user.other.transformer.show', compact('active', 'heading', 'tbl_col_name', 'fee', 'form', 'files'));
+        return view('user/other/transformer/show', compact('active', 'heading', 'tbl_col_name', 'fee', 'form', 'files'));
     }
     
     /* For Other Division/State */

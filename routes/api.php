@@ -191,6 +191,7 @@ Route::group([
     // form preview
     Route::post('ygn_r_show','HomeController@ygn_r_show');
     Route::post('ygn_c_show','HomeController@ygn_c_show');
+    Route::post('ygn_tr_show','HomeController@ygn_tr_show');
     
 
     // overall process

@@ -2,8 +2,6 @@
 
 @section('content')
 <div class="row">
-
-    {{ cdt($form->id)[0] }}
     <div class="col-12">
         <div class="card">
             <div class="card-header text-white bg-info d-flex display-flex">

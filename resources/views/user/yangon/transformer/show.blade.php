@@ -168,7 +168,7 @@
                                                 @foreach ($tbl_col_name as $col_name)
                                                 @if ($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'composit_box' && $col_name != 'sub_type' && $col_name != 'incheck_fee')
                                                 <tr>
-                                                    <td class="">{{ __('lang.'.$col_name) }}</td>
+                                                    <td class="">{{$col_name}} {{ __('lang.'.$col_name) }}</td>
                                                     <td class="text-center">{{ checkMM() === 'mm' ? mmNum(number_format($fee->$col_name)) : number_format($fee->$col_name) }}</td>
                                                     @php $total += $fee->$col_name; @endphp
 
