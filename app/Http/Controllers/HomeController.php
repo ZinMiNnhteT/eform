@@ -16824,7 +16824,7 @@ class HomeController extends Controller {
         $form = ApplicationForm::orderBy('date', 'desc')->find($form_id);
         $c_form = ApplicationFormContractor::where('application_form_id', $form_id)->first();
         $files = $form->application_files;
-        return view('user.mandalay.contractor.show', compact('active', 'heading', 'form', 'files', 'c_form'));
+        return view('user/mandalay/contractor/show', compact('active', 'heading', 'form', 'files', 'c_form'));
     }
     /* Mandalay Contractor Meter End */
     /* ------------------------------------------------------------------------ */
@@ -17848,7 +17848,7 @@ class HomeController extends Controller {
         $tbl_col_name = Schema::getColumnListing('initial_costs');
         $fee = InitialCost::where('building_fee','!=',null)->where([['type', 4], ['sub_type', $form->apply_sub_type]])->first();
         // dd($fee);
-        return view('user.mandalay.transformer.show', compact('active', 'heading', 'tbl_col_name', 'fee', 'form', 'files'));
+        return view('user/mandalay/transformer/show', compact('active', 'heading', 'tbl_col_name', 'fee', 'form', 'files'));
     }
     
     /* For Mandalay */

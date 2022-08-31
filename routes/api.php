@@ -190,8 +190,12 @@ Route::group([
 
     // form preview
     Route::post('ygn_r_show','HomeController@ygn_r_show');
+    Route::post('ygn_rp_show','HomeController@ygn_rp_show');
     Route::post('ygn_c_show','HomeController@ygn_c_show');
-    Route::post('ygn_tr_show','HomeController@ygn_tr_show');
+    Route::post('constructor_show','HomeController@constructor_show');
+    Route::post('ygn_t_show','HomeController@ygn_t_show');
+    Route::post('mdy_t_show','HomeController@mdy_t_show');
+    
     
 
     // overall process

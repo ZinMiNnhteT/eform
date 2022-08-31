@@ -1715,6 +1715,70 @@ class HomeController extends Controller
         ]);
     }
 
+    public function ygn_rp_show(Request $request){
+        $validator = Validator::make($request->all(),[
+            'token'     => 'required',
+            'form_id'   => 'required',
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors(), 400);
+        }
+        $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
+        $files = $form->application_files;
+        $tbl_col_name = Schema::getColumnListing('initial_costs');
+        $fee = InitialCost::where([['type', 1], ['id', $form->apply_sub_type]])->get();
+
+        $chk_send = false;
+        if (chk_form_finish($form->id, $form->apply_type)['state']){
+            if (chk_send($form->id) !== 'first' && $form->serial_code){
+                $chk_send = true;
+            }
+        }
+
+        if(chk_send($form->id) == 'first'){
+            $msg = 'သင့်လျှောက်လွှာအား ရုံးသို့ပေးပို့ပြီးဖြစ်ပါသည်။ ';
+            $state = 'send';
+        }else{
+            if(chk_form_finish($form->id, $form->apply_type)['state']){
+                $msg = " သင့်လျှောက်လွှာအား ရုံးသို့ မပို့ရသေးပါ။ သေချာစွာစစ်ဆေး၍ ပေးပို့မည် အားနှိပ်ပါ။";
+                $state = 'finish';
+            }else{
+                $msg="သင့်လျှောက်လွှာ ဖြည့်သွင်းခြင်း မပြီးသေးပါ။";
+                $state = 'no-finish';
+            }
+        }
+
+        $total = 0; $feeMap = [];
+        foreach ($tbl_col_name as $col_name){
+            if ($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' &&  $col_name != 'incheck_fee' && $col_name != 'sub_type'){
+                $name = $col_name;
+                $value = mmNum(number_format($fee->$col_name));
+                $feeMap[$name] = $value;
+                $total += $fee->$col_name;
+            }
+        }
+        $feeMap['total'] = mmNum(number_format($total));
+        $feeMap['name'] = $fee->name;
+         
+        return response()->json([
+            'success'       => true,
+            'token'         => $this->refresh_token($request->token),
+            'form'          => $form,
+            'files'         => $files,
+            'tbl_col_name'  => $tbl_col_name,
+            'fee'           => $feeMap,
+            'chk_send'      => $chk_send,
+            'msg'           => $msg,
+            'state'         => $state,
+
+            'township_name' => township_mm($form->township_id),
+            'address'       => address_mm($form->id),
+            'date'          => mmNum(date('d-m-Y', strtotime($form->date))),
+
+            'path'          => $this->storagePath.$form->id.'/',
+        ]);
+    }
+
     // yangon constructor meter show
     public function ygn_c_show(Request $request){
         $validator = Validator::make($request->all(),[
@@ -1768,8 +1832,61 @@ class HomeController extends Controller
 
     }
 
+    // constructor meter show
+    public function constructor_show(Request $request){
+        $validator = Validator::make($request->all(),[
+            'token'     => 'required',
+            'form_id'   => 'required',
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors(), 400);
+        }
+
+        $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
+        $c_form = ApplicationFormContractor::where('application_form_id', $request->form_id)->first();
+        $files = $form->application_files;
+
+        $chk_send = false;
+        if (chk_form_finish($form->id, $form->apply_type)['state']){
+            if (chk_send($form->id) !== 'first' && $form->serial_code){
+                $chk_send = true;
+            }
+        }
+
+        if(chk_send($form->id) == 'first'){
+            $msg = 'သင့်လျှောက်လွှာအား ရုံးသို့ပေးပို့ပြီးဖြစ်ပါသည်။ ';
+            $state = 'send';
+        }else{
+            if(chk_form_finish($form->id, $form->apply_type)['state']){
+                $msg = " သင့်လျှောက်လွှာအား ရုံးသို့ မပို့ရသေးပါ။ သေချာစွာစစ်ဆေး၍ ပေးပို့မည် အားနှိပ်ပါ။";
+                $state = 'finish';
+            }else{
+                $msg="သင့်လျှောက်လွှာ ဖြည့်သွင်းခြင်း မပြီးသေးပါ။";
+                $state = 'no-finish';
+            }
+        }
+
+        return response()->json([
+            'success'       => true,
+            'token'         => $this->refresh_token($request->token),
+            'form'          => $form,
+            'c_form'        => $c_form,
+            'files'         => $files,
+            'chk_send'      => $chk_send,
+            'msg'           => $msg,
+            'state'         => $state,
+
+            'township_name' => township_mm($form->township_id),
+            'address'       => address_mm($form->id),
+            'date'          => mmNum(date('d-m-Y', strtotime($form->date))),
+
+            'path'          => $this->storagePath.$form->id.'/',
+        ]);
+
+    }
+
     //yangon transformer (residential transformer) show
-    public function ygn_tr_show(Request $request){
+    public function ygn_t_show(Request $request){
         $validator = Validator::make($request->all(),[
             'token'     => 'required',
             'form_id'   => 'required',
@@ -1836,6 +1953,75 @@ class HomeController extends Controller
             'path'          => $this->storagePath.$form->id.'/',
         ]);
 
+    }
+
+    // mandalary transformer show
+    public function mdy_t_show(Request $request){
+        $validator = Validator::make($request->all(),[
+            'token'     => 'required',
+            'form_id'   => 'required',
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors(), 400);
+        }
+
+        $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
+        $files = $form->application_files;
+        $tbl_col_name = Schema::getColumnListing('initial_costs');
+        $fee = InitialCost::where('building_fee','!=',null)->where([['type', 4], ['sub_type', $form->apply_sub_type]])->first();
+
+        $chk_send = false;
+        if (chk_form_finish($form->id, $form->apply_type)['state']){
+            if (chk_send($form->id) !== 'first' && $form->serial_code){
+                $chk_send = true;
+            }
+        }
+
+        if(chk_send($form->id) == 'first'){
+            $msg = 'သင့်လျှောက်လွှာအား ရုံးသို့ပေးပို့ပြီးဖြစ်ပါသည်။ ';
+            $state = 'send';
+        }else{
+            if(chk_form_finish($form->id, $form->apply_type)['state']){
+                $msg = " သင့်လျှောက်လွှာအား ရုံးသို့ မပို့ရသေးပါ။ သေချာစွာစစ်ဆေး၍ ပေးပို့မည် အားနှိပ်ပါ။";
+                $state = 'finish';
+            }else{
+                $msg="သင့်လျှောက်လွှာ ဖြည့်သွင်းခြင်း မပြီးသေးပါ။";
+                $state = 'no-finish';
+            }
+        }
+
+        $total = 0; $feeMap = [];
+        foreach ($tbl_col_name as $col_name){
+            if ($col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'composit_box' && $col_name != 'sub_type' && $col_name != 'incheck_fee'){
+                $name = $col_name;
+                $value = mmNum(number_format($fee->$col_name));
+                $feeMap[$name] = $value;
+                $total += $fee->$col_name;
+            }
+        }
+        $feeMap['total'] = mmNum(number_format($total));
+        $feeMap['name'] = $fee->name;
+
+
+        return response()->json([
+            'success'       => true,
+            'token'         => $this->refresh_token($request->token),
+            'form'          => $form,
+            'files'         => $files,
+            'tbl_col_name'  => $tbl_col_name,
+            'fee'           => $feeMap,
+            
+            'chk_send'      => $chk_send,
+            'msg'           => $msg,
+            'state'         => $state,
+
+            'township_name' => township_mm($form->township_id),
+            'address'       => address_mm($form->id),
+            'date'          => mmNum(date('d-m-Y', strtotime($form->date))),
+            'tsf_type'      => tsf_type($form->id),
+
+            'path'          => $this->storagePath.$form->id.'/',
+        ]);
     }
 
     public function refresh_token($token){
