@@ -188,6 +188,9 @@ Route::group([
     // send form
     Route::post('send_form', 'HomeController@send_form');
 
+    // money cost
+    Route::post('mdy_t_money','HomeController@mdy_t_money');
+
     // form preview
     Route::post('ygn_r_show','HomeController@ygn_r_show');
     Route::post('ygn_rp_show','HomeController@ygn_rp_show');

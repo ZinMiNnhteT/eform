@@ -16902,7 +16902,7 @@ class HomeController extends Controller {
                 }
                 $form->apply_sub_type = $app_form->apply_sub_type;
             }
-            return view('user.mandalay.transformer.tsf_form_1_edit', compact('active', 'fee_names', 'tbl_col_name', 'form'));
+            return view('user/mandalay/transformer/tsf_form_1_edit', compact('active', 'fee_names', 'tbl_col_name', 'form'));
         // } else {
         //     return redirect()->route('home');
         // }

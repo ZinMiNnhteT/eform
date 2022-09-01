@@ -1674,7 +1674,7 @@ class HomeController extends Controller
         $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
         $files = $form->application_files;
         $tbl_col_name = Schema::getColumnListing('initial_costs');
-        $fee_names = InitialCost::where([['type', 1], ['id', $form->apply_sub_type]])->get();
+        $fee = InitialCost::where([['type', 1], ['id', $form->apply_sub_type]])->first();
 
         $chk_send = false;
         if (chk_form_finish($form->id, $form->apply_type)['state']){
@@ -1695,14 +1695,13 @@ class HomeController extends Controller
                 $state = 'no-finish';
             }
         }
-         
         return response()->json([
             'success'       => true,
             'token'         => $this->refresh_token($request->token),
             'form'          => $form,
             'files'         => $files,
             'tbl_col_name'  => $tbl_col_name,
-            'fee_names'     => $fee_names,
+            'fee_names'     => $fee,
             'chk_send'      => $chk_send,
             'msg'           => $msg,
             'state'         => $state,
@@ -1726,7 +1725,8 @@ class HomeController extends Controller
         $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
         $files = $form->application_files;
         $tbl_col_name = Schema::getColumnListing('initial_costs');
-        $fee = InitialCost::where([['type', 1], ['id', $form->apply_sub_type]])->get();
+
+        $fee = InitialCost::where([['type', 21], ['sub_type', $form->apply_sub_type]])->first();
 
         $chk_send = false;
         if (chk_form_finish($form->id, $form->apply_type)['state']){
@@ -1752,6 +1752,7 @@ class HomeController extends Controller
         foreach ($tbl_col_name as $col_name){
             if ($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' &&  $col_name != 'incheck_fee' && $col_name != 'sub_type'){
                 $name = $col_name;
+                
                 $value = mmNum(number_format($fee->$col_name));
                 $feeMap[$name] = $value;
                 $total += $fee->$col_name;
@@ -1759,6 +1760,7 @@ class HomeController extends Controller
         }
         $feeMap['total'] = mmNum(number_format($total));
         $feeMap['name'] = $fee->name;
+
          
         return response()->json([
             'success'       => true,
@@ -1953,6 +1955,43 @@ class HomeController extends Controller
             'path'          => $this->storagePath.$form->id.'/',
         ]);
 
+    }
+
+    public function mdy_t_money(Request $request){
+        $validator = Validator::make($request->all(),[
+            'token'     => 'required',
+            'form_id'   => 'required',
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors(), 400);
+        }
+        $tbl_col_name = Schema::getColumnListing('initial_costs');
+
+        $costs = InitialCost::where('building_fee','!=',null)->where('type', 4)->get();
+
+        $fees = [];
+        foreach($costs as $cost){
+            $total = 0; $feeMap = [];
+            foreach ($tbl_col_name as $col_name){
+                if ($col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'composit_box' && $col_name != 'sub_type' && $col_name != 'incheck_fee'){
+                    $name = $col_name;
+                    $value = mmNum(number_format($cost->$col_name));
+                    $feeMap[$name] = $value;
+                    $total += $cost->$col_name;
+                }
+            }
+            $feeMap['total'] = mmNum(number_format($total));
+            $feeMap['name'] = mmNum($cost->name);
+            $feeMap['type'] = $cost->sub_type;
+            array_push($fees, $feeMap);
+        }
+
+
+        return response()->json([
+            'success'       => true,
+            'token'         => $this->refresh_token($request->token),
+            'fees'           => $fees,
+        ]);
     }
 
     // mandalary transformer show
