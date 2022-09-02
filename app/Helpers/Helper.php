@@ -1710,7 +1710,13 @@ function cpower_meter_type($form_id) {
 }
 function tsf_type($form_id) {
     $form = ApplicationForm::find($form_id);
-    $type = InitialCost::where([['type', $form->apply_type], ['sub_type', $form->apply_sub_type]])->first();
+    if($form->apply_division == '3'){ // mdy
+        $type = InitialCost::where('building_fee','!=',null)->where([['type', $form->apply_type], ['sub_type', $form->apply_sub_type]])->first();
+    }elseif($form->apply_division == '1'){ // ygn
+        $type = InitialCost::whereNotIn('name',['630','800','1500'])->where([['type', $form->apply_type], ['sub_type', $form->apply_sub_type]])->first();
+    }else{ // other
+        $type = InitialCost::where([['type', $form->apply_type], ['sub_type', $form->apply_sub_type]])->first();
+    }
     return '('.$type->name.' KVA) ထရန်စဖေါ်မာတစ်လုံး';
 }
 function user_applied_form($type) {

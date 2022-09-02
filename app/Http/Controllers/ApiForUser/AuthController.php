@@ -10,13 +10,31 @@ use Illuminate\Support\Facades\Hash;
 use App\User;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Foundation\Auth\VerifiesEmails;
+use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
+use Illuminate\Database\Query\Expression;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
+    use VerifiesEmails;
 
     // validator error 400
     // unauthorized 401
     // success 200
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        // $this->middleware('signed')->only('verify');
+        // $this->middleware('throttle:6,1')->only('verify', 'resend');
+    }
     
     public function login(Request $request){
         $validator = Validator::make($request->all(),[
@@ -54,6 +72,7 @@ class AuthController extends Controller
         
                     $login_user = JWTAuth::user();
                     
+                    
                     return response()->json([
                         'success'   => true,
                         'token'     => $jwt_token,
@@ -62,8 +81,8 @@ class AuthController extends Controller
                 }else{
                     return response()->json([
                         'success'   => false,
-                        'title'     => 'Login Invalid!',
-                        'message'   => 'PLease verify your email first.',
+                        'title'     => 'Verify Your Email!',
+                        'message'   => 'သင့်အီးမေးလ်မှန်ကန်ကြောင်းအတည်မပြုရသေးပါ။ သင့်အီးမေးလ် ('.$request->email.') တွင် MOEP Support Team မှပေးပို့ထားသည့် mail ကို အတည်ပြုပေးရန်လိုအပ်သည်။ Mail မတွေ့ရှိပါက Resend Verify နှိပ်ပါ။',
                     ], 401);
                 }
             }else{
@@ -83,20 +102,18 @@ class AuthController extends Controller
     }
 
     public function register(Request $request){
-        // $validator = Validator::make($request->all(), [
-        //     'name' => ['required', 'string', 'max:255'],
-        //     'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-        //     'password' => ['required', 'string', 'min:6', 'confirmed'],
-        //     'captcha' => ['required', 'captcha']
-        // ], ['captcha.captcha' => 'Invalid Code']);
-
         $validator = Validator::make($request->all(), [
             'name'      => ['required', 'string', 'max:255'],
             'email'     => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password'  => ['required', 'string', 'min:6', 'confirmed']
+            'phone'     => ['required', 'string', 'min:9', 'max:11', 'unique:users'],
+            'password'  => ['required', 'string', 'min:6']
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json([
+                'success'   => false,
+                'title'     => 'Validate Error',
+                'errors'    => $validator->errors(),
+            ]);
         }
 
         $user = new User();
@@ -109,11 +126,51 @@ class AuthController extends Controller
         $user->sendEmailVerificationNotification();
 
         // $user = User::first();
-        $token = JWTAuth::fromUser($user);
+        // $token = JWTAuth::fromUser($user);
  
         return response()->json([
             'success' => true,
-            'token' => $token,
+            'title' => 'အီးမေးလ်အတည်ပြုပေးပါ။',
+            'message' => 'အကောင့်ပြုလုပ်ပြီးပါပြီ။ အကောင့်ဝင်နိုင်ရန် သင့်အီးမေးလ် ('.$request->email.') တွင် MOEP Support Team မှပေးပို့ထားသည့် mail ကို အတည်ပြုပေးရန်လိုအပ်သည်။ Mail မတွေ့ရှိပါက Resend Verify နှိပ်ပါ။',
+            // 'token' => $token,
+        ]);
+    }
+
+    public function verify(Request $request){
+        $validator = Validator::make($request->all(), [
+            'email'     => ['required', 'string', 'email'],
+            'password'  => ['required', 'string', 'min:6']
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+
+        $user = User::where('email', $request->email)->first();
+        if(isset($user)){
+            if(Hash::check($request->password, $user->password)){  
+                if($user->email_verified_at == null){
+
+                        $user->sendEmailVerificationNotification();
+                        // event(new Verified($user));
+                        return response()->json([
+                            'success' => true,
+                            'title' => 'Verify Send Success!',
+                            'message' => 'အီးမေးလ်မှန်ကန်ကြောင်း အတည်ပြုပေးရန် လင့်ကို  သင့်အီးမေးလ် ('.$request->email.')သို့ပေးပို့ပြီးဖြစ်ပါသည်။',
+                        ]);
+                    
+                }else{
+                    return response()->json([
+                        'success' => true,
+                        'title' => 'Verify Send Fail!',
+                        'message' => 'အီးမေးလ်မှန်ကန်ကြောင်း အတည်ပြုပေးပြီးဖြစ်ပါသည်။ Verify Send လုပ်ရန်မလိုအပ်တော့ပါ။',
+                    ]);
+                }
+            }
+        }
+        return response()->json([
+            'success' => true,
+            'title' => 'Verify Send Fail',
+            'message' => 'အကောင့်မတွေ့ရှိပါ',
         ]);
     }
 
@@ -214,5 +271,37 @@ class AuthController extends Controller
         }catch(TokenInvalidException $e){
             return $token;
         }
+    }
+
+    /**
+     * Send a password reset notification to the user.
+     *
+     * @param  string  $token
+     * @return void
+    */
+    public function reset_psw(Request $request)
+    {
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+        $user  = User::where('email', $request->email)->first();
+        if(isset($user)){
+            $psw_reset = DB::table('password_resets')->where('email', $request->email)->first();
+
+            $url = $psw_reset->token;
+            new ResetPasswordNotification($url);
+            return response()->json([
+                'success'    => true,
+                'title'     => 'လင့်ခ်ပို့ပေးပြီးပါပြီ',
+                'message'   => 'သင့်အီးမေးလ် ('. $request->email.') သို့ စကားဝှက်ပြောင်းလဲရန်လင့်ခ်ကို ပေးပို့ပေးပြီးဖြစ်ပါသည်။',
+            ]);
+        }else{
+            return response()->json([
+                'success'    => true,
+                'title'     => 'အကောင့်မတွေ့ရှိပါ',
+                'message'   => ''. $request->email.') ဖြင့် အကောင့်ဖွင့်ထားခြင်းမရှိပါ။',
+            ]);
+        }
+        
     }
 }

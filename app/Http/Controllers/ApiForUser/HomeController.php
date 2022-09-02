@@ -1788,6 +1788,10 @@ class HomeController extends Controller
         $tbl_col_name = Schema::getColumnListing('initial_costs');
 
         $fee = InitialCost::where([['type', 21], ['sub_type', $form->apply_sub_type]])->first();
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 6ed549cfe0240f6042b0ccf9b38d9eaa9e4adcb3
 
         $chk_send = false;
         if (chk_form_finish($form->id, $form->apply_type)['state']){
