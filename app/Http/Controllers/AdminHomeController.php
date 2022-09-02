@@ -48,7 +48,7 @@ class AdminHomeController extends Controller
      * @return void
      */
     public function __construct() {
-        $this->middleware('auth:admin');
+        // $this->middleware('auth:admin');
     }
 
     /**
@@ -75,7 +75,9 @@ class AdminHomeController extends Controller
         $link       = '#';
         $link_name  = "Go to Form";
         $office_from       = divType(2);
-        Mail::to('htetaung@thenexthop.net')->send(new SendMail($header, $body, $remark, $link, $link_name, $office_from));
+
+        
+        Mail::to('mayzinmoe@thenexthop.net')->send(new SendMail($header, $body, $remark, $link, $link_name, $office_from));
         /* queue and mail */
         // dispatch(new sendToUserJob($mail_detail));
 

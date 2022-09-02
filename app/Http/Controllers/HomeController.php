@@ -4281,7 +4281,7 @@ class HomeController extends Controller {
             $heading = '';
             $tbl_col_name = Schema::getColumnListing('initial_costs');
             $fee_names = InitialCost::whereNotIn('name',['630','800','1500'])->where('type', 4)->get();
-            return view('user.other.transformer.tsf_form_1', compact('active', 'fee_names', 'tbl_col_name'));
+            return view('user/other/transformer/tsf_form_1', compact('active', 'fee_names', 'tbl_col_name'));
         // } else {
         //     return redirect()->route('home');
         // }
@@ -13258,7 +13258,7 @@ class HomeController extends Controller {
         $files = $form->application_files;
         $tbl_col_name = Schema::getColumnListing('initial_costs');
         $fee_names = InitialCost::where([['type', 1], ['sub_type', $form->apply_sub_type]])->get();
-        return view('user.mandalay.residential.show', compact('active', 'heading', 'tbl_col_name', 'fee_names', 'form', 'files'));
+        return view('user/mandalay/residential/show', compact('active', 'heading', 'tbl_col_name', 'fee_names', 'form', 'files'));
     }
     /* Mandalay Residentialial Meter End */
     /* ------------------------------------------------------------------------ */

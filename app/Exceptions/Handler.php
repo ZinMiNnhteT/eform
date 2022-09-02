@@ -15,6 +15,9 @@ use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+
+use Swift_TransportException;
+
 class Handler extends ExceptionHandler
 {
     /**
@@ -63,7 +66,10 @@ class Handler extends ExceptionHandler
             }
             else if($exception instanceof UnauthorizedHttpException) {
                 return response()->json(['success' => false,'title'=>'Unauthorized', 'message' => 'Your login time is expired. Please login again', 'exception' => class_basename($exception)], 403);
-            }else{
+            }else if($exception instanceof Swift_TransportException) {
+                return response()->json(['success' => false,'title'=>'Email Sending Failed', 'message' => 'We can\'t sent mail to your email address. Your email address or domain address may be invalid.', 'exception' => class_basename($exception)], 501);
+            }
+            else{
                 return response()->json(['success' => false,'title'=>'ServerError', 'message' => 'A server error currently occur. Please wait until the developer teams fix it.', 'exception' => class_basename($exception)], 500);
             }
         }
