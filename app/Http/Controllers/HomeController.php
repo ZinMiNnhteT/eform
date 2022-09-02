@@ -4281,7 +4281,7 @@ class HomeController extends Controller {
             $heading = '';
             $tbl_col_name = Schema::getColumnListing('initial_costs');
             $fee_names = InitialCost::whereNotIn('name',['630','800','1500'])->where('type', 4)->get();
-            return view('user.other.transformer.tsf_form_1', compact('active', 'fee_names', 'tbl_col_name'));
+            return view('user/other/transformer/tsf_form_1', compact('active', 'fee_names', 'tbl_col_name'));
         // } else {
         //     return redirect()->route('home');
         // }
@@ -5252,7 +5252,7 @@ class HomeController extends Controller {
         $tbl_col_name = Schema::getColumnListing('initial_costs');
         $fee = InitialCost::whereNotIn('name',['630','800','1500'])->where([['type', 4], ['sub_type', $form->apply_sub_type]])->first();
         // dd($fee);
-        return view('user.other.transformer.show', compact('active', 'heading', 'tbl_col_name', 'fee', 'form', 'files'));
+        return view('user/other/transformer/show', compact('active', 'heading', 'tbl_col_name', 'fee', 'form', 'files'));
     }
     
     /* For Other Division/State */
@@ -5446,7 +5446,7 @@ class HomeController extends Controller {
                     $form->id = $form_id;
                 }
             }
-            return view('user.yangon.residential.residential_form_2_edit', compact('active', 'form_id', 'heading', 'regions', 'districts', 'townships', 'form'));
+            return view('user/yangon/residential/residential_form_2_edit', compact('active', 'form_id', 'heading', 'regions', 'districts', 'townships', 'form'));
         } else {
             return redirect()->route('home');
         }
@@ -13258,7 +13258,7 @@ class HomeController extends Controller {
         $files = $form->application_files;
         $tbl_col_name = Schema::getColumnListing('initial_costs');
         $fee_names = InitialCost::where([['type', 1], ['sub_type', $form->apply_sub_type]])->get();
-        return view('user.mandalay.residential.show', compact('active', 'heading', 'tbl_col_name', 'fee_names', 'form', 'files'));
+        return view('user/mandalay/residential/show', compact('active', 'heading', 'tbl_col_name', 'fee_names', 'form', 'files'));
     }
     /* Mandalay Residentialial Meter End */
     /* ------------------------------------------------------------------------ */
@@ -16824,7 +16824,7 @@ class HomeController extends Controller {
         $form = ApplicationForm::orderBy('date', 'desc')->find($form_id);
         $c_form = ApplicationFormContractor::where('application_form_id', $form_id)->first();
         $files = $form->application_files;
-        return view('user.mandalay.contractor.show', compact('active', 'heading', 'form', 'files', 'c_form'));
+        return view('user/mandalay/contractor/show', compact('active', 'heading', 'form', 'files', 'c_form'));
     }
     /* Mandalay Contractor Meter End */
     /* ------------------------------------------------------------------------ */
@@ -16902,7 +16902,7 @@ class HomeController extends Controller {
                 }
                 $form->apply_sub_type = $app_form->apply_sub_type;
             }
-            return view('user.mandalay.transformer.tsf_form_1_edit', compact('active', 'fee_names', 'tbl_col_name', 'form'));
+            return view('user/mandalay/transformer/tsf_form_1_edit', compact('active', 'fee_names', 'tbl_col_name', 'form'));
         // } else {
         //     return redirect()->route('home');
         // }
@@ -17848,7 +17848,7 @@ class HomeController extends Controller {
         $tbl_col_name = Schema::getColumnListing('initial_costs');
         $fee = InitialCost::where('building_fee','!=',null)->where([['type', 4], ['sub_type', $form->apply_sub_type]])->first();
         // dd($fee);
-        return view('user.mandalay.transformer.show', compact('active', 'heading', 'tbl_col_name', 'fee', 'form', 'files'));
+        return view('user/mandalay/transformer/show', compact('active', 'heading', 'tbl_col_name', 'fee', 'form', 'files'));
     }
     
     /* For Mandalay */

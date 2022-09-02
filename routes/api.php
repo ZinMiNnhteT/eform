@@ -60,7 +60,9 @@ Route::group([
     'namespace'     => 'ApiForUser'
 ], function () {
     Route::post('login', 'AuthController@login');
-    Route::post('register', 'AuthController@register');
+    Route::post('registerxnf8sdb^&sdf5nonv', 'AuthController@register');
+    Route::post('resend_verify45xGW0uEXlu','AuthController@verify');
+    Route::post('reset_passwordndh&bdflRf','AuthController@reset_psw');
 });
 Route::group([
     'middleware'    => ['auth.jwt', 'cors'], 
@@ -83,51 +85,51 @@ Route::group([
 });
 // helpsers        end -----------
 // yangon        start -----------
-Route::group([
-    'middleware'    => ['auth.jwt', 'cors'], 
-    'namespace'     => 'ApiForUser\Yangon',
-    'prefix'        => 'yangon'
-], function () {
-    // Residential
-    // step 1 : meter type
-    Route::post('residential_meter_type', 'ResidentialController@meter_type');
-    // step 2 : applicant info
-    Route::post('residential_applicant_info', 'ResidentialController@applicant_info');
-    // step 3 : nrc 
-    Route::post('residential_nrc','ResidentialController@nrc');
-    // step 4 : Form10
-    Route::post('residential_form10','ResidentialController@form10');
-    // step 5 : Recommanded
-    Route::post('residential_recommanded', 'ResidentialController@recommanded');
-    // step 6 :  Ownership
-    Route::post('residential_ownership', 'ResidentialController@ownership');
-    // step 7 : FarmLand
-    Route::post('residential_farmland', 'ResidentialController@farmland');
-    // step 8 : Building (can skip)
-    Route::post('residential_building', 'ResidentialController@building');
-    // step 9 : power
-    Route::post('residential_power', 'ResidentialController@power');
-    // send form
-    Route::post('residential_send_form', 'ResidentialController@send_form');
+// Route::group([
+//     'middleware'    => ['auth.jwt', 'cors'], 
+//     'namespace'     => 'ApiForUser\Yangon',
+//     'prefix'        => 'yangon'
+// ], function () {
+//     // Residential
+//     // step 1 : meter type
+//     Route::post('residential_meter_type', 'ResidentialController@meter_type');
+//     // step 2 : applicant info
+//     Route::post('residential_applicant_info', 'ResidentialController@applicant_info');
+//     // step 3 : nrc 
+//     Route::post('residential_nrc','ResidentialController@nrc');
+//     // step 4 : Form10
+//     Route::post('residential_form10','ResidentialController@form10');
+//     // step 5 : Recommanded
+//     Route::post('residential_recommanded', 'ResidentialController@recommanded');
+//     // step 6 :  Ownership
+//     Route::post('residential_ownership', 'ResidentialController@ownership');
+//     // step 7 : FarmLand
+//     Route::post('residential_farmland', 'ResidentialController@farmland');
+//     // step 8 : Building (can skip)
+//     Route::post('residential_building', 'ResidentialController@building');
+//     // step 9 : power
+//     Route::post('residential_power', 'ResidentialController@power');
+//     // send form
+//     Route::post('residential_send_form', 'ResidentialController@send_form');
 
-    // Residential Power
-    // step 1 : meter type
-    Route::post('rp_meter_type', 'ResidentialPowerController@meter_type');
-    // step 2 : applicant info
-    Route::post('rp_info', 'ResidentialPowerController@info');
-    // step 3 : nrc 
-    Route::post('rp_nrc','ResidentialPowerController@nrc');
-    // step 4 : Form10
-    Route::post('rp_form10','ResidentialPowerController@form10');
-    // step 5 : Recommanded
-    Route::post('rp_recommanded', 'ResidentialPowerController@recommanded');
-    // step 6 :  Ownership
-    Route::post('rp_ownership', 'ResidentialPowerController@ownership');
-    // step 7 : power
-    Route::post('rp_power', 'ResidentialPowerController@power');
-    // send form
-    Route::post('rp_send_form', 'ResidentialPowerController@send_form');
-});
+//     // Residential Power
+//     // step 1 : meter type
+//     Route::post('rp_meter_type', 'ResidentialPowerController@meter_type');
+//     // step 2 : applicant info
+//     Route::post('rp_info', 'ResidentialPowerController@info');
+//     // step 3 : nrc 
+//     Route::post('rp_nrc','ResidentialPowerController@nrc');
+//     // step 4 : Form10
+//     Route::post('rp_form10','ResidentialPowerController@form10');
+//     // step 5 : Recommanded
+//     Route::post('rp_recommanded', 'ResidentialPowerController@recommanded');
+//     // step 6 :  Ownership
+//     Route::post('rp_ownership', 'ResidentialPowerController@ownership');
+//     // step 7 : power
+//     Route::post('rp_power', 'ResidentialPowerController@power');
+//     // send form
+//     Route::post('rp_send_form', 'ResidentialPowerController@send_form');
+// });
 // yangon        end -----------
 
 
@@ -188,9 +190,25 @@ Route::group([
     // send form
     Route::post('send_form', 'HomeController@send_form');
 
+    // money cost
+    Route::post('ygn_t_money','HomeController@ygn_t_money');
+    Route::post('mdy_t_money','HomeController@mdy_t_money');
+    Route::post('other_t_money','HomeController@other_t_money');
+
     // form preview
     Route::post('ygn_r_show','HomeController@ygn_r_show');
+    Route::post('ygn_rp_show','HomeController@ygn_rp_show');
+    Route::post('ygn_cp_show','HomeController@ygn_cp_show');
+    Route::post('ygn_c_show','HomeController@ygn_c_show');
+    Route::post('constructor_show','HomeController@constructor_show');
+    Route::post('ygn_t_show','HomeController@ygn_t_show');
+    Route::post('mdy_r_show','HomeController@mdy_r_show');
+    Route::post('mdy_t_show','HomeController@mdy_t_show');
+    Route::post('other_t_show','HomeController@other_t_show');
+    
+    
 
     // overall process
     Route::post('overall_process', 'HomeController@overall_process');
+
 });

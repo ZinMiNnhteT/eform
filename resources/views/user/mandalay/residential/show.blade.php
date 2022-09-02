@@ -138,6 +138,7 @@
                                                 </tr>
                                                 <tr class="text-center">
                                                     @foreach ($fee_names as $item)
+                                                    <?php var_dump($item->slug); ?>
                                                     
                                                     <th class="">{{ __('lang.'.$item->slug) }}</th>
                                                     
