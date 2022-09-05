@@ -12390,13 +12390,15 @@ class HomeController extends Controller {
             $heading = 'applied_electricpower_photo';
             $form = ApplicationForm::find($form_id);
             $files = $form->application_files;
-            return view('user.yangon.transformer.tsf_form_11_edit', compact('active', 'form_id', 'heading', 'form', 'files'));
+            return view('user/yangon/transformer/tsf_form_11_edit', compact('active', 'form_id', 'heading', 'form', 'files'));
         }else{
             return redirect()->route('home');
         }
     }
     public function ygn_transformer_electricpower_update(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+
+            // return $request;
 
             $this->validate($request, [
                 'front.*' => ['image', 'mimes:jpeg,jpg,png,pdf'],

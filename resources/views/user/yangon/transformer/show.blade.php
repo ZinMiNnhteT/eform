@@ -455,7 +455,7 @@
                                     <a data-toggle="collapse" data-parent="#app_show" href="#electricpower_letter" aria-expanded="true" aria-controls="collapseOne">{{ __('lang.applied_dc_recomm_photo') }}</a>
                                 </h5>
                                 @if (chk_send($form->id) !== 'first')
-                                    @if (chk_form_finish($form->id, $form->apply_type)['dc'])
+                                    @if (chk_form_finish($form->id, $form->apply_type)['electric'])
                                 <div class="ml-auto">
                                     <a href="{{ route('tsf_electricpower_edit_ygn', $form->id) }}" class="btn-edit text-info ">{{ __('lang.create') }}</a>
                                 </div>
@@ -469,10 +469,10 @@
                             <div id="electricpower_letter" class="collapse" role="tabpanel" aria-labelledby="headingOne">
                                 @if ($files->count() > 0)
                                     @foreach ($files as $file)
-                                        @if ($file->dc_recomm)
+                                        @if ($file->electric_power)
                                 <div class="row text-center mt-2">
                                         @php
-                                            $electricpower_foto = explode(',', $file->dc_recomm);
+                                            $electricpower_foto = explode(',', $file->electric_power);
                                         @endphp
                                             @foreach ($electricpower_foto as $foto)
                                     <div class="col-md-6 text-center">

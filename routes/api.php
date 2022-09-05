@@ -196,19 +196,23 @@ Route::group([
     Route::post('other_t_money','HomeController@other_t_money');
 
     // form preview
+    // yangon
     Route::post('ygn_r_show','HomeController@ygn_r_show');
     Route::post('ygn_rp_show','HomeController@ygn_rp_show');
-
-    
-
+    Route::post('ygn_cp_show','HomeController@ygn_cp_show');
     Route::post('ygn_c_show','HomeController@ygn_c_show');
-    Route::post('constructor_show','HomeController@constructor_show');
     Route::post('ygn_t_show','HomeController@ygn_t_show');
+    
+    // mandalay & other
+    Route::post('constructor_show','HomeController@constructor_show');
+
+    // mandalay
     Route::post('mdy_r_show','HomeController@mdy_r_show');
     Route::post('mdy_t_show','HomeController@mdy_t_show');
+    
+    // other
+    Route::post('other_r_show','HomeController@other_r_show');
     Route::post('other_t_show','HomeController@other_t_show');
-
-    Route::post('ygn_cp_show','HomeController@ygn_cp_show');
     
     
 
