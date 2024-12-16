@@ -12,7 +12,7 @@
             </div>
             <div class="card-body">
                 <h5 class="py-2 text-danger text-center ">{{ __('lang.required_msg') }}</h5><br/>
-                {!! Form::open(['route' => ['contractor_choose_form']]) !!}
+                {!! Form::open(['route' => ['contractor_choose_form',$div]]) !!}
                 <div class="row justify-content-center">
                     <div class="col-md-8">
                         <div class="form-group">

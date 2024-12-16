@@ -10,7 +10,7 @@
     {{--  CSRF Token  --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ 'MOEE |' }} {{ config('app.name', 'Laravel') }}</title>
+    <title>{{ 'MOEP |' }} {{ config('app.name', 'Laravel') }}</title>
 
     {{--  Fonts  --}}
     <link rel="dns-prefetch" href="//fonts.gstatic.com">

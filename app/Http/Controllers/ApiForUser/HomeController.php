@@ -31,7 +31,7 @@ class HomeController extends Controller
 {
 
     public function __construct() {
-        $this->storagePath = 'http://192.168.99.124/eform/public/storage/user_attachments/';
+        $this->storagePath = 'https://eform.moep.gov.mm/storage/user_attachments/';
     }
 
     // save meter type
@@ -43,7 +43,13 @@ class HomeController extends Controller
             'apply_division' => 'required',
         ]);
         if($validator->fails()){
-            return response()->json(['success'=> false, 'validate' => $validator->errors()], 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $user = JWTAuth::authenticate($request->token);
 
@@ -76,7 +82,13 @@ class HomeController extends Controller
             'apply_division' => 'required',
         ]);
         if($validator->fails()){
-            return response()->json(['success'=> false, 'validate' => $validator->errors()], 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $user = JWTAuth::authenticate($request->token);
 
@@ -137,6 +149,7 @@ class HomeController extends Controller
             'success'   => true,
             'token'     => $this->refresh_token($request->token),
             'form'      => $form,
+            'c_form'    => $c_form,
         ]);
     }
 
@@ -147,7 +160,13 @@ class HomeController extends Controller
             'apply_division' => 'required',
         ]);
         if($validator->fails()){
-            return response()->json(['success'=> false, 'validate' => $validator->errors()], 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $user = JWTAuth::authenticate($request->token);
         if($request->form_id != ''){
@@ -166,7 +185,7 @@ class HomeController extends Controller
 
         return response()->json([
             'success'   => true,
-            'token'     => $this->refresh_token($request->token),
+            'token'     => $request->token,
             'form'      => $form,
         ]);
     }
@@ -190,7 +209,13 @@ class HomeController extends Controller
             'div_state_id'          => 'required',
         ]);
         if($validator->fails()){
-            return response()->json(['success'=> false, 'validate' => $validator->errors()], 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $user = JWTAuth::authenticate($request->token);
 
@@ -265,7 +290,13 @@ class HomeController extends Controller
             'div_state_id'          => 'required',
         ]);
         if($validator->fails()){
-            return response()->json(['success'=> false, 'validate' => $validator->errors()], 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $user = JWTAuth::authenticate($request->token);
 
@@ -323,7 +354,13 @@ class HomeController extends Controller
             'div_state_id'          => 'required',
         ]);
         if($validator->fails()){
-            return response()->json(['success'=> false, 'validate' => $validator->errors()], 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $user = JWTAuth::authenticate($request->token);
 
@@ -397,7 +434,13 @@ class HomeController extends Controller
             'back'      => ['image', 'mimes:jpeg,jpg,png,pdf'],
         ]);
         if($validator->fails()){
-            return response()->json(['success'=> false, 'validate' => $validator->errors()], 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
 
         $form = ApplicationForm::find($request->form_id);
@@ -412,21 +455,31 @@ class HomeController extends Controller
         $path = public_path('storage/user_attachments/'.$form->id);
         // return $path;
 
-        $front_ext = $request->file('front')->getClientOriginalExtension();
-        $front_img = Image::make($request->file('front'));
-        $front_nrc = get_random_string().'_'.getdate()[0].'.'.$front_ext;
-        $front_img->resize(1600, 1600, function($constraint) {
+        if ($request->hasFile('front')) {
+            $front_ext = $request->file('front')->getClientOriginalExtension();
+            $front_img = Image::make($request->file('front'));
+            $front_nrc = get_random_string().'_'.getdate()[0].'.'.$front_ext;
+            $front_img->resize(1600, 1600, function($constraint) {
                 $constraint->aspectRatio();
+                $constraint->upsize();
             });
-        $front_img->save($path.'/'.$front_nrc);
+            $front_img->save($path.'/'.$front_nrc);
+        }else{
+            $front_nrc = null;
+        }
 
-        $back_ext = $request->file('back')->getClientOriginalExtension();
-        $back_img = Image::make($request->file('back'));
-        $back_nrc = get_random_string().'_'.getdate()[0].'.'.$back_ext;
-        $back_img->resize(1600, 1600, function($constraint) {
+        if ($request->hasFile('back')) {
+            $back_ext = $request->file('back')->getClientOriginalExtension();
+            $back_img = Image::make($request->file('back'));
+            $back_nrc = get_random_string().'_'.getdate()[0].'.'.$back_ext;
+            $back_img->resize(1600, 1600, function($constraint) {
                 $constraint->aspectRatio();
+                $constraint->upsize();
             });
-        $back_img->save($path.'/'.$back_nrc);
+            $back_img->save($path.'/'.$back_nrc);
+        }else{
+            $back_nrc = null;
+        }
 
         /* retreive data from table to check */
         $form_files = $form->application_files; 
@@ -470,7 +523,13 @@ class HomeController extends Controller
             'back.*'    => ['image', 'mimes:jpeg,jpg,png,pdf'],
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $form = ApplicationForm::find($request->form_id);
 
@@ -491,6 +550,7 @@ class HomeController extends Controller
                 $save_file_img = Image::make($value);
                 $save_file_img->resize(1600, 1600, function($constraint) {
                     $constraint->aspectRatio();
+                    $constraint->upsize();
                 });
                 $save_file_img->save($path.'/'.$save_db_img);
                 array_push($tmp_arr, $save_db_img);
@@ -508,6 +568,7 @@ class HomeController extends Controller
                 $save_file_img = Image::make($value);
                 $save_file_img->resize(1600, 1600, function($constraint) {
                     $constraint->aspectRatio();
+                    $constraint->upsize();
                 });
                 $save_file_img->save($path.'/'.$save_db_img);
                 array_push($tmp_arr, $save_db_img);
@@ -553,7 +614,13 @@ class HomeController extends Controller
             'back'      => 'mimes:jpeg,jpg,png',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $form = ApplicationForm::find($request->form_id);
         
@@ -572,6 +639,7 @@ class HomeController extends Controller
             $occupy = get_random_string().'_'.getdate()[0].'.'.$occupy_ext;
             $occupy_img->resize(1600, 1600, function($constraint) {
                 $constraint->aspectRatio();
+                $constraint->upsize();
             });
             $occupy_img->save($path.'/'.$occupy);
         }else{
@@ -584,6 +652,7 @@ class HomeController extends Controller
             $no_invade = get_random_string().'_'.getdate()[0].'.'.$no_invade_ext;
             $no_invade_img->resize(1600, 1600, function($constraint) {
                 $constraint->aspectRatio();
+                $constraint->upsize();
             });
             $no_invade_img->save($path.'/'.$no_invade);
         }else{
@@ -616,14 +685,25 @@ class HomeController extends Controller
 
     // save ownership
     public function ownership(Request $request){
+        if($request->form_id == null || $request->form_id == ''){
+            $user = JWTAuth::authenticate($request->token);
+            $last_form = ApplicationForm::where('user_id', $user->id)->order_by('id','desc')->limit(1);
+            $request->form_id = $last_form->id;
+        }
         $validator = Validator::make($request->all(),[
             'token'     => 'required',
-            'form_id'   => 'required',
+            // 'form_id'   => 'required',
             'front'     => 'required',
             'front.*'   => ['image', 'mimes:jpeg,jpg,png,pdf'],
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $form = ApplicationForm::find($request->form_id);
 
@@ -644,6 +724,7 @@ class HomeController extends Controller
                 $save_file_img = Image::make($value);
                 $save_file_img->resize(1600, 1600, function($constraint) {
                 $constraint->aspectRatio();
+                $constraint->upsize();
             });
                 $save_file_img->save($path.'/'.$save_db_img);
                 array_push($tmp_arr, $save_db_img);
@@ -688,7 +769,13 @@ class HomeController extends Controller
             'front.*'   => ['image', 'mimes:jpeg,jpg,png,pdf'],
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $form = ApplicationForm::find($request->form_id);
 
@@ -709,6 +796,7 @@ class HomeController extends Controller
                 $save_file_img = Image::make($value);
                 $save_file_img->resize(1600, 1600, function($constraint) {
                     $constraint->aspectRatio();
+                    $constraint->upsize();
                 });
                 $save_file_img->save($path.'/'.$save_db_img);
                 array_push($tmp_arr, $save_db_img);
@@ -754,7 +842,13 @@ class HomeController extends Controller
             'front.*'   => ['image', 'mimes:jpeg,jpg,png,pdf'],
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $form = ApplicationForm::find($request->form_id);
         
@@ -774,6 +868,7 @@ class HomeController extends Controller
             $save_file_img = Image::make($value);
             $save_file_img->resize(1600, 1600, function($constraint) {
                 $constraint->aspectRatio();
+                $constraint->upsize();
             });
             $save_file_img->save($path.'/'.$save_db_img);
             array_push($tmp_arr, $save_db_img);
@@ -817,7 +912,13 @@ class HomeController extends Controller
             'front.*'     => ['image', 'mimes:jpeg,jpg,png'],
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $form = ApplicationForm::find($request->form_id);
         
@@ -837,6 +938,7 @@ class HomeController extends Controller
             $save_file_img = Image::make($value);
             $save_file_img->resize(1600, 1600, function($constraint) {
                 $constraint->aspectRatio();
+                $constraint->upsize();
             });
             $save_file_img->save($path.'/'.$save_db_img);
             array_push($tmp_arr, $save_db_img);
@@ -873,7 +975,13 @@ class HomeController extends Controller
             'front'     => ['image', 'mimes:jpeg,jpg,png,pdf'],
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
 
         $form = ApplicationForm::find($request->form_id);
@@ -893,6 +1001,7 @@ class HomeController extends Controller
             $front_bill = get_random_string().'_'.getdate()[0].'.'.$front_ext;
             $front_img->resize(1600, 1600, function($constraint) {
                     $constraint->aspectRatio();
+                    $constraint->upsize();
                 });
             $front_img->save($path.'/'.$front_bill);
         }else{
@@ -926,7 +1035,13 @@ class HomeController extends Controller
             'form_id'   => 'required'
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $form = ApplicationForm::find($request->form_id);
             
@@ -948,6 +1063,7 @@ class HomeController extends Controller
                 $save_file_img = Image::make($value);
                 $save_file_img->resize(1600, 1600, function($constraint) {
                 $constraint->aspectRatio();
+                $constraint->upsize();
             });
                 $save_file_img->save($path.'/'.$save_db_img);
                 array_push($tmp_arr, $save_db_img);
@@ -987,7 +1103,13 @@ class HomeController extends Controller
             'form_id'   => 'required'
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $form = ApplicationForm::find($request->form_id);
         if (chk_form_finish($form->id, $form->apply_type)['state']){
@@ -1038,7 +1160,13 @@ class HomeController extends Controller
             'front'     => ['image', 'mimes:jpeg,jpg,png,pdf'],
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $form = ApplicationForm::find($request->form_id);
         
@@ -1058,6 +1186,7 @@ class HomeController extends Controller
             $permit = get_random_string().'_'.getdate()[0].'.'.$front_ext;
             $front_img->resize(1600, 1600, function($constraint) {
                 $constraint->aspectRatio();
+                $constraint->upsize();
             });
             $front_img->save($path.'/'.$permit);
         } 
@@ -1096,7 +1225,13 @@ class HomeController extends Controller
             'front'     => ['image', 'mimes:jpeg,jpg,png,pdf'],
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $form = ApplicationForm::find($request->form_id);
         
@@ -1116,6 +1251,7 @@ class HomeController extends Controller
             $bcc = get_random_string().'_'.getdate()[0].'.'.$front_ext;
             $front_img->resize(1600, 1600, function($constraint) {
                 $constraint->aspectRatio();
+                $constraint->upsize();
             });
             $front_img->save($path.'/'.$bcc);
         } 
@@ -1154,7 +1290,13 @@ class HomeController extends Controller
             'front'     => ['image', 'mimes:jpeg,jpg,png,pdf'],
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $form = ApplicationForm::find($request->form_id);
             
@@ -1174,6 +1316,7 @@ class HomeController extends Controller
             $dc_recomm = get_random_string().'_'.getdate()[0].'.'.$front_ext;
             $front_img->resize(1600, 1600, function($constraint) {
                 $constraint->aspectRatio();
+                $constraint->upsize();
             });
             $front_img->save($path.'/'.$dc_recomm);
         }
@@ -1211,7 +1354,13 @@ class HomeController extends Controller
             'front.*'     => ['image', 'mimes:jpeg,jpg,png,pdf'],
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
 
         $form = ApplicationForm::find($request->form_id);
@@ -1233,6 +1382,7 @@ class HomeController extends Controller
                 $save_file_img = Image::make($value);
                 $save_file_img->resize(1600, 1600, function($constraint) {
                 $constraint->aspectRatio();
+                $constraint->upsize();
             });
                 $save_file_img->save($path.'/'.$save_db_img);
                 array_push($tmp_arr, $save_db_img);
@@ -1268,7 +1418,13 @@ class HomeController extends Controller
             'front.*'     => ['image', 'mimes:jpeg,jpg,png,pdf'],
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
 
         $form = ApplicationForm::find($request->form_id);
@@ -1290,6 +1446,7 @@ class HomeController extends Controller
                 $save_file_img = Image::make($value);
                 $save_file_img->resize(1600, 1600, function($constraint) {
                 $constraint->aspectRatio();
+                $constraint->upsize();
             });
                 $save_file_img->save($path.'/'.$save_db_img);
                 array_push($tmp_arr, $save_db_img);
@@ -1334,7 +1491,13 @@ class HomeController extends Controller
             'front.*'     => ['image', 'mimes:jpeg,jpg,png,pdf'],
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
 
         $form = ApplicationForm::find($request->form_id);
@@ -1356,6 +1519,7 @@ class HomeController extends Controller
                 $save_file_img = Image::make($value);
                 $save_file_img->resize(1600, 1600, function($constraint) {
                 $constraint->aspectRatio();
+                $constraint->upsize();
             });
                 $save_file_img->save($path.'/'.$save_db_img);
                 array_push($tmp_arr, $save_db_img);
@@ -1390,7 +1554,13 @@ class HomeController extends Controller
             'front.*'     => ['image', 'mimes:jpeg,jpg,png,pdf'],
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
 
         $form = ApplicationForm::find($request->form_id);
@@ -1412,6 +1582,7 @@ class HomeController extends Controller
                 $save_file_img = Image::make($value);
                 $save_file_img->resize(1600, 1600, function($constraint) {
                 $constraint->aspectRatio();
+                $constraint->upsize();
             });
                 $save_file_img->save($path.'/'.$save_db_img);
                 array_push($tmp_arr, $save_db_img);
@@ -1446,7 +1617,13 @@ class HomeController extends Controller
             'front.*'     => ['image', 'mimes:jpeg,jpg,png,pdf'],
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
 
         $form = ApplicationForm::find($request->form_id);
@@ -1468,6 +1645,7 @@ class HomeController extends Controller
                 $save_file_img = Image::make($value);
                 $save_file_img->resize(1600, 1600, function($constraint) {
                     $constraint->aspectRatio();
+                    $constraint->upsize();
                 });
                 $save_file_img->save($path.'/'.$save_db_img);
                 array_push($tmp_arr, $save_db_img);
@@ -1504,7 +1682,13 @@ class HomeController extends Controller
             'front.*'     => ['image', 'mimes:jpeg,jpg,png,pdf'],
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $form = ApplicationForm::find($request->form_id);
             
@@ -1525,6 +1709,7 @@ class HomeController extends Controller
                 $save_file_img = Image::make($value);
                 $save_file_img->resize(1600, 1600, function($constraint) {
                     $constraint->aspectRatio();
+                    $constraint->upsize();
                 });
                 $save_file_img->save($path.'/'.$save_db_img);
                 array_push($tmp_arr, $save_db_img);
@@ -1566,7 +1751,13 @@ class HomeController extends Controller
             'front.*'     => ['image', 'mimes:jpeg,jpg,png,pdf'],
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $form = ApplicationForm::find($request->form_id);
             
@@ -1587,6 +1778,7 @@ class HomeController extends Controller
                 $save_file_img = Image::make($value);
                 $save_file_img->resize(1600, 1600, function($constraint) {
                     $constraint->aspectRatio();
+                    $constraint->upsize();
                 });
                 $save_file_img->save($path.'/'.$save_db_img);
                 array_push($tmp_arr, $save_db_img);
@@ -1629,26 +1821,92 @@ class HomeController extends Controller
             'token'     => 'required',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $user = JWTAuth::authenticate($request->token);
+        
+        $start = $request->start != null ? $request->start : 0;
+        $limit = 20;
+        
+        // language
+        if($request->language == 'mm'){
+            $language = 'mm';
+        }else{
+            $language = 'en';
+        }
 
-        $user_data = ApplicationForm::select('application_forms.*', 'division_states.name as div_name', DB::raw('DATE_FORMAT(application_forms.date, "%d-%b-%Y") as date_f'))->where('user_id', $user->id)->orderBy('date', 'desc')->orderBy('id', 'asc')->leftJoin('division_states',function($join){
+         $user_data = ApplicationForm::select('application_forms.*','form_process_actions.register_meter', 'division_states.name as div_name', DB::raw('DATE_FORMAT(application_forms.date, "%d-%b-%Y") as date_f'))->where('user_id', $user->id)->leftJoin('division_states',function($join){
             $join->on('application_forms.div_state_id','=','division_states.id');
-        })->get();
+        })->leftJoin('form_process_actions',function($join){
+            $join->on('form_process_actions.application_form_id','=','application_forms.id');
+        });
+
+        if($request->type == 'finish'){
+            $user_data = $user_data->where('form_process_actions.register_meter', 1);
+        }else{
+            $user_data = $user_data->where(function($query){
+                $query->where('form_process_actions.register_meter', 0);
+                $query->orWhere('form_process_actions.register_meter', null);
+            });
+             
+        }
+
+        $user_data = $user_data->orderBy('application_forms.id', 'desc')->offset($start)->limit($limit)->get();
+        
+
+        $total = ApplicationForm::select('application_forms.*','form_process_actions.register_meter', 'division_states.name as div_name', DB::raw('DATE_FORMAT(application_forms.date, "%d-%b-%Y") as date_f'))->where('user_id', $user->id)->orderBy('date', 'desc')->orderBy('id', 'asc')->leftJoin('division_states',function($join){
+            $join->on('application_forms.div_state_id','=','division_states.id');
+        })->leftJoin('form_process_actions',function($join){
+            $join->on('form_process_actions.application_form_id','=','application_forms.id');
+        });
+
+        if($request->type == 'finish'){
+            $total = $total->where('form_process_actions.register_meter', 1);
+        }else{
+            $total = $total->where(function($query){
+                $query->where('form_process_actions.register_meter', 0);
+                $query->orWhere('form_process_actions.register_meter', null);
+            });
+        }
+        
+        $total = $total->distinct()->get();
+        
+        $total_count = count($total);
+        $pagination = ceil($total_count / $limit);
         
         $result = [];
         foreach ($user_data as $data){
             $status = cdt($data->id)[0];
+            $apply_type = (int)$data->apply_type;
+            $address = addressApi($data->id, $request->language);
+            
+            // please remove after apk update
+            // if($data->apply_division == 4){
+            //     $apply_division = 2;
+            //     $data->apply_division = $apply_division;
+            // }
 
-            if (chk_send($data->id) == 'first'){
-                $state_name = 'lang.'.chk_userForm($data->id)['msg'];
-            }elseif (chk_send($data->id) == 'second'){
-                $state_name = 'lang.resend_form';
+            if($request->type == 'finish'){
+                $state_name = 'lang.successfully_finished';
             }else{
-                $state_name = 'lang.'.$status;
+                if (chk_send($data->id) == 'first'){
+                    $state_name = 'lang.'.chk_userForm($data->id)['msg'];
+                }elseif (chk_send($data->id) == 'second'){
+                    $state_name = 'lang.resend_form';
+                }else{
+                    $state_name = 'lang.'.$status;
+                }
             }
-            $data->state = trans($state_name);
+            $data->state = trans($state_name,[], $language);
+            $data->apply_type = $apply_type;
+            $data->address = $address;
+            
             array_push($result, $data);
         }
 
@@ -1656,18 +1914,29 @@ class HomeController extends Controller
             'success'  => true,
             'token'    => $this->refresh_token($request->token),
             'count'     => count($user_data),
-            'forms'     => $result
+            'forms'     => $result,
+            'total_count'   => $total_count,
+            'pagination'    => (int)$pagination,
+            'limit' => (int)$limit,
+            'start' => (int)$start,
+            
         ]);
     }
 
-    // yangon residential meter
+    // residential meter
     public function ygn_r_show(Request $request){
         $validator = Validator::make($request->all(),[
             'token'     => 'required',
             'form_id'   => 'required',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
         $files = $form->application_files;
@@ -1680,19 +1949,12 @@ class HomeController extends Controller
                 $chk_send = true;
             }
         }
-
-        if(chk_send($form->id) == 'first'){
-            $msg = 'သင့်လျှောက်လွှာအား ရုံးသို့ပေးပို့ပြီးဖြစ်ပါသည်။ ';
-            $state = 'send';
-        }else{
-            if(chk_form_finish($form->id, $form->apply_type)['state']){
-                $msg = " သင့်လျှောက်လွှာအား ရုံးသို့ မပို့ရသေးပါ။ သေချာစွာစစ်ဆေး၍ ပေးပို့မည် အားနှိပ်ပါ။";
-                $state = 'finish';
-            }else{
-                $msg="သင့်လျှောက်လွှာ ဖြည့်သွင်းခြင်း မပြီးသေးပါ။";
-                $state = 'no-finish';
-            }
-        }
+        
+        $form_state = $this->form_state($request, $form);
+        $msg = $form_state['msg'];
+        $state = $form_state['state'];
+        $step = $form_state['step'];
+        
         return response()->json([
             'success'       => true,
             'token'         => $this->refresh_token($request->token),
@@ -1703,6 +1965,7 @@ class HomeController extends Controller
             'chk_send'      => $chk_send,
             'msg'           => $msg,
             'state'         => $state,
+            'step'          => (int)$step,
 
             'township_name' => township_mm($form->township_id),
             'address'       => address_mm($form->id),
@@ -1717,7 +1980,13 @@ class HomeController extends Controller
             'form_id'   => 'required',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $form = ApplicationForm::find($request->form_id);
         $files = $form->application_files;
@@ -1731,30 +2000,22 @@ class HomeController extends Controller
             }
         }
 
-        if(chk_send($form->id) == 'first'){
-            $msg = 'သင့်လျှောက်လွှာအား ရုံးသို့ပေးပို့ပြီးဖြစ်ပါသည်။ ';
-            $state = 'send';
-        }else{
-            if(chk_form_finish($form->id, $form->apply_type)['state']){
-                $msg = " သင့်လျှောက်လွှာအား ရုံးသို့ မပို့ရသေးပါ။ သေချာစွာစစ်ဆေး၍ ပေးပို့မည် အားနှိပ်ပါ။";
-                $state = 'finish';
-            }else{
-                $msg="သင့်လျှောက်လွှာ ဖြည့်သွင်းခြင်း မပြီးသေးပါ။";
-                $state = 'no-finish';
-            }
-        }
+        $form_state = $this->form_state($request, $form);
+        $msg = $form_state['msg'];
+        $state = $form_state['state'];
+        $step = $form_state['step'];
 
         $total = 0; $feeMap = [];
         foreach ($tbl_col_name as $col_name){
             if ($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'composit_box' && $col_name != 'sub_type'){
                 $name = $col_name;
                 
-                $value = mmNum(number_format($fee->$col_name));
+                $value = $request->language == 'mm' ? mmNum(number_format($fee->$col_name)) : number_format($fee->$col_name);
                 $feeMap[$name] = $value;
                 $total += $fee->$col_name;
             }
         }
-        $feeMap['total'] = mmNum(number_format($total));
+        $feeMap['total'] = $request->language == 'mm' ? mmNum(number_format($total)) : number_format($total);
         $feeMap['name'] = mmNum($fee->name);
 
         return response()->json([
@@ -1767,6 +2028,7 @@ class HomeController extends Controller
             'chk_send'      => $chk_send,
             'msg'           => $msg,
             'state'         => $state,
+            'step'          => (int)$step,
 
             'township_name' => township_mm($form->township_id),
             'address'       => address_mm($form->id),
@@ -1781,7 +2043,13 @@ class HomeController extends Controller
             'form_id'   => 'required',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
 
         $form = ApplicationForm::find($request->form_id);
@@ -1796,30 +2064,22 @@ class HomeController extends Controller
             }
         }
 
-        if(chk_send($form->id) == 'first'){
-            $msg = 'သင့်လျှောက်လွှာအား ရုံးသို့ပေးပို့ပြီးဖြစ်ပါသည်။ ';
-            $state = 'send';
-        }else{
-            if(chk_form_finish($form->id, $form->apply_type)['state']){
-                $msg = " သင့်လျှောက်လွှာအား ရုံးသို့ မပို့ရသေးပါ။ သေချာစွာစစ်ဆေး၍ ပေးပို့မည် အားနှိပ်ပါ။";
-                $state = 'finish';
-            }else{
-                $msg="သင့်လျှောက်လွှာ ဖြည့်သွင်းခြင်း မပြီးသေးပါ။";
-                $state = 'no-finish';
-            }
-        }
+        $form_state = $this->form_state($request, $form);
+        $msg = $form_state['msg'];
+        $state = $form_state['state'];
+        $step =  $form_state['step'];
 
         $total = 0; $feeMap = [];
         foreach ($tbl_col_name as $col_name){
             if ($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'composit_box' && $col_name != 'sub_type'){
                 $name = $col_name;
                 
-                $value = mmNum(number_format($fee->$col_name));
+                $value = $request->language == 'mm' ? mmNum(number_format($fee->$col_name)) : number_format($fee->$col_name);
                 $feeMap[$name] = $value;
                 $total += $fee->$col_name;
             }
         }
-        $feeMap['total'] = mmNum(number_format($total));
+        $feeMap['total'] = $request->language == 'mm' ? mmNum(number_format($total)) : number_format($total);
         $feeMap['name'] = mmNum($fee->name);
 
         return response()->json([
@@ -1832,6 +2092,7 @@ class HomeController extends Controller
             'chk_send'      => $chk_send,
             'msg'           => $msg,
             'state'         => $state,
+            'step'         => (int)$step,
 
             'township_name' => township_mm($form->township_id),
             'address'       => address_mm($form->id),
@@ -1841,18 +2102,24 @@ class HomeController extends Controller
         ]);
     }
 
+    // residential power meter
     public function ygn_rp_show(Request $request){
         $validator = Validator::make($request->all(),[
             'token'     => 'required',
             'form_id'   => 'required',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
         $files = $form->application_files;
         $tbl_col_name = Schema::getColumnListing('initial_costs');
-
         $fee = InitialCost::where([['type', 21], ['sub_type', $form->apply_sub_type]])->first();
 
         $chk_send = false;
@@ -1862,30 +2129,22 @@ class HomeController extends Controller
             }
         }
 
-        if(chk_send($form->id) == 'first'){
-            $msg = 'သင့်လျှောက်လွှာအား ရုံးသို့ပေးပို့ပြီးဖြစ်ပါသည်။ ';
-            $state = 'send';
-        }else{
-            if(chk_form_finish($form->id, $form->apply_type)['state']){
-                $msg = " သင့်လျှောက်လွှာအား ရုံးသို့ မပို့ရသေးပါ။ သေချာစွာစစ်ဆေး၍ ပေးပို့မည် အားနှိပ်ပါ။";
-                $state = 'finish';
-            }else{
-                $msg="သင့်လျှောက်လွှာ ဖြည့်သွင်းခြင်း မပြီးသေးပါ။";
-                $state = 'no-finish';
-            }
-        }
+        $form_state = $this->form_state($request, $form);
+        $msg = $form_state['msg'];
+        $state = $form_state['state'];
+        $step = $form_state['step'];
 
         $total = 0; $feeMap = [];
         foreach ($tbl_col_name as $col_name){
             if ($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' &&  $col_name != 'incheck_fee' && $col_name != 'sub_type'){
                 $name = $col_name;
                 
-                $value = mmNum(number_format($fee->$col_name));
+                $value = $request->language == 'mm' ? mmNum(number_format($fee->$col_name)) : number_format($fee->$col_name);
                 $feeMap[$name] = $value;
                 $total += $fee->$col_name;
             }
         }
-        $feeMap['total'] = mmNum(number_format($total));
+        $feeMap['total'] = $request->language == 'mm' ? mmNum(number_format($total)) : number_format($total);
         $feeMap['name'] = $fee->name;
 
          
@@ -1899,6 +2158,201 @@ class HomeController extends Controller
             'chk_send'      => $chk_send,
             'msg'           => $msg,
             'state'         => $state,
+            'step'          => (int)$step,
+
+            'township_name' => township_mm($form->township_id),
+            'address'       => address_mm($form->id),
+            'date'          => mmNum(date('d-m-Y', strtotime($form->date))),
+
+            'path'          => $this->storagePath.$form->id.'/',
+        ]);
+    }
+    public function mdy_rp_show(Request $request){
+        $validator = Validator::make($request->all(),[
+            'token'     => 'required',
+            'form_id'   => 'required',
+        ]);
+        if($validator->fails()){
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
+        }
+
+        $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
+        $files = $form->application_files;
+        $tbl_col_name = Schema::getColumnListing('initial_costs');
+        $fee = InitialCost::where([['type', 2], ['sub_type', $form->apply_sub_type]])->first();
+
+        $chk_send = false;
+        if (chk_form_finish($form->id, $form->apply_type)['state']){
+            if (chk_send($form->id) !== 'first' && $form->serial_code){
+                $chk_send = true;
+            }
+        }
+
+        $form_state = $this->form_state($request, $form);
+        $msg = $form_state['msg'];
+        $state = $form_state['state'];
+        $step =  $form_state['step'];
+
+        $total = 0; $feeMap = [];
+        foreach ($tbl_col_name as $col_name){
+            if ($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'service_fee' && $col_name != 'incheck_fee' && $col_name != 'sub_type'){
+                $name = $col_name;
+                
+                $value = $request->language == 'mm' ? mmNum(number_format($fee->$col_name)) : number_format($fee->$col_name);
+                $feeMap[$name] = $value;
+                $total += $fee->$col_name;
+            }
+        }
+        $feeMap['total'] = $request->language == 'mm' ? mmNum(number_format($total)) : number_format($total);
+        $feeMap['name'] = $fee->name;
+
+        return response()->json([
+            'success'       => true,
+            'token'         => $this->refresh_token($request->token),
+            'form'          => $form,
+            'files'         => $files,
+            'tbl_col_name'  => $tbl_col_name,
+            'fee'           => $feeMap,
+            'chk_send'      => $chk_send,
+            'msg'           => $msg,
+            'state'         => $state,
+            'step'         => (int)$step,
+
+            'township_name' => township_mm($form->township_id),
+            'address'       => address_mm($form->id),
+            'date'          => mmNum(date('d-m-Y', strtotime($form->date))),
+
+            'path'          => $this->storagePath.$form->id.'/',
+        ]);
+    }
+    public function other_rp_show(Request $request){
+        $validator = Validator::make($request->all(),[
+            'token'     => 'required',
+            'form_id'   => 'required',
+        ]);
+        if($validator->fails()){
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
+        }
+
+        $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
+        $files = $form->application_files;
+        $tbl_col_name = Schema::getColumnListing('initial_costs');
+        $fee = InitialCost::where([['type', 2], ['sub_type', $form->apply_sub_type]])->first();
+
+        $chk_send = false;
+        if (chk_form_finish($form->id, $form->apply_type)['state']){
+            if (chk_send($form->id) !== 'first' && $form->serial_code){
+                $chk_send = true;
+            }
+        }
+
+        $form_state = $this->form_state($request, $form);
+        $msg = $form_state['msg'];
+        $state = $form_state['state'];
+        $step = $form_state['step'];
+
+        $total = 0; $feeMap = [];
+        foreach ($tbl_col_name as $col_name){
+            if ($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'service_fee' && $col_name != 'incheck_fee' && $col_name != 'sub_type'){
+                $name = $col_name;
+                
+                $value = $request->language == 'mm' ? mmNum(number_format($fee->$col_name)) : number_format($fee->$col_name);
+                $feeMap[$name] = $value;
+                $total += $fee->$col_name;
+            }
+        }
+        $feeMap['total'] = $request->language == 'mm' ? mmNum(number_format($total)) : number_format($total);
+        $feeMap['name'] = $fee->name;
+
+        return response()->json([
+            'success'       => true,
+            'token'         => $this->refresh_token($request->token),
+            'form'          => $form,
+            'files'         => $files,
+            'tbl_col_name'  => $tbl_col_name,
+            'fee'           => $feeMap,
+            'chk_send'      => $chk_send,
+            'msg'           => $msg,
+            'state'         => $state,
+            'step'          => (int)$step,
+
+            'township_name' => township_mm($form->township_id),
+            'address'       => address_mm($form->id),
+            'date'          => mmNum(date('d-m-Y', strtotime($form->date))),
+
+            'path'          => $this->storagePath.$form->id.'/',
+        ]);
+    }
+
+    // commercial power meter 
+    public function cp_show(Request $request){
+        $validator = Validator::make($request->all(),[
+            'token'     => 'required',
+            'form_id'   => 'required',
+        ]);
+        if($validator->fails()){
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
+        }
+
+        $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
+        $files = $form->application_files;
+        $tbl_col_name = Schema::getColumnListing('initial_costs');
+        $fee = InitialCost::where([['type', 3], ['sub_type', $form->apply_sub_type]])->first();
+
+        $chk_send = false;
+        if (chk_form_finish($form->id, $form->apply_type)['state']){
+            if (chk_send($form->id) !== 'first' && $form->serial_code){
+                $chk_send = true;
+            }
+        }
+
+        $form_state = $this->form_state($request, $form);
+        $msg = $form_state['msg'];
+        $state = $form_state['state'];
+        $step =  $form_state['step'];
+
+        $total = 0; $feeMap = [];
+        foreach ($tbl_col_name as $col_name){
+            if ($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'service_fee' && $col_name != 'incheck_fee' && $col_name != 'sub_type'){
+                $name = $col_name;
+                
+                $value = $request->language == 'mm' ? mmNum(number_format($fee->$col_name)) : number_format($fee->$col_name);
+                $feeMap[$name] = $value;
+                $total += $fee->$col_name;
+            }
+        }
+        $feeMap['total'] = $request->language == 'mm' ? mmNum(number_format($total)) : number_format($total);
+        $feeMap['name'] = $fee->name;
+
+        return response()->json([
+            'success'       => true,
+            'token'         => $this->refresh_token($request->token),
+            'form'          => $form,
+            'files'         => $files,
+            'tbl_col_name'  => $tbl_col_name,
+            'fee'           => $feeMap,
+            'chk_send'      => $chk_send,
+            'msg'           => $msg,
+            'state'         => $state,
+            'step'         => (int)$step,
 
             'township_name' => township_mm($form->township_id),
             'address'       => address_mm($form->id),
@@ -1915,11 +2369,29 @@ class HomeController extends Controller
             'form_id'   => 'required',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
 
         $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
         $c_form = ApplicationFormContractor::where('application_form_id', $request->form_id)->first();
+        if(isset($c_form)){
+            $c_form->room_count = (int) $c_form->room_count;
+            $c_form->pMeter10 = (int) $c_form->pMeter10;
+            $c_form->pMeter20 = (int) $c_form->pMeter20;
+            $c_form->pMeter30 = (int) $c_form->pMeter30;
+            $c_form->meter = (int) $c_form->meter;
+            $c_form->elevator_meter = (int) $c_form->elevator_meter;
+            $c_form->water_meter = (int) $c_form->water_meter;
+            $c_form->elevator_meter = (int) $c_form->elevator_meter;
+            $c_form->apartment_count = (int) $c_form->apartment_count;
+            $c_form->floor_count = (int) $c_form->floor_count;
+        }
         $files = $form->application_files;
 
         $chk_send = false;
@@ -1929,18 +2401,11 @@ class HomeController extends Controller
             }
         }
 
-        if(chk_send($form->id) == 'first'){
-            $msg = 'သင့်လျှောက်လွှာအား ရုံးသို့ပေးပို့ပြီးဖြစ်ပါသည်။ ';
-            $state = 'send';
-        }else{
-            if(chk_form_finish($form->id, $form->apply_type)['state']){
-                $msg = " သင့်လျှောက်လွှာအား ရုံးသို့ မပို့ရသေးပါ။ သေချာစွာစစ်ဆေး၍ ပေးပို့မည် အားနှိပ်ပါ။";
-                $state = 'finish';
-            }else{
-                $msg="သင့်လျှောက်လွှာ ဖြည့်သွင်းခြင်း မပြီးသေးပါ။";
-                $state = 'no-finish';
-            }
-        }
+        $form_state = $this->form_state($request, $form);
+        $msg = $form_state['msg'];
+        $state = $form_state['state'];
+        $step =  $form_state['step'];
+        
 
         return response()->json([
             'success'       => true,
@@ -1951,6 +2416,7 @@ class HomeController extends Controller
             'chk_send'      => $chk_send,
             'msg'           => $msg,
             'state'         => $state,
+            'step'         => (int)$step,
 
             'township_name' => township_mm($form->township_id),
             'address'       => address_mm($form->id),
@@ -1968,11 +2434,29 @@ class HomeController extends Controller
             'form_id'   => 'required',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
 
         $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
         $c_form = ApplicationFormContractor::where('application_form_id', $request->form_id)->first();
+        if(isset($c_form)){
+            $c_form->room_count = (int) $c_form->room_count;
+            $c_form->pMeter10 = (int) $c_form->pMeter10;
+            $c_form->pMeter20 = (int) $c_form->pMeter20;
+            $c_form->pMeter30 = (int) $c_form->pMeter30;
+            $c_form->meter = (int) $c_form->meter;
+            $c_form->elevator_meter = (int) $c_form->elevator_meter;
+            $c_form->water_meter = (int) $c_form->water_meter;
+            $c_form->elevator_meter = (int) $c_form->elevator_meter;
+             $c_form->apartment_count = (int) $c_form->apartment_count;
+             $c_form->floor_count = (int) $c_form->floor_count;
+        }
         $files = $form->application_files;
 
         $chk_send = false;
@@ -1982,18 +2466,10 @@ class HomeController extends Controller
             }
         }
 
-        if(chk_send($form->id) == 'first'){
-            $msg = 'သင့်လျှောက်လွှာအား ရုံးသို့ပေးပို့ပြီးဖြစ်ပါသည်။ ';
-            $state = 'send';
-        }else{
-            if(chk_form_finish($form->id, $form->apply_type)['state']){
-                $msg = " သင့်လျှောက်လွှာအား ရုံးသို့ မပို့ရသေးပါ။ သေချာစွာစစ်ဆေး၍ ပေးပို့မည် အားနှိပ်ပါ။";
-                $state = 'finish';
-            }else{
-                $msg="သင့်လျှောက်လွှာ ဖြည့်သွင်းခြင်း မပြီးသေးပါ။";
-                $state = 'no-finish';
-            }
-        }
+        $form_state = $this->form_state($request, $form);
+        $msg = $form_state['msg'];
+        $state = $form_state['state'];
+        $step =  $form_state['step'];
 
         return response()->json([
             'success'       => true,
@@ -2001,9 +2477,10 @@ class HomeController extends Controller
             'form'          => $form,
             'c_form'        => $c_form,
             'files'         => $files,
-            'chk_send'      => $chk_send,
+            'chk_send'      => $chk_send != 0 ? true : false,
             'msg'           => $msg,
             'state'         => $state,
+            'step'         => (int)$step,
 
             'township_name' => township_mm($form->township_id),
             'address'       => address_mm($form->id),
@@ -2019,7 +2496,13 @@ class HomeController extends Controller
             'token'     => 'required',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $tbl_col_name = Schema::getColumnListing('initial_costs');
 
@@ -2038,7 +2521,7 @@ class HomeController extends Controller
             }
             $feeMap['total'] = mmNum(number_format($total));
             $feeMap['name'] = mmNum($cost->name);
-            $feeMap['type'] = $cost->sub_type;
+            $feeMap['type'] = (int) $cost->sub_type;
             array_push($fees, $feeMap);
         }
 
@@ -2057,7 +2540,13 @@ class HomeController extends Controller
             'form_id'   => 'required',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
 
         $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
@@ -2072,18 +2561,10 @@ class HomeController extends Controller
             }
         }
 
-        if(chk_send($form->id) == 'first'){
-            $msg = 'သင့်လျှောက်လွှာအား ရုံးသို့ပေးပို့ပြီးဖြစ်ပါသည်။ ';
-            $state = 'send';
-        }else{
-            if(chk_form_finish($form->id, $form->apply_type)['state']){
-                $msg = " သင့်လျှောက်လွှာအား ရုံးသို့ မပို့ရသေးပါ။ သေချာစွာစစ်ဆေး၍ ပေးပို့မည် အားနှိပ်ပါ။";
-                $state = 'finish';
-            }else{
-                $msg="သင့်လျှောက်လွှာ ဖြည့်သွင်းခြင်း မပြီးသေးပါ။";
-                $state = 'no-finish';
-            }
-        }
+        $form_state = $this->form_state($request, $form);
+        $msg = $form_state['msg'];
+        $state = $form_state['state'];
+        $step =  $form_state['step'];
 
         $total = 0; $feeMap = [];
         foreach ($tbl_col_name as $col_name){
@@ -2097,7 +2578,8 @@ class HomeController extends Controller
         $feeMap['total'] = mmNum(number_format($total));
         $feeMap['name'] = $fee->name;
 
-
+        $form->apply_tsf_type = (int) $form->apply_tsf_type;
+        $form->pole_type = (int) $form->pole_type;
         return response()->json([
             'success'       => true,
             'token'         => $this->refresh_token($request->token),
@@ -2109,6 +2591,7 @@ class HomeController extends Controller
             'chk_send'      => $chk_send,
             'msg'           => $msg,
             'state'         => $state,
+            'step'         => (int)$step,
 
             'township_name' => township_mm($form->township_id),
             'address'       => address_mm($form->id),
@@ -2125,7 +2608,13 @@ class HomeController extends Controller
             'token'     => 'required',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $tbl_col_name = Schema::getColumnListing('initial_costs');
 
@@ -2163,7 +2652,13 @@ class HomeController extends Controller
             'form_id'   => 'required',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
 
         $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
@@ -2178,29 +2673,22 @@ class HomeController extends Controller
             }
         }
 
-        if(chk_send($form->id) == 'first'){
-            $msg = 'သင့်လျှောက်လွှာအား ရုံးသို့ပေးပို့ပြီးဖြစ်ပါသည်။ ';
-            $state = 'send';
-        }else{
-            if(chk_form_finish($form->id, $form->apply_type)['state']){
-                $msg = " သင့်လျှောက်လွှာအား ရုံးသို့ မပို့ရသေးပါ။ သေချာစွာစစ်ဆေး၍ ပေးပို့မည် အားနှိပ်ပါ။";
-                $state = 'finish';
-            }else{
-                $msg="သင့်လျှောက်လွှာ ဖြည့်သွင်းခြင်း မပြီးသေးပါ။";
-                $state = 'no-finish';
-            }
-        }
+        $form_state = $this->form_state($request, $form);
+        $msg = $form_state['msg'];
+        $state = $form_state['state'];
+        $step =  $form_state['step'];
 
         $total = 0; $feeMap = [];
         foreach ($tbl_col_name as $col_name){
             if ($col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'composit_box' && $col_name != 'sub_type' && $col_name != 'incheck_fee'){
                 $name = $col_name;
-                $value = mmNum(number_format($fee->$col_name));
+                
+                $value = $request->language == 'mm' ? mmNum(number_format($fee->$col_name)) : number_format($fee->$col_name);
                 $feeMap[$name] = $value;
                 $total += $fee->$col_name;
             }
         }
-        $feeMap['total'] = mmNum(number_format($total));
+        $feeMap['total'] = $request->language == 'mm' ? mmNum(number_format($total)) : number_format($total);
         $feeMap['name'] = $fee->name;
 
 
@@ -2215,6 +2703,7 @@ class HomeController extends Controller
             'chk_send'      => $chk_send,
             'msg'           => $msg,
             'state'         => $state,
+            'step'         => (int)$step,
 
             'township_name' => township_mm($form->township_id),
             'address'       => address_mm($form->id),
@@ -2230,7 +2719,13 @@ class HomeController extends Controller
             'token'     => 'required',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $tbl_col_name = Schema::getColumnListing('initial_costs');
 
@@ -2268,7 +2763,13 @@ class HomeController extends Controller
             'form_id'   => 'required',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
 
         $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
@@ -2283,29 +2784,22 @@ class HomeController extends Controller
             }
         }
 
-        if(chk_send($form->id) == 'first'){
-            $msg = 'သင့်လျှောက်လွှာအား ရုံးသို့ပေးပို့ပြီးဖြစ်ပါသည်။ ';
-            $state = 'send';
-        }else{
-            if(chk_form_finish($form->id, $form->apply_type)['state']){
-                $msg = " သင့်လျှောက်လွှာအား ရုံးသို့ မပို့ရသေးပါ။ သေချာစွာစစ်ဆေး၍ ပေးပို့မည် အားနှိပ်ပါ။";
-                $state = 'finish';
-            }else{
-                $msg="သင့်လျှောက်လွှာ ဖြည့်သွင်းခြင်း မပြီးသေးပါ။";
-                $state = 'no-finish';
-            }
-        }
+        $form_state = $this->form_state($request, $form);
+        $msg = $form_state['msg'];
+        $state = $form_state['state'];
+        $step =  $form_state['step'];
 
         $total = 0; $feeMap = [];
         foreach ($tbl_col_name as $col_name){
             if ($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'incheck_fee' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'composit_box' && $col_name != 'sub_type'){
                 $name = $col_name;
-                $value = mmNum(number_format($fee->$col_name));
+                
+                $value = $request->language == 'mm' ? mmNum(number_format($fee->$col_name)) : number_format($fee->$col_name);
                 $feeMap[$name] = $value;
                 $total += $fee->$col_name;
             }
         }
-        $feeMap['total'] = mmNum(number_format($total));
+        $feeMap['total'] = $request->language == 'mm' ? mmNum(number_format($total)) : number_format($total);
         $feeMap['name'] = $fee->name;
 
 
@@ -2320,6 +2814,7 @@ class HomeController extends Controller
             'chk_send'      => $chk_send,
             'msg'           => $msg,
             'state'         => $state,
+            'step'         => (int)$step,
 
             'township_name' => township_mm($form->township_id),
             'address'       => address_mm($form->id),
@@ -2331,12 +2826,13 @@ class HomeController extends Controller
     }
 
     public function refresh_token($token){
-        try{
-            $new_token = JWTAuth::refresh($token);
-            return $new_token;
-        }catch(TokenInvalidException $e){
-            return $token;
-        }
+        return $token;
+        // try{
+        //     $new_token = JWTAuth::refresh($token);
+        //     return $new_token;
+        // }catch(TokenInvalidException $e){
+        //     return $token;
+        // }
     }
 
     function deleteMulipleFiles($files, $path){
@@ -2361,7 +2857,13 @@ class HomeController extends Controller
             'form_id'   => 'required',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
         }
         $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
         $files = $form->application_files;
@@ -2376,30 +2878,22 @@ class HomeController extends Controller
             }
         }
 
-        if(chk_send($form->id) == 'first'){
-            $msg = 'သင့်လျှောက်လွှာအား ရုံးသို့ပေးပို့ပြီးဖြစ်ပါသည်။ ';
-            $state = 'send';
-        }else{
-            if(chk_form_finish($form->id, $form->apply_type)['state']){
-                $msg = " သင့်လျှောက်လွှာအား ရုံးသို့ မပို့ရသေးပါ။ သေချာစွာစစ်ဆေး၍ ပေးပို့မည် အားနှိပ်ပါ။";
-                $state = 'finish';
-            }else{
-                $msg="သင့်လျှောက်လွှာ ဖြည့်သွင်းခြင်း မပြီးသေးပါ။";
-                $state = 'no-finish';
-            }
-        }
+        $form_state = $this->form_state($request, $form);
+        $msg = $form_state['msg'];
+        $state = $form_state['state'];
+        $step =  $form_state['step'];
 
         $total = 0; $feeMap = [];
         foreach ($tbl_col_name as $col_name){
             if ($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'service_fee' && $col_name != 'incheck_fee' && $col_name != 'sub_type'){
                 $name = $col_name;
                 
-                $value = mmNum(number_format($fee->$col_name));
+                $value = $request->language == 'mm' ? mmNum(number_format($fee->$col_name)) : number_format($fee->$col_name);
                 $feeMap[$name] = $value;
                 $total += $fee->$col_name;
             }
         }
-        $feeMap['total'] = mmNum(number_format($total));
+       $feeMap['total'] = $request->language == 'mm' ? mmNum(number_format($total)) : number_format($total);
         $feeMap['name'] = $fee->name;
 
          
@@ -2413,6 +2907,7 @@ class HomeController extends Controller
             'chk_send'      => $chk_send,
             'msg'           => $msg,
             'state'         => $state,
+            'step'         => (int)$step,
 
             'township_name' => township_mm($form->township_id),
             'address'       => address_mm($form->id),
@@ -2420,5 +2915,241 @@ class HomeController extends Controller
 
             'path'          => $this->storagePath.$form->id.'/',
         ]);
+    }
+
+    public function other_cp_show(Request $request){
+        $validator = Validator::make($request->all(),[
+            'token'     => 'required',
+            'form_id'   => 'required',
+        ]);
+        if($validator->fails()){
+            return response()->json([
+                'success'=> false, 
+                'title'     => 'Validate Error',
+                'validate'  => $validator->errors(),
+                'errors'    => $validator->errors(),
+                'message'   => $validator->errors(),
+            ], 400);
+        }
+        $form = ApplicationForm::orderBy('date', 'desc')->orderBy('id', 'desc')->find($request->form_id);
+        $files = $form->application_files;
+        $tbl_col_name = Schema::getColumnListing('initial_costs');
+
+        $fee = InitialCost::where([['type', 3], ['sub_type', $form->apply_sub_type]])->first();
+
+        $chk_send = false;
+        if (chk_form_finish($form->id, $form->apply_type)['state']){
+            if (chk_send($form->id) !== 'first' && $form->serial_code){
+                $chk_send = true;
+            }
+        }
+
+        $form_state = $this->form_state($request, $form);
+        $msg = $form_state['msg'];
+        $state = $form_state['state'];
+        $step =  $form_state['step'];
+
+        $total = 0; $feeMap = [];
+        foreach ($tbl_col_name as $col_name){
+            if($col_name != 'building_fee' && $col_name != 'id' && $col_name != 'type' && $col_name != 'name' && $col_name != 'created_at' && $col_name != 'updated_at' && $col_name != 'slug' && $col_name != 'service_fee' && $col_name != 'incheck_fee' && $col_name != 'sub_type'){
+                $name = $col_name;
+                
+                $value = $request->language == 'mm' ? mmNum(number_format($fee->$col_name)) : number_format($fee->$col_name);
+                $feeMap[$name] = $value;
+                $total += $fee->$col_name;
+            }
+        }
+        $feeMap['total'] = $request->language == 'mm' ? mmNum(number_format($total)) : number_format($total);
+        $feeMap['name'] = $fee->name;
+
+         
+        return response()->json([
+            'success'       => true,
+            'token'         => $this->refresh_token($request->token),
+            'form'          => $form,
+            'files'         => $files,
+            'tbl_col_name'  => $tbl_col_name,
+            'fee'           => $feeMap,
+            'chk_send'      => $chk_send,
+            'msg'           => $msg,
+            'state'         => $state,
+            'step'         => (int)$step,
+
+            'township_name' => township_mm($form->township_id),
+            'address'       => address_mm($form->id),
+            'date'          => mmNum(date('d-m-Y', strtotime($form->date))),
+
+            'path'          => $this->storagePath.$form->id.'/',
+        ]);
+    }
+    
+    function form_state(Request $request, $form){
+        // language
+        if($request->language == 'en'){
+            $language = 'en';
+        }else{
+            $language = 'mm';
+        }
+        $status = cdt($form->id)[0];
+        if (chk_send($form->id) == 'first'){
+            $state_name = 'lang.'.chk_userForm($form->id)['msg'];
+        }elseif (chk_send($form->id) == 'second'){
+            $state_name = 'lang.resend_form';
+        }else{
+            $state_name = 'lang.'.$status;
+        }
+        $msg1 = trans('lang.form_current_state',[], $language);
+        $msg = trans($state_name,[], $language);
+
+        $step = $this->form_state_name($form->id, $language);
+
+        if(chk_send($form->id) == 'first'){
+            // $msg = cdt($form->id)[0];
+            $state = 'send';
+        }else{
+            if(chk_form_finish($form->id, $form->apply_type)['state']){
+                $msg = trans('lang.form_send_ready',[], $language);
+                $state = 'finish';
+            }else{
+                $msg=trans('lang.form_send_not_ready',[], $language);
+                $state = 'no-finish';
+            }
+        }
+
+        return [
+            "msg" => $msg1.'-'.$step.' '.$msg, 
+            "state" => $state, 
+            "step" => $this->form_step($form->id, 'en')
+        ];    
+    }
+    function form_state_name($id, $language){
+        if(progress($id)['reg']){
+            return trans('lang.step9',[], $language);
+        }elseif(progress($id)['install']){
+            return trans('lang.step8',[], $language);
+        }elseif(progress($id)['c_payment']){
+            return trans('lang.step7',[], $language);
+        }elseif(progress($id)['payment']){
+            return trans('lang.step6',[], $language);
+        }elseif(progress($id)['ann']){
+            return trans('lang.step5',[], $language);
+        }elseif(progress($id)['c_survey_div_state']){
+            return trans('lang.step4',[], $language);
+        }elseif(progress($id)['c_survey_dist']){
+            return trans('lang.step4',[], $language);
+        }elseif(progress($id)['c_survey']){
+            return trans('lang.step4',[], $language);
+        }elseif(progress($id)['survey']){
+            return trans('lang.step3',[], $language);
+        }elseif(progress($id)['accept']){
+            return trans('lang.step2',[], $language);
+        }elseif(progress($id)['send']){
+            return trans('lang.step1',[], $language);
+        }else{
+            return '';
+        }
+    }
+    function form_step($id, $language){
+        $form = ApplicationForm::find($id);
+
+        if($form->apply_type == 1){
+            if(progress($id)['reg']){
+                return 8;
+            }elseif(progress($id)['install']){
+                return 7;
+            }elseif(progress($id)['c_payment']){
+                return 6;
+            }elseif(progress($id)['payment']){
+                return 6;
+            }elseif(progress($id)['ann']){
+                return 5;
+            }elseif(progress($id)['c_survey_div_state']){
+                return 4;
+            }elseif(progress($id)['c_survey_dist']){
+                return 4;
+            }elseif(progress($id)['c_survey']){
+                return 4;
+            }elseif(progress($id)['survey']){
+                return 3;
+            }elseif(progress($id)['accept']){
+                return 2;
+            }elseif(progress($id)['send']){
+                return 1;
+            }else{
+                return '';
+            }
+        }else{
+            if(progress($id)['reg']){
+                return 9;
+            }else if(progress($id)['install_confirm']){
+                return 8;
+            }elseif(progress($id)['install']){
+                return 7;
+            }elseif(progress($id)['c_payment']){
+                return 6;
+            }elseif(progress($id)['payment']){
+                return 6;
+            }elseif(progress($id)['ann']){
+                return 5;
+            }elseif(progress($id)['c_survey_head_state']){
+                return 44;
+            }elseif(progress($id)['c_survey_div_state']){
+                return 43;
+            }elseif(progress($id)['c_survey_dist']){
+                return 42;
+            }elseif(progress($id)['c_survey']){
+                return 4;
+            }elseif(progress($id)['survey']){
+                return 3;
+            }elseif(progress($id)['accept']){
+                return 2;
+            }elseif(progress($id)['send']){
+                return 1;
+            }else{
+                return '';
+            }
+        }
+    }
+    
+    function yng_state($form, $language){
+        if($form->apply_type == 1){
+            $step = $this->yng_r_state($form->id, $language);
+        }else if($form->apply_type == 2){ // rp
+            $step = $this->yng_rp_state($form->id, $language);
+        }else if($form->apply_type == 3){ // rp
+            $step = $this->yng_cp_state($form->id, $language);
+        }else if($form->apply_type == 4){ // trans
+            $step = $this->yng_t_state($form->id, $language);
+        }else{
+            $step = $this->yng_c_state($form->id, $language);
+        }
+        return $step;
+    }
+    function ygn_r_state($id, $language){
+        if(progress($id)['reg']){
+            return trans('lang.step9',[], $language);
+        }elseif(progress($id)['install']){
+            return trans('lang.step8',[], $language);
+        }elseif(progress($id)['c_payment']){
+            return trans('lang.step7',[], $language);
+        }elseif(progress($id)['payment']){
+            return trans('lang.step6',[], $language);
+        }elseif(progress($id)['ann']){
+            return trans('lang.step5',[], $language);
+        }elseif(progress($id)['c_survey_div_state']){
+            return trans('lang.step4',[], $language);
+        }elseif(progress($id)['c_survey_dist']){
+            return trans('lang.step4',[], $language);
+        }elseif(progress($id)['c_survey']){
+            return trans('lang.step4',[], $language);
+        }elseif(progress($id)['survey']){
+            return trans('lang.step3',[], $language);
+        }elseif(progress($id)['accept']){
+            return trans('lang.step2',[], $language);
+        }elseif(progress($id)['send']){
+            return trans('lang.step1',[], $language);
+        }else{
+            return '';
+        }
     }
 }

@@ -49,7 +49,7 @@
                         {{-- Mobile --}}
                         <div class="form-group">
                             <label for="applied_phone" class="text-info"> {{ __('lang.contact_phone') }} <span class="text-danger f-s-15">&#10039;</span></label>
-                            <input type="text" name="applied_phone" value="{{ $applied_phone }}" id="phone" class="form-control {{ $errors->has('applied_phone') ? 'is-invalid' : '' }}" required>
+                            <input type="text" name="applied_phone" value="{{ $applied_phone }}" id="phone" class="form-control {{ $errors->has('applied_phone') ? 'is-invalid' : '' }}" required minlength="9"  maxlength="11">
                             <small class="text-danger"> {{ __('lang.phone_help') }}</small>
                         </div>
                         {{-- Builing No --}}
@@ -60,7 +60,7 @@
                         {{-- Street Address --}}
                         <div class="form-group">
                             <label for="applied_street" class="text-info">{{ __('lang.street') }}<span class="text-danger f-s-15">&#10039;</span></label>
-                            <input type="text" name="applied_street" value="{{ $applied_street }}" id="applied_street" class="form-control {{ $errors->has('applied_street') ? 'is-invalid' : '' }}" required>
+                            <input type="text" name="applied_street" value="{{ $applied_street }}" id="applied_street" class="form-control {{ $errors->has('applied_street') ? 'is-invalid' : '' }}" required >
                         </div>
                         {{-- Lane --}}
                         <div class="form-group">

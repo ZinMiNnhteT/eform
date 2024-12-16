@@ -1,6 +1,7 @@
 <?php
 
 use App\Events\sendNote;
+use Illuminate\Support\Facades\Hash;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,14 +14,20 @@ use App\Events\sendNote;
 |
 */
 
+
+Route::get('chgUsrPsw', 'HomeController@chgUsrPsw');
 Route::get('/delete_form', 'AdminHomeController@delete_form');
 Route::get('/delete_multiform', 'AdminHomeController@delete_multiform');
+
+Route::get('/policy', function(){
+    return view('welcome');
+});
 
 /* For Test Error Pages */
 Route::get('/pages/{page}', function($page) {
     switch ($page) {
-        case '401': abort(401); break; // un-authorized 
-        case '403': abort(403); break; // forbidden 
+        case '401': abort(401); break; // un-authorized
+        case '403': abort(403); break; // forbidden
         case '404': abort(404); break; // page not found
         case '419': abort(419); break; // session expired
         case '429': abort(429); break; // too many requests
@@ -66,7 +73,10 @@ Route::get('/tester2',function(){
 
 // Testing Routes
 Route::get('/test', function() {
-    event(new sendNote('1'));
+    $admin = \App\Admin\Admin::find(1);
+    $admin->password = Hash::make('123456');
+    $admin->save();
+    // event(new sendNote('1'));
 });
 
 // Testing Route for send mail
@@ -85,7 +95,7 @@ Route::get('/language/{locale}', function($locale) {
 });
 
 // Authentication Routes for Admin
-Route::get('/login/moee', 'Auth\LoginController@showAdminLoginForm');
+Route::get('/login/moep', 'Auth\LoginController@showAdminLoginForm');
 Route::post('/login/moee', 'Auth\LoginController@adminLogin');
 // Route::get('/register/moee', 'Auth\RegisterController@showAdminRegisterForm');
 Route::post('/register/moee', 'Auth\RegisterController@createAdmin');
@@ -98,6 +108,16 @@ Route::get('chart_with_database', 'SettingController@chart_data');
 /* User Route */
 /* ========== */
 Route::group(['middleware' => ['auth']], function () {
+    // account deletion
+    Route::post('/accountDeletionDone', 'Auth\DeletionController@accountDeletionDone')->name('acc_delete_done');
+});
+Route::group(['middleware' => ['auth', 'accdelchk']], function () {
+    // account deletion
+    Route::get('/accountDeletion', 'Auth\DeletionController@index')->name('acc_delete');
+    Route::post('/accountDeletionRequest', 'Auth\DeletionController@accountDeletionRequest')->name('acc_delete_request');
+    Route::get('/accountDeletionForm', 'Auth\DeletionController@accountDeletionForm')->name('acc_del_form');
+
+    // Home Page
     Route::get('/home', 'HomeController@index')->name('home')->middleware('verified');
     Route::get('/onlineMeterApplyingForm', 'HomeController@all_meter_forms')->name('all_meter_forms')->middleware('verified');
     // Route::get('/applicationForm', 'HomeController@residential_index')->name('resident_app')->middleware('verified');
@@ -130,17 +150,17 @@ Route::group(['middleware' => ['auth']], function () {
     /* ======================================================================================================================================= */
     /* ================================================== Start Residential Meter ================================================== */
     /* Rule and Regulation */
-    Route::get('/residentialMeterRuleAndRegulation', 'HomeController@residential_rule_regulation')->name('resident_rule_regulation')->middleware('verified');
-    Route::get('/residentialMeterAgreement', 'HomeController@residential_agreement')->name('resident_agreement')->middleware('verified');
+    Route::get('/residentialMeterRuleAndRegulation/{div?}', 'HomeController@residential_rule_regulation')->name('resident_rule_regulation')->middleware('verified');
+    Route::get('/residentialMeterAgreement/{div?}', 'HomeController@residential_agreement')->name('resident_agreement')->middleware('verified');
     /* Reisdential Meter Type */
-    Route::get('/residentialMeterType', 'HomeController@residential_select_meter_type')->name('resident_meter_type')->middleware('verified');
-    Route::post('/residentialMeterType', 'HomeController@residential_store_meter_type')->name('resident_store_meter_type')->middleware('verified');
+    Route::get('/residentialMeterType/{div?}', 'HomeController@residential_select_meter_type')->name('resident_meter_type')->middleware('verified');
+    Route::post('/residentialMeterType/{div?}', 'HomeController@residential_store_meter_type')->name('resident_store_meter_type')->middleware('verified');
     Route::get('/residentialMeterTypeEdit/{id}', 'HomeController@residential_edit_meter_type')->name('resident_edit_meter_type')->middleware('verified');
     Route::patch('/residentialMeterTypeUpdate', 'HomeController@residential_update_meter_type')->name('resident_update_meter_type')->middleware('verified');
     /* User Info */
-    Route::get('/residentialMeterApplicantInfo/{id}', 'HomeController@residential_user_information')->name('resident_user_info')->middleware('verified');
+    Route::get('/residentialMeterApplicantInfo/{id}/{div?}', 'HomeController@residential_user_information')->name('resident_user_info')->middleware('verified');
     Route::post('/residentialMeterApplicantInfo', 'HomeController@residential_store_user_information')->name('resident_store_user_info')->middleware('verified');
-    Route::get('/residentialMeterApplicantInfoEdit/{id}', 'HomeController@residential_edit_user_information')->name('resident_edit_user_info')->middleware('verified');
+    Route::get('/residentialMeterApplicantInfoEdit/{id}/{div?}', 'HomeController@residential_edit_user_information')->name('resident_edit_user_info')->middleware('verified');
     Route::patch('/residentialMeterApplicantInfoUpdate', 'HomeController@residential_update_user_information')->name('resident_update_user_info')->middleware('verified');
     /* User NRC */
     Route::get('/residentialMeterApplicantNRC/{id}', 'HomeController@residential_nrc_create')->name('resident_nrc_create')->middleware('verified');
@@ -174,15 +194,15 @@ Route::group(['middleware' => ['auth']], function () {
     /* ================================================== End Residential Meter ================================================== */
 
     /* ================================================== Start Residential Power Meter ================================================== */
-    Route::get('/residentialPowerMeterRuleAndRegulation', 'HomeController@residential_power_rule_regulation')->name('resident_power_rule_regulation')->middleware('verified');
-    Route::get('/residentialPowerMeterAgreement', 'HomeController@residential_power_agreement')->name('resident_power_agreement')->middleware('verified');
+    Route::get('/residentialPowerMeterRuleAndRegulation/{div?}', 'HomeController@residential_power_rule_regulation')->name('resident_power_rule_regulation')->middleware('verified');
+    Route::get('/residentialPowerMeterAgreement/{div?}', 'HomeController@residential_power_agreement')->name('resident_power_agreement')->middleware('verified');
      /* Reisdential Power Meter Type */
-    Route::get('/residentialPowerMeterType', 'HomeController@residential_power_select_meter_type')->name('resident_power_meter_type')->middleware('verified');
-    Route::post('/residentialPowerMeterType', 'HomeController@residential_power_store_meter_type')->name('resident_power_store_meter_type')->middleware('verified');
-    Route::get('/residentialPowerMeterTypeEdit/{id}', 'HomeController@residential_power_edit_meter_type')->name('resident_power_edit_meter_type')->middleware('verified');
+    Route::get('/residentialPowerMeterType/{div?}', 'HomeController@residential_power_select_meter_type')->name('resident_power_meter_type')->middleware('verified');
+    Route::post('/residentialPowerMeterType/{div?}', 'HomeController@residential_power_store_meter_type')->name('resident_power_store_meter_type')->middleware('verified');
+    Route::get('/residentialPowerMeterTypeEdit/{id}/{div?}', 'HomeController@residential_power_edit_meter_type')->name('resident_power_edit_meter_type')->middleware('verified');
     Route::patch('/residentialPowerMeterTypeUpdate', 'HomeController@residential_power_update_meter_type')->name('resident_power_update_meter_type')->middleware('verified');
     /* User Info */
-    Route::get('/residentialPowerMeterApplicantInfo/{id}', 'HomeController@residential_power_user_information')->name('resident_power_user_info')->middleware('verified');
+    Route::get('/residentialPowerMeterApplicantInfo/{id}/{div?}', 'HomeController@residential_power_user_information')->name('resident_power_user_info')->middleware('verified');
     Route::post('/residentialPowerMeterApplicantInfo', 'HomeController@residential_power_store_user_information')->name('resident_power_store_user_info')->middleware('verified');
     Route::get('/residentialPowerMeterApplicantInfoEdit/{id}', 'HomeController@residential_power_edit_user_information')->name('resident_power_edit_user_info')->middleware('verified');
     Route::patch('/residentialPowerMeterApplicantInfoUpdate', 'HomeController@residential_power_update_user_information')->name('resident_power_update_user_info')->middleware('verified');
@@ -219,17 +239,17 @@ Route::group(['middleware' => ['auth']], function () {
 
     /* ================================================== Start Commercial Power Merter ================================================== */
     /* Rule and Regulation */
-    Route::get('/commercialPowerMeterRuleAndRegulation', 'HomeController@commercial_rule_regulation')->name('commercial_rule_regulation')->middleware('verified');
-    Route::get('/commercialPowerMeterAgreement', 'HomeController@commercial_agreement')->name('commercial_agreement')->middleware('verified');
+    Route::get('/commercialPowerMeterRuleAndRegulation/{div?}', 'HomeController@commercial_rule_regulation')->name('commercial_rule_regulation')->middleware('verified');
+    Route::get('/commercialPowerMeterAgreement/{div?}', 'HomeController@commercial_agreement')->name('commercial_agreement')->middleware('verified');
     /* Reisdential Meter Type */
-    Route::get('/commercialPowerMeterType', 'HomeController@commercial_select_meter_type')->name('commercial_meter_type')->middleware('verified');
-    Route::post('/commercialPowerMeterType', 'HomeController@commercial_store_meter_type')->name('commercial_store_meter_type')->middleware('verified');
+    Route::get('/commercialPowerMeterType/{div?}', 'HomeController@commercial_select_meter_type')->name('commercial_meter_type')->middleware('verified');
+    Route::post('/commercialPowerMeterType/{div?}', 'HomeController@commercial_store_meter_type')->name('commercial_store_meter_type')->middleware('verified');
     Route::get('/commercialPowerMeterTypeEdit/{id}', 'HomeController@commercial_edit_meter_type')->name('commercial_edit_meter_type')->middleware('verified');
     Route::patch('/commercialPowerMeterTypeUpdate', 'HomeController@commercial_update_meter_type')->name('commercial_update_meter_type')->middleware('verified');
     /* User Info */
-    Route::get('/commercialPowerMeterApplicantInfo/{id}', 'HomeController@commercial_user_information')->name('commercial_user_info')->middleware('verified');
-    Route::post('/commercialPowerMeterApplicantInfo', 'HomeController@commercial_store_user_information')->name('commercial_store_user_info')->middleware('verified');
-    Route::get('/commercialPowerMeterApplicantInfoEdit/{id}', 'HomeController@commercial_edit_user_information')->name('commercial_edit_user_info')->middleware('verified');
+    Route::get('/commercialPowerMeterApplicantInfo/{id}/{div?}', 'HomeController@commercial_user_information')->name('commercial_user_info')->middleware('verified');
+    Route::post('/commercialPowerMeterApplicantInfo/{div?}', 'HomeController@commercial_store_user_information')->name('commercial_store_user_info')->middleware('verified');
+    Route::get('/commercialPowerMeterApplicantInfoEdit/{id}/{div?}', 'HomeController@commercial_edit_user_information')->name('commercial_edit_user_info')->middleware('verified');
     Route::patch('/commercialPowerMeterApplicantInfoUpdate', 'HomeController@commercial_update_user_information')->name('commercial_update_user_info')->middleware('verified');
     /* User NRC */
     Route::get('/commercialPowerMeterApplicantNRC/{id}', 'HomeController@commercial_nrc_create')->name('commercial_nrc_create')->middleware('verified');
@@ -269,20 +289,20 @@ Route::group(['middleware' => ['auth']], function () {
 
     /* ================================================== Start Contractor Merter ================================================== */
     /* Rule and Regulation */
-    Route::get('/contractorRuleAndRegulation', 'HomeController@contractor_rule_regulation')->name('contract_rule_regulation')->middleware('verified');
-    Route::get('/contractorAgreement', 'HomeController@contractor_agreement')->name('contract_agreement')->middleware('verified');
+    Route::get('/contractorRuleAndRegulation/{div?}', 'HomeController@contractor_rule_regulation')->name('contract_rule_regulation')->middleware('verified');
+    Route::get('/contractorAgreement/{div?}', 'HomeController@contractor_agreement')->name('contract_agreement')->middleware('verified');
     /* Choose buildings ==> 4-17 and 18andOver */
-    Route::get('/contractorBuildingRoom', 'HomeController@contractor_building_room')->name('contract_building_room')->middleware('verified');
+    Route::get('/contractorBuildingRoom/{div?}', 'HomeController@contractor_building_room')->name('contract_building_room')->middleware('verified');
 
     Route::get('/contractorBuildingRoomEdit/{id}', 'HomeController@contractor_building_room_edit')->name('contract_building_room_edit')->middleware('verified');
     Route::patch('/contractorBuildingRoomUpdate', 'HomeController@contractor_building_update')->name('contract_building_room_update')->middleware('verified');
 
-    Route::post('/contractorChooseBuilding', 'HomeController@contractor_building')->name('contractor_choose_form')->middleware('verified');
+    Route::post('/contractorChooseBuilding/{div?}', 'HomeController@contractor_building')->name('contractor_choose_form')->middleware('verified');
     Route::post('/chooseBuilding18Under', 'HomeController@contractor_building_4_17')->name('contractor_choose_4_17')->middleware('verified');
     Route::post('/chooseBuilding18Over', 'HomeController@contractor_building_18')->name('contractor_choose_18')->middleware('verified');
     /* 4-17 rooms */
     /* User Info */
-    Route::get('/contractorMeterOneUserInformation/{id}', 'HomeController@room_417_user_information')->name('417_user_info')->middleware('verified');
+    Route::get('/contractorMeterOneUserInformation/{id}/{div?}', 'HomeController@room_417_user_information')->name('417_user_info')->middleware('verified');
     Route::post('/contractorMeterOneUserInformation', 'HomeController@room_417_store_user_information')->name('417_store_user_info')->middleware('verified');
     Route::get('/contractorMeterOneUserInformationEdit/{id}', 'HomeController@room_417_edit_user_information')->name('417_edit_user_info')->middleware('verified');
     Route::patch('/contractorMeterOneUserInformationUpdate', 'HomeController@room_417_update_user_information')->name('417_update_user_info')->middleware('verified');
@@ -375,19 +395,19 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/contractorMeterAppliedForm/{id}', 'HomeController@contractor_show')->name('contractor_applied_form')->middleware('verified');
     /* ================================================== End Contractor Merter ===================================================== */
-    
+
     /* ================================================== Start Transformer Meter ================================================== */
     /* Reisdential Meter Type */
-    Route::get('/transformerRuleAndRegulation', 'HomeController@transformer_rule_regulation')->name('tsf_rule_regulation')->middleware('verified');
-    Route::get('/transformerAgreement', 'HomeController@transformer_agreement')->name('tsf_agreement')->middleware('verified');
-    Route::get('/transformerAgreementOne', 'HomeController@transformer_agreement_one')->name('tsf_agreement_one')->middleware('verified');
+    Route::get('/transformerRuleAndRegulation/{div?}', 'HomeController@transformer_rule_regulation')->name('tsf_rule_regulation')->middleware('verified');
+    Route::get('/transformerAgreement/{div?}', 'HomeController@transformer_agreement')->name('tsf_agreement')->middleware('verified');
+    Route::get('/transformerAgreementOne/{div?}', 'HomeController@transformer_agreement_one')->name('tsf_agreement_one')->middleware('verified');
     /* Reisdential Meter Type */
-    Route::get('/transformerType', 'HomeController@transformer_select_meter_type')->name('tsf_meter_type')->middleware('verified');
-    Route::post('/transformerType', 'HomeController@transformer_store_meter_type')->name('tsf_store_meter_type')->middleware('verified');
+    Route::get('/transformerType/{div?}', 'HomeController@transformer_select_meter_type')->name('tsf_meter_type')->middleware('verified');
+    Route::post('/transformerType/{div?}', 'HomeController@transformer_store_meter_type')->name('tsf_store_meter_type')->middleware('verified');
     Route::get('/transformerTypeEdit/{id}', 'HomeController@transformer_edit_meter_type')->name('tsf_edit_meter_type')->middleware('verified');
     Route::patch('/transformerTypeUpdate', 'HomeController@transformer_update_meter_type')->name('tsf_update_meter_type')->middleware('verified');
     /* User Info */
-    Route::get('/transformerApplicantInfo/{id}', 'HomeController@transformer_user_information')->name('tsf_user_info')->middleware('verified');
+    Route::get('/transformerApplicantInfo/{id}/{div?}', 'HomeController@transformer_user_information')->name('tsf_user_info')->middleware('verified');
     Route::post('/transformerApplicantInfo', 'HomeController@transformer_store_user_information')->name('tsf_store_user_info')->middleware('verified');
     Route::get('/transformerApplicantInfoEdit/{id}', 'HomeController@transformer_edit_user_information')->name('tsf_edit_user_info')->middleware('verified');
     Route::patch('/transformerApplicantInfoUpdate', 'HomeController@transformer_update_user_information')->name('tsf_update_user_info')->middleware('verified');
@@ -423,7 +443,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::patch('/transformerUseElectricPowerUpdate', 'HomeController@transformer_electricpower_update')->name('tsf_electricpower_update')->middleware('verified');
     /* User Applied Form View */
     Route::get('/transformerAppliedForm/{id}', 'HomeController@transformer_show')->name('tsf_applied_form')->middleware('verified');
-    
+
     /* ======================================================================================================================================= */
     /* =============================================================== Yangon =============================================================== */
     /* ======================================================================================================================================= */
@@ -747,15 +767,15 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/contractorMeterYangonAppliedForm/{id}', 'HomeController@ygn_contractor_show')->name('contractor_applied_form_ygn')->middleware('verified');
     /* ================================================== End Contractor ================================================== */
-    
+
     /* ================================================== Start Transformer ================================================== */
     /* Rule and Regulation */
-    Route::get('/transformerYangonRuleAndRegulation', 'HomeController@ygn_transformer_rule_regulation')->name('tsf_rule_regulation_ygn')->middleware('verified');
-    Route::get('/transformerYangonAgreement', 'HomeController@ygn_transformer_agreement')->name('tsf_agreement_ygn')->middleware('verified');
-    Route::get('/transformerYangonAgreementOne', 'HomeController@ygn_transformer_agreement_one')->name('tsf_agreement_one_ygn')->middleware('verified');
+    Route::get('/transformerYangonRuleAndRegulation/{div?}', 'HomeController@ygn_transformer_rule_regulation')->name('tsf_rule_regulation_ygn')->middleware('verified');
+    Route::get('/transformerYangonAgreement/{div?}', 'HomeController@ygn_transformer_agreement')->name('tsf_agreement_ygn')->middleware('verified');
+    Route::get('/transformerYangonAgreementOne/{div?}', 'HomeController@ygn_transformer_agreement_one')->name('tsf_agreement_one_ygn')->middleware('verified');
     /* Reisdential Meter Type */
-    Route::get('/transformerYangonType', 'HomeController@ygn_transformer_select_meter_type')->name('tsf_meter_type_ygn')->middleware('verified');
-    Route::post('/transformerYangonType', 'HomeController@ygn_transformer_store_meter_type')->name('tsf_store_meter_type_ygn')->middleware('verified');
+    Route::get('/transformerYangonType/{div?}', 'HomeController@ygn_transformer_select_meter_type')->name('tsf_meter_type_ygn')->middleware('verified');
+    Route::post('/transformerYangonType/{div?}', 'HomeController@ygn_transformer_store_meter_type')->name('tsf_store_meter_type_ygn')->middleware('verified');
     Route::get('/transformerYangonTypeEdit/{id}', 'HomeController@ygn_transformer_edit_meter_type')->name('tsf_edit_meter_type_ygn')->middleware('verified');
     Route::patch('/transformerYangonTypeUpdate', 'HomeController@ygn_transformer_update_meter_type')->name('tsf_update_meter_type_ygn')->middleware('verified');
     /* Commercial Transformer */
@@ -767,7 +787,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/transformercommercialYangonType', 'HomeController@ygn_commercial_transformer_store_meter_type')->name('commercial_tsf_store_meter_type_ygn')->middleware('verified');
 
     /* User Info */
-    Route::get('/transformerYangonApplicantInfo/{id}', 'HomeController@ygn_transformer_user_information')->name('tsf_user_info_ygn')->middleware('verified');
+    Route::get('/transformerYangonApplicantInfo/{id}/{div?}', 'HomeController@ygn_transformer_user_information')->name('tsf_user_info_ygn')->middleware('verified');
     Route::post('/transformerYangonApplicantInfo', 'HomeController@ygn_transformer_store_user_information')->name('tsf_store_user_info_ygn')->middleware('verified');
     Route::get('/transformerYangonApplicantInfoEdit/{id}', 'HomeController@ygn_transformer_edit_user_information')->name('tsf_edit_user_info_ygn')->middleware('verified');
     Route::patch('/transformerYangonApplicantInfoUpdate', 'HomeController@ygn_transformer_update_user_information')->name('tsf_update_user_info_ygn')->middleware('verified');
@@ -851,7 +871,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/residentialMeterMandalayApplicantRecommanded/{id}', 'HomeController@mdy_residential_recomm_create')->name('resident_recomm_create_mdy')->middleware('verified');
     Route::post('/residentialMeterMandalayApplicantRecommanded', 'HomeController@mdy_residential_recomm_store')->name('resident_recomm_store_mdy')->middleware('verified');
     Route::get('/residentialMeterMandalayApplicantRecommandedEdit/{id}', 'HomeController@mdy_residential_recomm_edit')->name('resident_recomm_edit_mdy')->middleware('verified');
-    Route::patch('/residentialMeterMandalayApplicantRecommandedUpdate', 'HomeController@mdy_residential_recomm_update')->name('resident_recomm_update_mdy')->middleware('verified');    
+    Route::patch('/residentialMeterMandalayApplicantRecommandedUpdate', 'HomeController@mdy_residential_recomm_update')->name('resident_recomm_update_mdy')->middleware('verified');
     /* User Ownership */
     Route::get('/residentialMeterMandalayApplicantOwnership/{id}', 'HomeController@mdy_residential_owner_create')->name('resident_owner_create_mdy')->middleware('verified');
     Route::post('/residentialMeterMandalayApplicantOwnership', 'HomeController@mdy_residential_owner_store')->name('resident_owner_store_mdy')->middleware('verified');
@@ -1124,7 +1144,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::patch('/transformerMandalayUseElectricPowerUpdate', 'HomeController@mdy_transformer_electricpower_update')->name('tsf_electricpower_update_mdy')->middleware('verified');
     /* User Applied Form View */
     Route::get('/transformerMandalayAppliedForm/{id}', 'HomeController@mdy_transformer_show')->name('tsf_applied_form_mdy')->middleware('verified');
-    
+
     /* ======================================================================================================================================= */
 
     // User Profile Route
@@ -1216,12 +1236,12 @@ Route::group(['middleware' => ['auth:admin']], function () {
     Route::get('/residentialMeterAnnounceList', 'AdminHomeController@residential_anno_list')->name('residentialMeterAnnounceList.index');
     Route::get('/residentialMeterAnnounceListShow/{id}', 'AdminHomeController@residential_anno_list_show')->name('residentialMeterAnnounceList.show');
     Route::get('/residentialMeterAnnounceListForm/{id}', 'AdminHomeController@residential_anno_list_create')->name('residentialMeterAnnounceList.create');
-    
+
     Route::get('/residentialMeterPaymentList', 'AdminHomeController@residential_payment_list')->name('residentialMeterPaymentList.index');
     Route::get('/residentialMeterPaymentListShow/{id}', 'AdminHomeController@residential_payment_show')->name('residentialMeterPaymentList.show');
     Route::get('/residentialMeterPaymentListForm/{id}', 'AdminHomeController@residential_payment_create')->name('residentialMeterPaymentList.create');
     Route::post('/residentialMeterPaymentListForm', 'AdminHomeController@residential_payment_store')->name('residentialMeterPaymentList.store');
-    
+
     Route::get('/residentialMeterContractList', 'AdminHomeController@residential_contract_list')->name('residentialMeterContractList.index');
     Route::get('/residentialMeterContractListShow/{id}', 'AdminHomeController@residential_contract_list_show')->name('residentialMeterContractList.show');
     Route::get('/residentialMeterContractListForm/{id}', 'AdminHomeController@residential_contract_list_create')->name('residentialMeterContractList.create');
@@ -1271,7 +1291,7 @@ Route::group(['middleware' => ['auth:admin']], function () {
     Route::post('/residentialPowerMeterGroundCheckDoneListForm', 'AdminHomeController@residential_power_grd_done_list_store')->name('residentialPowerMeterGroundCheckDoneList.store');
     Route::get('/residentialPowerMeterGroundCheckDoneListFormEidt/{id}', 'AdminHomeController@residential_power_grd_done_list_edit')->name('residentialPowerMeterGroundCheckDoneList.edit');
     Route::patch('/residentialPowerMeterGroundCheckDoneListForm', 'AdminHomeController@residential_power_grd_done_list_update')->name('residentialPowerMeterGroundCheckDoneList.update');
-    
+
     // *********** Ground Check Done List District ***********
     Route::get('/residentialPowerMeterGroundCheckDoneListByDistrict', 'AdminHomeController@residential_power_grd_done_list_dist')->name('residentialPowerMeterGroundCheckDoneListByDistrict.index');
     Route::get('/residentialPowerMeterGroundCheckDoneListShowByDistrict/{id}', 'AdminHomeController@residential_power_grd_done_list_show_dist')->name('residentialPowerMeterGroundCheckDoneListByDistrict.show');
@@ -1347,7 +1367,7 @@ Route::group(['middleware' => ['auth:admin']], function () {
     Route::get('/commercialPowerMeterGroundCheckDoneListByDistrict', 'AdminHomeController@commercial_grd_done_list_dist')->name('commercialPowerMeterGroundCheckDoneListDist.index');
     Route::get('/commercialPowerMeterGroundCheckDoneListShowFormByDistrict/{id}', 'AdminHomeController@commercial_grd_done_list_show_dist')->name('commercialPowerMeterGroundCheckDoneListDist.show');
     Route::post('/commercialPowerMeterGroundCheckDoneListFormByDistrict', 'AdminHomeController@commercial_grd_done_list_store_dist')->name('commercialPowerMeterGroundCheckDoneListDist.store');
-    
+
     // ************ Pending & Reject ************
     Route::get('/commercialPowerMeterPendingForm', 'AdminHomeController@commercial_pending_list')->name('commercialPowerMeterPendingForm.index');
     Route::get('/commercialPowerMeterPendingFormShow/{id}', 'AdminHomeController@commercial_pending_list_show')->name('commercialPowerMeterPendingForm.show');
@@ -1366,7 +1386,7 @@ Route::group(['middleware' => ['auth:admin']], function () {
     Route::get('/commercialPowerMeterPaymentListShow/{id}', 'AdminHomeController@commercial_payment_show')->name('commercialPowerMeterPaymentList.show');
     Route::get('/commercialPowerMeterPaymentListForm/{id}', 'AdminHomeController@commercial_payment_create')->name('commercialPowerMeterPaymentList.create');
     Route::post('/commercialPowerMeterPaymentListForm', 'AdminHomeController@commercial_payment_store')->name('commercialPowerMeterPaymentList.store');
-    
+
     // Contract List
     Route::get('/commercialPowerMeterContractList', 'AdminHomeController@commercial_contract_list')->name('commercialPowerMeterContractList.index');
     Route::get('/commercialPowerMeterContractListShow/{id}', 'AdminHomeController@commercial_contract_list_show')->name('commercialPowerMeterContractList.show');
@@ -1406,7 +1426,7 @@ Route::group(['middleware' => ['auth:admin']], function () {
     Route::get('/contractorMeterGroundCheckListShow/{id}', 'AdminHomeController@contractor_grd_chk_list_show')->name('contractorMeterGroundCheckList.show');
     Route::get('/contractorMeterGroundCheckListForm/{id}', 'AdminHomeController@contractor_grd_chk_list_create')->name('contractorMeterGroundCheckList.create');
     Route::post('/contractorMeterGroundCheckListForm', 'AdminHomeController@contractor_grd_chk_list_store')->name('contractorMeterGroundCheckList.store');
-    
+
     Route::get('/contractorMeterGroundCheckChooseForm/{id}', 'AdminHomeController@contractor_grd_chk_list_choose_create')->name('contractorMeterGroundCheckChoose.create');
     Route::post('/contractorMeterGroundCheckChooseForm', 'AdminHomeController@contractor_grd_chk_list_choose_store')->name('contractorMeterGroundCheckChoose.store');
 
@@ -1436,12 +1456,12 @@ Route::group(['middleware' => ['auth:admin']], function () {
 
     Route::get('/contractorMeterRejectedForm', 'AdminHomeController@contractor_reject_list')->name('contractorMeterRejectedForm.index');
     Route::get('/contractorMeterRejectedFormShow/{id}', 'AdminHomeController@contractor_reject_list_show')->name('contractorMeterRejectedForm.show');
-    
+
 
     Route::get('/contractorMeterAnnounceList', 'AdminHomeController@contractor_anno_list')->name('contractorMeterAnnounceList.index');
     Route::get('/contractorMeterAnnounceListShow/{id}', 'AdminHomeController@contractor_anno_list_show')->name('contractorMeterAnnounceList.show');
     Route::get('/contractorMeterAnnounceListForm/{id}', 'AdminHomeController@contractor_anno_list_create')->name('contractorMeterAnnounceList.create');
-    
+
     Route::get('/contractorMeterPaymentList', 'AdminHomeController@contractor_payment_list')->name('contractorMeterPaymentList.index');
     Route::get('/contractorMeterPaymentListShow/{id}', 'AdminHomeController@contractor_payment_show')->name('contractorMeterPaymentList.show');
     Route::get('/contractorMeterPaymentListForm/{id}', 'AdminHomeController@contractor_payment_create')->name('contractorMeterPaymentList.create');
@@ -1509,21 +1529,21 @@ Route::group(['middleware' => ['auth:admin']], function () {
     Route::get('/transformerGroundCheckDoneListFormByDivisionState/{id}', 'AdminHomeController@tsf_grd_done_list_create_by_div_state')->name('transformerGroundCheckDoneListByDivisionState.create');
     Route::post('/transformerGroundCheckDoneListFormByDivisionState', 'AdminHomeController@tsf_grd_done_list_store_by_div_state')->name('transformerGroundCheckDoneListByDivisionState.store');
 
-    Route::post('/transformerGroundCheckDoneListConfirmByDivisionState', 'AdminHomeController@tsf_grd_done_list_confirm_by_div_state')->name('transformerGroundCheckDoneListConfirmByDivisionState.store');    
+    Route::post('/transformerGroundCheckDoneListConfirmByDivisionState', 'AdminHomeController@tsf_grd_done_list_confirm_by_div_state')->name('transformerGroundCheckDoneListConfirmByDivisionState.store');
     Route::get('/transformerGroundCheckDoneListByHeadOffice', 'AdminHomeController@tsf_grd_done_list_by_head_office')->name('transformerGroundCheckDoneListByHeadOffice.index');
     Route::get('/transformerGroundCheckDoneListShowByHeadOffice/{id}', 'AdminHomeController@tsf_grd_done_list_show_by_head_office')->name('transformerGroundCheckDoneListByHeadOffice.show');
     Route::get('/transformerGroundCheckDoneListFormByHeadOffice/{id}', 'AdminHomeController@tsf_grd_done_list_create_by_head_office')->name('transformerGroundCheckDoneListByHeadOffice.create');
     Route::post('/transformerGroundCheckDoneListFormByHeadOffice', 'AdminHomeController@tsf_grd_done_list_store_by_head_office')->name('transformerGroundCheckDoneListByHeadOffice.store');
-    
+
     Route::get('/transformerAnnounceList', 'AdminHomeController@tsf_anno_list')->name('transformerAnnounceList.index');
     Route::get('/transformerAnnounceListShow/{id}', 'AdminHomeController@tsf_anno_list_show')->name('transformerAnnounceList.show');
     Route::get('/transformerAnnounceListForm/{id}', 'AdminHomeController@tsf_anno_list_create')->name('transformerAnnounceList.create');
-    
+
     Route::get('/transformerPaymentList', 'AdminHomeController@tsf_payment_list')->name('transformerPaymentList.index');
     Route::get('/transformerPaymentListShow/{id}', 'AdminHomeController@tsf_payment_show')->name('transformerPaymentList.show');
     Route::get('/transformerPaymentListForm/{id}', 'AdminHomeController@tsf_payment_create')->name('transformerPaymentList.create');
     Route::post('/transformerPaymentListForm', 'AdminHomeController@tsf_payment_store')->name('transformerPaymentList.store');
-    
+
     Route::get('/transformerContractList', 'AdminHomeController@tsf_contract_list')->name('transformerContractList.index');
     Route::get('/transformerContractListShow/{id}', 'AdminHomeController@tsf_contract_list_show')->name('transformerContractList.show');
     Route::get('/transformerContractListForm/{id}', 'AdminHomeController@tsf_contract_list_create')->name('transformerContractList.create');
@@ -1544,7 +1564,7 @@ Route::group(['middleware' => ['auth:admin']], function () {
     Route::get('/transformerRegisterMeterListForm/{id}', 'AdminHomeController@tsf_reg_meter_list_create')->name('transformerRegisterMeterList.create');
     Route::post('/transformerRegisterMeterListForm', 'AdminHomeController@tsf_reg_meter_list_store')->name('transformerRegisterMeterList.store');
     /* ================================================================================================================================== */
-    
+
     /* ============================================= JS route ============================================================== */
     Route::post('/role_action', 'SettingController@role_chk_action');
     Route::post('/choose_region', 'SettingController@choose_region');

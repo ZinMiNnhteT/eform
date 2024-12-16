@@ -48,7 +48,7 @@
                                         {{ checkMM() === 'mm' ? mmNum(number_format($fee->$col_name)) : number_format($fee->$col_name) }}/-
                                             @php $t_count += $fee->$col_name; @endphp
                                             @endif
-                                            {{$fee->sub_type}}
+                                            <!--{{$fee->sub_type}}-->
                                     </td>
                                         @endif
                                     @endforeach

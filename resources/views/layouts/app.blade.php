@@ -6,17 +6,17 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    {{--  CSRF Token  --}}
+    {{-- CSRF Token  --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ 'MOEE |' }} {{ config('app.name', 'Laravel') }}</title>
 
-    {{--  Fonts  --}}
+    {{-- Fonts  --}}
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
     <link rel="icon" href="{{ asset('images/logo.png') }}">
 
-    {{--  Styles  --}}
+    {{-- Styles  --}}
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('css/sweetalert.css') }}">
@@ -32,20 +32,20 @@
     <link rel="stylesheet" href="{{ asset('css/stylish-tooltip.css') }}">
     <link rel="stylesheet" href="{{ asset('css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/tab-page.css') }}">
-    {{--  <link rel="stylesheet" href="{{ asset('css/mycssImg.css') }}">  --}}
+    {{-- <link rel="stylesheet" href="{{ asset('css/mycssImg.css') }}"> --}}
     <link rel="stylesheet" href="{{ asset('css/mycss.css') }}">
 </head>
 <body class="horizontal-nav skin-megna-dark fixed-layout {{ checkMM() }}">
     @php
     $chking_user = App\User::find(Auth::user()->id);
     @endphp
-    {{--  loader  --}}
-    <div class="preloader">
+    {{-- loader  --}}
+    {{-- <div class="preloader">
         <div class="loader">
             <div class="loader__figure"></div>
             <p class="loader__label {{ checkMM() }}">{{ __('lang.loading') }}</p>
-        </div>
     </div>
+    </div> --}}
 
     <div id="main-wrapper">
         <header class="topbar">
@@ -65,15 +65,15 @@
 
                 <div class="navbar-collapse">
                     <ul class="navbar-nav mr-auto">
-                        {{--  <li class="nav-item d-sm-none"> <a class="nav-link nav-toggler waves-effect waves-light" href="javascript:void(0)"><i class="ti-menu"></i></a></li>  --}}
+                        {{-- <li class="nav-item d-sm-none"> <a class="nav-link nav-toggler waves-effect waves-light" href="javascript:void(0)"><i class="ti-menu"></i></a></li>  --}}
                         <li class="nav-item d-sm-none">
                             <button class="nav-link navbar-toggler waves-effect waves-light" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                         </li>
 
-                        
-                        {{--  @if ($chking_user->active && $chking_user->email_verified_at)  --}}
+
+                        {{-- @if ($chking_user->active && $chking_user->email_verified_at)  --}}
                         @if ($chking_user->active)
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle waves-effect waves-dark mail-dd" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="ti-email"></i>
@@ -94,16 +94,16 @@
                                             @if (all_mail()->count() > 0)
                                             @foreach (all_mail() as $item)
                                             @php
-                                                if ($item->mail_read) {
-                                                    $read = '';
-                                                } else {
-                                                    $read = 'mail_un_read';
-                                                }
+                                            if ($item->mail_read) {
+                                            $read = '';
+                                            } else {
+                                            $read = 'mail_un_read';
+                                            }
                                             @endphp
                                             <a href="{{ route('inbox.index2', $item->id) }}" class="{{ $read }} clk-mail-notify" data-id="{{ $item->id }}">
                                                 <div class="mail-contnet">
                                                     <p class="mb-0">{{ mail_type($item->send_type) }}</p>
-                                                    {{--  <span class="mail-desc">Just see the my admin!</span>  --}}
+                                                    {{-- <span class="mail-desc">Just see the my admin!</span>  --}}
                                                     <span class="time">
                                                         {{ date('d-m-Y',strtotime($item->mail_send_date)) }}
                                                     </span>
@@ -136,13 +136,15 @@
                                     <div class=""><img src="{{ asset('images/user_foto.jpg') }}" alt="user" class="img-circle" width="60"></div>
                                     <div class="m-l-10">
                                         <h4 class="m-b-0">{{ Auth::user()->name }}</h4>
+                                        <h4 class="m-b-0">{{ Auth::user()->id }}</h4>
                                         <p class=" m-b-0">{{ Auth::user()->email }}</p>
                                     </div>
                                 </div>
                                 @if ($chking_user->active)
                                 <a class="dropdown-item" href="{{ route('user_profile_edit') }}"><i class="ti-user m-r-5 m-l-5"></i> {{ __('lang.profile') }}</a>
-                                <a class="dropdown-item" href="javascript:void(0)"><i class="ti-email m-r-5 m-l-5"></i> {{ __('lang.inbox') }}</a>
-                                <a class="dropdown-item" href="{{ route('user_password_edit') }}"><i class="ti-key m-r-5 m-l-5"></i> {{ __('lang.change_password') }}</a> 
+                                <!--<a class="dropdown-item" href="javascript:void(0)"><i class="ti-email m-r-5 m-l-5"></i> {{ __('lang.inbox') }}</a>-->
+                                <a class="dropdown-item" href="{{ route('user_password_edit') }}"><i class="ti-key m-r-5 m-l-5"></i> {{ __('lang.change_password') }}</a>
+                                <a class="dropdown-item text-danger" href="{{ route('acc_delete') }}"><i class="ti-key m-r-5 m-l-5"></i> {{ __('lang.account_deletion') }}</a>
                                 @endif
                                 <a class="dropdown-item" href="logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="ti-power-off m-r-5 m-l-5"></i> {{ __('lang.logout') }}</a>
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -155,7 +157,7 @@
             </nav>
         </header>
 
-        {{--  checking user is active or not  --}}
+        {{-- checking user is active or not  --}}
         @if (!$chking_user->active)
         <div class="page-wrapper p-0">
             <div class="custom-container-fluid">
@@ -194,7 +196,7 @@
         </div>
 
         @else
-            {{--  @if ($chking_user->email_verified_at)  --}}
+        {{-- @if ($chking_user->email_verified_at)  --}}
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark-custom nav-sm-none">
             <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
                 <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
@@ -209,9 +211,9 @@
                     </li>
                     <li class="nav-item m-l-10 m-r-10">
                         <a class="nav-link {{ active('overall', @$active, null) }}" href="{{ route('overall_process') }}"><i class="ti-bar-chart f-s-15 text-danger vm"></i> {{ __('lang.process_menu') }}
-                            {{--  @if (chk_send_count())
+                            {{-- @if (chk_send_count())
                             <span class="badge badge-danger">{{ chk_send_count() }}</span>
-                            @endif  --}}
+                            @endif --}}
                         </a>
                     </li>
                     <li class="nav-item m-l-10 m-r-10">
@@ -223,27 +225,27 @@
                 </ul>
             </div>
         </nav>
-            {{--  @endif  --}}
+        {{-- @endif  --}}
 
         <div class="page-wrapper p-0">
             <div class="custom-container-fluid">
 
-            @yield('content')
+                @yield('content')
 
             </div>
         </div>
         @endif
 
-        {{--  footer  --}}
+        {{-- footer  --}}
         <footer class="footer text-right">
             © {{ date('Y') }} Power by <a href="http://www.thenexthop.net" target="_blank">Next Hop</a>
         </footer>
-        {{--  End footer  --}}
+        {{-- End footer  --}}
     </div>
 
-    
 
-    {{--  Scripts  --}}
+
+    {{-- Scripts  --}}
     <script src="{{ asset('js/app.js') }}"></script>
     {{-- <script src="{{ asset('js/pusher.min.js') }}"></script> --}}
     <script src="{{ asset('js/custom.min.js') }}"></script>
@@ -255,15 +257,14 @@
     <script src="{{ asset('js/horizontal-timeline.js') }}"></script>
     <script src="{{ asset('js/waitMe.min.js') }}"></script>
     <script src="{{ asset('js/select2.min.js') }}"></script>
-     <!-- icheck -->
+    <!-- icheck -->
     <script src="{{ asset('js/icheck.min.js') }}"></script>
     <script src="{{ asset('js/icheck.init.js') }}"></script>
     {{-- <script src="{{ asset('js/noti.js') }}"></script> --}}
     <script src="{{ asset('js/myjs.js') }}"></script>
-    {{--  <script src="{{ asset('js/perfect-scrollbar.jquery.min.js') }}"></script>  --}}
-    {{--  <script src="{{ asset('js/mask.js') }}"></script>  --}}
+    {{-- <script src="{{ asset('js/perfect-scrollbar.jquery.min.js') }}"></script> --}}
+    {{-- <script src="{{ asset('js/mask.js') }}"></script> --}}
     <script>
-        
         // Enable pusher logging - don't include this in production
         // Pusher.logToConsole = true;
 
@@ -279,10 +280,11 @@
 
         // channel.bind('App\\Events\\sendNote', function(data) {
         //     alert(JSON.stringify(data));
-            // $(".nav-notify").addClass("notify");
-            // $(".noti-seen-count").attr("data-count", seenCount++);
-            // $(".noti-seen-count").text(seenCount++);
+        // $(".nav-notify").addClass("notify");
+        // $(".noti-seen-count").attr("data-count", seenCount++);
+        // $(".noti-seen-count").text(seenCount++);
         // });
+
     </script>
 </body>
 </html>

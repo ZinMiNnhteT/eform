@@ -1030,6 +1030,10 @@ class AdminHomeController extends Controller
             }
             $adminAction->survey_confirm = admin()->id;
             $adminAction->save();
+
+            $noti = save_api_noti('form_reject', $form->id, $user->id, strip_tags($request->reject_remark));
+            send_individual_noti_to_app($form->serial_code, 'Your application form has been canceled due to the some reasons.', $noti, $user->fcm_key);
+
             /* residential */
             if ($form->apply_type == 1) {
                 return redirect()->route('residentialMeterApplicationList.index');
@@ -1204,6 +1208,9 @@ class AdminHomeController extends Controller
             $from       = divType($form->div_state_id);
             Mail::to($user->email)->send(new sendMail($header, $body, $remark, $link, $link_name, $from));
             
+            $noti = save_api_noti('form_resend', $form->id, $user->id, strip_tags($request->remark));
+            send_individual_noti_to_app($form->serial_code, 'Your form has requirements, so please check the contents and send them back.', $noti, $user->fcm_key);
+            
             return redirect()->route('residentialMeterApplicationList.index');
         } else {
             return redirect()->route('dashboard');
@@ -1250,6 +1257,9 @@ class AdminHomeController extends Controller
             $link_name  = trans('lang.go_to_form');
             $from       = divType($form->div_state_id);
             Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
+            
+            $noti = save_api_noti('form_accept', $form->id, $user->id);
+            send_individual_noti_to_app($form->serial_code, 'Your form is accepted.', $noti, $user->fcm_key);
 
             return redirect()->route('residentialMeterApplicationList.index');
         } else {
@@ -1398,6 +1408,9 @@ class AdminHomeController extends Controller
             ]);
             // dd($request->all());
             $id = $request->form_id;
+            $form = ApplicationForm::find($id);
+            $user = User::find($form->user_id);
+
             if ($request->living == 'on') {
                 $living = true;
             } elseif ($request->living == 'off') {
@@ -1439,7 +1452,6 @@ class AdminHomeController extends Controller
 
             $power_file = null;
             if ($request->hasFile('front')) {
-                $form = ApplicationForm::find($id);
                 $folder_name = $form->id;
 
                 $path = public_path('storage/user_attachments/'.$folder_name);
@@ -1512,6 +1524,9 @@ class AdminHomeController extends Controller
                 $form->apply_sub_type = $request->allowed_type;
                 $form->save();
             }
+
+            $noti = save_api_noti('form_survey', $form->id, $user->id, null);
+            send_individual_noti_to_app($form->serial_code, 'The ground check stage has been completed.', $noti, $user->fcm_key);
 
             return redirect()->route('residentialMeterGroundCheckList.index');
         }else{
@@ -1650,6 +1665,9 @@ class AdminHomeController extends Controller
                 $survey = FormSurvey::where('application_form_id',$id)->first();
                 $survey->remark_tsp = $request->remark_tsp;
                 $survey->save();
+
+                $noti = save_api_noti('form_tsp_approve', $form->id, $user->id, null);
+                send_individual_noti_to_app($form->serial_code, 'Your form has been approved by Township.', $noti, $user->fcm_key);
             } elseif ($request->survey_submit == 'pending') {
                 $action = FormProcessAction::where('application_form_id', $id)->first();
                 $action->form_pending = true;
@@ -1682,6 +1700,9 @@ class AdminHomeController extends Controller
                 $link_name  = trans('lang.go_to_form');
                 $from       = divType($form->div_state_id);
                 Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
+
+                $noti = save_api_noti('form_tsp_pending', $form->id, $user->id, strip_tags($request->remark_tsp));
+                send_individual_noti_to_app($form->serial_code, 'Your form is suspended by Township due to some reasons.', $noti, $user->fcm_key);
             } elseif ($request->survey_submit == 'reject') {
                 $action = FormProcessAction::where('application_form_id', $id)->first();
                 $action->form_reject = true;
@@ -1714,6 +1735,9 @@ class AdminHomeController extends Controller
                 $link_name  = trans('lang.go_to_form');
                 $from       = divType($form->div_state_id);
                 Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
+
+                $noti = save_api_noti('form_tsp_reject', $form->id, $user->id, strip_tags($request->remark_tsp));
+                send_individual_noti_to_app($form->serial_code, 'Your form is rejected by Township for some reasons.', $noti, $user->fcm_key);
             }
 
             $adminAction = AdminAction::where('application_form_id', $id)->first();
@@ -1906,6 +1930,8 @@ class AdminHomeController extends Controller
     public function residential_pending_list_store(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
             $form_id = $request->form_id;
+            $form = ApplicationForm::find($form_id);
+            $user = User::find($form->user_id);
 
             $action = FormProcessAction::where('application_form_id', $form_id)->first();
             $action->form_pending = false;
@@ -1914,6 +1940,9 @@ class AdminHomeController extends Controller
             $adminAction = AdminAction::where('application_form_id', $form_id)->first();
             $adminAction->form_pending = admin()->id;
             $adminAction->save();
+
+            $noti = save_api_noti('form_pending_remove', $form->id, $user->id, strip_tags($request->remark));
+            send_individual_noti_to_app($form->serial_code, 'The suspending has been canceled and the form is now processing', $noti, $user->fcm_key);
             return redirect()->route('residentialMeterPendingForm.index');
         } else {
             return redirect()->route('dashboard');
@@ -2090,7 +2119,7 @@ class AdminHomeController extends Controller
 
             $expDate = Carbon::now()->addDay(7);
 
-            $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော အိမ်သုံးမီတာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ငွေသွင်းရန်အဆင့်သို့ ရောက်ရှိနေပြီဖြစ်ပါသောကြောင့် လျှောက်လွှာအတွင်းပါရှိသော အထောက်အထားများ၏ မူရင်းများကို တပါတည်းယူဆောင်၍ သက်မှတ်ရက် ( <span class="text-danger">'.$expDate->format('d-m-Y').'</span> )ထက်နောက်မကျစေဘဲ ရုံးသို့ လူကိုယ်တိုင် လာရောက် ငွေသွင်းနိုင်ပြီဖြစ်ကြောင်း အကြောင်းကြားပါသည်။</p>';
+            $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော အိမ်သုံးမီတာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ငွေသွင်းရန်အဆင့်သို့ ရောက်ရှိနေပြီဖြစ်ပါသောကြောင့် လျှောက်လွှာအတွင်းပါရှိသော အထောက်အထားများ၏ မူရင်းများကို တပါတည်းယူဆောင်၍ သက်မှတ်ရက် ( <span class="text-danger">'.$expDate->format('d-m-Y').' နေ့လည် ၂:၀၀ နာရီ'.'</span> )ထက်နောက်မကျစေဘဲ ရုံးသို့ လူကိုယ်တိုင် လာရောက် ငွေသွင်းနိုင်ပြီဖြစ်ကြောင်း အကြောင်းကြားပါသည်။</p>';
             // $mail_body .= '<div class="text-center mt-5 mb-5"><a href="'.route('user_pay_form.create', $form_id).'" class="btn btn-info text-center">Click for payment</a></div>';
 
             $mail = new MailTbl();
@@ -2109,6 +2138,9 @@ class AdminHomeController extends Controller
             $link_name  = "";
             $from       = divType($form->div_state_id);
             Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
+
+            $noti = save_api_noti('form_announce_deposit', $form->id, $user->id, strip_tags($mail_body));
+            send_individual_noti_to_app($form->serial_code, 'Please make a deposit.', $noti, $user->fcm_key);
 
             return redirect()->route('residentialMeterAnnounceList.index');
         } else {
@@ -2220,7 +2252,9 @@ class AdminHomeController extends Controller
             // add the payment slips to mail body
             $fpa = DB::table("form_process_actions")->where("application_form_id", $form->id)->first();
             $files = explode(",",$fpa->payment_accepted_slips);
+            $photo_att = $pdf_att = null;
             if(count($files)> 0){
+                $photo_att = $pdf_att = [];
                 $payment_slips = "Payment Slips : </br>";
                 $payment_slips .= '<div class="row">';
                 foreach ($files as $file) {
@@ -2230,8 +2264,12 @@ class AdminHomeController extends Controller
                     if($file != ""){
                         if($ext != 'pdf'){
                             $payment_slips .= "<div class='col-md-2'><img src='".asset('storage/user_attachments/'.$form->id.'/'.$file)."' alt='".$file."' class='img-thumbnail'  data-toggle='modal' data-target='#myImg'></div>";
+                            
+                            array_push($photo_att, asset('storage/user_attachments/'.$form->id.'/'.$file));
                         }else{
                             $payment_slips .= "<a href='".asset('storage/user_attachments/'.$form->id.'/'.$file)."' target='_blank' class='pdf-block'>".$file."</a>";
+                            
+                            array_push($pdf_att, asset('storage/user_attachments/'.$form->id.'/'.$file));
                         }
                     }
                 }
@@ -2257,6 +2295,12 @@ class AdminHomeController extends Controller
             $from       = divType($form->div_state_id);
             $file_path  = public_path('storage/user_attachments/'.$form->id.'/');
             Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from, $files, $file_path));
+
+            $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော အိမ်သုံးမီတာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ( '.mmNum(date('d-m-Y', strtotime($paid_date))).' )တွင် ငွေသွင်းလက်ခံ ရရှိပြီးဖြစ်ကြောင်း အကြောင်းကြားပါသည်။</p>';
+
+            $noti = save_api_noti('form_deposit_done', $form->id, $user->id, strip_tags($mail_body), $photo_att, $pdf_att);
+            send_individual_noti_to_app($form->serial_code, 'Your payment has been made for the meter.', $noti, $user->fcm_key);
+
             return redirect()->route('residentialMeterPaymentList.index');
         } else {
             return redirect()->route('dashboard');
@@ -2313,6 +2357,8 @@ class AdminHomeController extends Controller
         }
     }
     public function residential_chk_install_list_store(Request $request) {
+        $form = ApplicationForm::find($request->form_id);
+        $user = User::find($form->user_id);
         if (isset($_SERVER['HTTP_REFERER'])) {
             // dd($request->all());
             $action = FormProcessAction::where('application_form_id', $request->form_id)->first();
@@ -2343,6 +2389,10 @@ class AdminHomeController extends Controller
             $form138->string_form_date = $request->string_form_date;
             $form138->service_string_form_date = $request->service_string_form_date;
             $form138->save();
+
+            $noti = save_api_noti('form_install', $form->id, $user->id, 'The meter had been installed on '.date('d-m-Y', strtotime($request->accept_date)));
+            send_individual_noti_to_app($form->serial_code, 'The meter has been installed on '.date('d-m-Y', strtotime($request->accept_date)), $noti, $user->fcm_key);
+            
             return redirect()->route('residentialMeterCheckInstallList.index');
         } else {
             return redirect()->route('dashboard');
@@ -2471,6 +2521,8 @@ class AdminHomeController extends Controller
         if (isset($_SERVER['HTTP_REFERER'])) {
             // dd($request->all());
             $id = $request->form_id;
+            $form = ApplicationForm::find($id);
+            $user = User::find($form->user_id);
 
             $action = FormProcessAction::where('application_form_id', $id)->first();
             $action->register_meter = true;
@@ -2504,6 +2556,10 @@ class AdminHomeController extends Controller
             $remark->installer_post = $request->installer_post;
             $remark->remark = $request->remark;
             $remark->save();
+
+            $noti = save_api_noti('form_register', $form->id, $user->id, 'The meter has been register with the number '.$remark->meter_no);
+            send_individual_noti_to_app($form->serial_code, 'The meter has been register with the number '.$remark->meter_no, $noti, $user->fcm_key);
+
             return redirect()->route('residentialMeterRegisterMeterList.index');
         } else {
             return redirect()->route('dashboard');
@@ -2647,6 +2703,9 @@ class AdminHomeController extends Controller
             $from       = divType($form->div_state_id);
             Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
 
+            $noti = save_api_noti('form_resend', $form->id, $user->id, strip_tags($request->remark));
+            send_individual_noti_to_app($form->serial_code, 'Your form has requirements, so please check the contents and send them back.', $noti, $user->fcm_key);
+
             return redirect()->route('residentialPowerMeterApplicationList.index');
         }else{
             return redirect()->route('dashboard');
@@ -2693,6 +2752,9 @@ class AdminHomeController extends Controller
             $link_name  = trans('lang.go_to_form');
             $from       = divType($form->div_state_id);
             Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
+
+            $noti = save_api_noti('form_accept', $form->id, $user->id);
+            send_individual_noti_to_app($form->serial_code, 'Your form is accepted.', $noti, $user->fcm_key);
 
             return redirect()->route('residentialPowerMeterApplicationList.index');
         }else{
@@ -2838,6 +2900,8 @@ class AdminHomeController extends Controller
             $img_str = null;
 
             $form = ApplicationForm::find($id);
+            $user = User::find($form->user_id);
+
             if ($request->hasFile('front')) {
                 $folder_name = $form->id;
                 $path = public_path('storage/user_attachments/'.$folder_name);
@@ -2990,6 +3054,9 @@ class AdminHomeController extends Controller
 
             $form->apply_sub_type = $request->allow_p_meter;
             $form->save();
+
+            $noti = save_api_noti('form_survey', $form->id, $user->id, null);
+            send_individual_noti_to_app($form->serial_code, 'The ground check stage has been completed.', $noti, $user->fcm_key);
             
             return redirect()->route('residentialPowerMeterGroundCheckList.index');
         }else{
@@ -3071,6 +3138,9 @@ class AdminHomeController extends Controller
             $action->survey_confirmed_date = date('Y-m-d H:i:s');
             $action->save();
 
+            $form = ApplicationForm::find($id);
+            $user = User::find($form->user_id);
+
             $send_from_to = new FormRoutine();
             $send_from_to->application_form_id = $id;
             $send_from_to->send_from = 1;
@@ -3110,6 +3180,9 @@ class AdminHomeController extends Controller
             $adminAction = AdminAction::where('application_form_id', $id)->first();
             $adminAction->survey_confirm=admin()->id;
             $adminAction->save();
+
+            $noti = save_api_noti('form_tsp_approve', $form->id, $user->id, null);
+            send_individual_noti_to_app($form->serial_code, 'Your form has been approved by Township.', $noti, $user->fcm_key);
             
             return redirect()->route('residentialPowerMeterGroundCheckDoneList.index');
         }else{
@@ -3471,6 +3544,9 @@ class AdminHomeController extends Controller
                 }
                 $remark->dist_recomm = $file;
                 $remark->save();
+
+                $noti = save_api_noti('form_district_approve', $form->id, $user->id, null);
+                send_individual_noti_to_app($form->serial_code, 'Your form has been approved by district.', $noti, $user->fcm_key);
             } elseif ($request->survey_submit_dist == 'resend') {
                 $action = FormProcessAction::where('application_form_id', $id)->first();
                 $action->survey_confirm = false;
@@ -3487,6 +3563,9 @@ class AdminHomeController extends Controller
                 $send_from_to->remark = $request->remark_dist;
                 $send_from_to->type = 'resend';
                 $send_from_to->save();
+
+                $noti = save_api_noti('form_district_township', $form->id, $user->id, strip_tags($request->remark_dist));
+                send_individual_noti_to_app($form->serial_code, 'Your form is resent back to township from district due to some reasons.', $noti, $user->fcm_key);
             } elseif ($request->survey_submit_dist == 'pending') {
                 $action = FormProcessAction::where('application_form_id', $id)->first();
                 $action->form_pending = true;
@@ -3519,7 +3598,9 @@ class AdminHomeController extends Controller
                 $link_name  = trans('lang.go_to_form');
                 $from       = divType($form->div_state_id);
                 Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
-                
+
+                $noti = save_api_noti('form_district_pending', $form->id, $user->id, strip_tags($request->remark_dist));
+                send_individual_noti_to_app($form->serial_code, 'Your form is suspended by district due to some reasons.', $noti, $user->fcm_key);
             } elseif ($request->survey_submit_dist == 'reject') {
                 $action = FormProcessAction::where('application_form_id', $id)->first();
                 $action->form_reject = true;
@@ -3553,6 +3634,8 @@ class AdminHomeController extends Controller
                 $from       = divType($form->div_state_id);
                 Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
 
+                $noti = save_api_noti('form_district_reject', $form->id, $user->id, strip_tags($request->remark_dist));
+                send_individual_noti_to_app($form->serial_code, 'Your form is rejected by district for some reasons.', $noti, $user->fcm_key);
             }
 
             $adminAction = AdminAction::where('application_form_id', $id)->first();
@@ -3610,6 +3693,8 @@ class AdminHomeController extends Controller
     public function residential_power_pending_list_store(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
             $form_id = $request->form_id;
+            $form = ApplicationForm::find($form_id);
+            $user = User::find($form->user_id);
 
             $action = FormProcessAction::where('application_form_id', $form_id)->first();
             $action->form_pending = false;
@@ -3618,6 +3703,9 @@ class AdminHomeController extends Controller
             $adminAction = AdminAction::where('application_form_id', $form_id)->first();
             $adminAction->form_pending = admin()->id;
             $adminAction->save();
+
+            $noti = save_api_noti('form_pending_remove', $form->id, $user->id, null);
+            send_individual_noti_to_app($form->serial_code, 'The suspending has been canceled and the form is now processing.', $noti, $user->fcm_key);
             return redirect()->route('residentialPowerMeterPendingForm.index');
         } else {
             return redirect()->route('dashboard');
@@ -3737,7 +3825,7 @@ class AdminHomeController extends Controller
             $expDate = Carbon::now()->addDay(7);
 
             // $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော အိမ်သုံးပါဝါမီတာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ငွေသွင်းရန်အဆင့်သို့ ရောက်ရှိနေပြီဖြစ်ပါသောကြောင့် အောက်ဖေါ်ပြပါ လင့်ခ် (Link) ကိုနှိပ်၍ ကျသင့်ငွေအား အွန်လိုင်းငွေချေစနစ်ဖြင့် ငွေပေးသွင်းနိုင်ပြီ ဖြစ်ပါသည်။ လုပ်ငန်းစဉ်များ ဆက်လက်လုပ်ဆောင်နိုင်ရန်အတွက် လူကြီးမင်းတို့အနေဖြင့် သက်မှတ်ရက် ( <span class="text-danger">'.$expDate->format('d-m-Y').' ၂:၀၀ နာရီ'.'</span> ) ထက်နောက်မကျဘဲ ငွေသွင်းပေးပါရန် အကြောင်းကြားပါသည်။</p>';
-            $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော အိမ်သုံးပါဝါမီတာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ငွေသွင်းရန်အဆင့်သို့ ရောက်ရှိနေပြီဖြစ်ပါသည်။ လုပ်ငန်းစဉ်များ ဆက်လက်လုပ်ဆောင်နိုင်ရန်အတွက် လူကြီးမင်းတို့အနေဖြင့် လျှောက်လွှာအတွင်းပါရှိသော အထောက်အထားများ၏ မူရင်းများကို တပါတည်းယူဆောင်၍ သက်မှတ်ရက် ( <span class="text-danger">'.$expDate->format('d-m-Y').' ၂:၀၀ နာရီ'.'</span> ) ထက်နောက်မကျဘဲ ရုံးသို့ လူကိုယ်တိုင် လာရောက် ငွေသွင်းပေးပါရန် အကြောင်းကြားပါသည်။</p>';
+            $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော အိမ်သုံးပါဝါမီတာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ငွေသွင်းရန်အဆင့်သို့ ရောက်ရှိနေပြီဖြစ်ပါသည်။ လုပ်ငန်းစဉ်များ ဆက်လက်လုပ်ဆောင်နိုင်ရန်အတွက် လူကြီးမင်းတို့အနေဖြင့် လျှောက်လွှာအတွင်းပါရှိသော အထောက်အထားများ၏ မူရင်းများကို တပါတည်းယူဆောင်၍ သက်မှတ်ရက် ( <span class="text-danger">'.$expDate->format('d-m-Y').' နေ့လည် ၂:၀၀ နာရီ'.'</span> ) ထက်နောက်မကျဘဲ ရုံးသို့ လူကိုယ်တိုင် လာရောက် ငွေသွင်းပေးပါရန် အကြောင်းကြားပါသည်။</p>';
             // $mail_body .= '<div class="text-center mt-5 mb-5"><a href="'.route('user_pay_form.create', $form_id).'" class="btn btn-info text-center">Click for payment</a></div>';
 
             $mail = new MailTbl();
@@ -3758,6 +3846,9 @@ class AdminHomeController extends Controller
             $link_name  = "";
             $from       = divType($form->div_state_id);
             Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
+
+            $noti = save_api_noti('form_announce_deposit', $form->id, $user->id, strip_tags($mail_body));
+            send_individual_noti_to_app($form->serial_code, 'Please make a deposit.', $noti, $user->fcm_key);
 
             // dispatch(new announceToUserJob($mail_detail));
             return redirect()->route('residentialPowerMeterAnnounceList.index');
@@ -3881,7 +3972,9 @@ class AdminHomeController extends Controller
             // add the payment slips to mail body
             $fpa = DB::table("form_process_actions")->where("application_form_id", $form->id)->first();
             $files = explode(",",$fpa->payment_accepted_slips);
+            $photo_att = $pdf_att = null;
             if(count($files)> 0){
+                $photo_att = $pdf_att = [];
                 $payment_slips = "Payment Slips : </br>";
                 $payment_slips .= '<div class="row">';
                 foreach ($files as $file) {
@@ -3891,8 +3984,12 @@ class AdminHomeController extends Controller
                     if($file != ""){
                         if($ext != 'pdf'){
                             $payment_slips .= "<div class='col-md-2'><img src='".asset('storage/user_attachments/'.$form->id.'/'.$file)."' alt='".$file."' class='img-thumbnail'  data-toggle='modal' data-target='#myImg'></div>";
+
+                            array_push($photo_att, asset('storage/user_attachments/'.$form->id.'/'.$file));
                         }else{
                             $payment_slips .= "<a href='".asset('storage/user_attachments/'.$form->id.'/'.$file)."' target='_blank' class='pdf-block'>".$file."</a>";
+
+                            array_push($pdf_att, asset('storage/user_attachments/'.$form->id.'/'.$file));
                         }
                     }
                 }
@@ -3918,6 +4015,11 @@ class AdminHomeController extends Controller
             $from       = divType($form->div_state_id);
             $file_path  = public_path('storage/user_attachments/'.$form->id.'/');
             Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from, $files, $file_path));
+
+            $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော အိမ်သုံးပါဝါမီတာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ('.date('d-m-Y', strtotime($paid_date)).')တွင် ငွေသွင်းလက်ခံ ရရှိပြီးဖြစ်ကြောင်း အကြောင်းကြားပါသည်။</p>';
+
+            $noti = save_api_noti('form_deposit_done', $form->id, $user->id, strip_tags($mail_body), $photo_att, $pdf_att);
+            send_individual_noti_to_app($form->serial_code, 'Your payment has been made for the meter.', $noti, $user->fcm_key);
 
             return redirect()->route('residentialPowerMeterPaymentList.index');
         }else{
@@ -4103,6 +4205,9 @@ class AdminHomeController extends Controller
     }
     public function residential_power_chk_install_list_store(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $form = ApplicationForm::find($request->form_id);
+            $user = User::find($form->user_id);
+
             $action = FormProcessAction::where('application_form_id', $request->form_id)->first();
             $action->install_accept = true;
             $action->install_accepted_date = date('Y-m-d', strtotime($request->accept_date)).' '.date('H:i:s');
@@ -4130,6 +4235,10 @@ class AdminHomeController extends Controller
             $form138->string_form_date = $request->string_form_date;
             $form138->service_string_form_date = $request->service_string_form_date;
             $form138->save();
+
+            $noti = save_api_noti('form_install', $form->id, $user->id, 'The meter had been installed on '.date('d-m-Y', strtotime($request->accept_date)));
+            send_individual_noti_to_app($form->serial_code, 'The meter has been installed on '.date('d-m-Y', strtotime($request->accept_date)), $noti, $user->fcm_key);
+
             return redirect()->route('residentialPowerMeterCheckInstallList.index');
         }else{
             return redirect()->route('dashboard');
@@ -4204,6 +4313,8 @@ class AdminHomeController extends Controller
             ]);
             // dd($request->all());
             $form = ApplicationForm::find($request->form_id);
+            $user = User::find($form->user_id);
+
             $folder_name = $form->id;
             $path = public_path('storage/user_attachments/'.$folder_name);
             $pathPDF = "user_attachments/".$folder_name;
@@ -4243,6 +4354,10 @@ class AdminHomeController extends Controller
             $adminAction = AdminAction::where('application_form_id', $form->id)->first();
             $adminAction->install_confirm = admin()->id;
             $adminAction->save();
+
+            $noti = save_api_noti('form_ei', $form->id, $user->id, null);
+            send_individual_noti_to_app($form->serial_code, 'The meter has been ei-checked.', $noti, $user->fcm_key);
+
             return redirect()->route('residentialPowerMeterInstallationDoneList.index');
         }else{
             return redirect()->route('dashboard');
@@ -4319,6 +4434,8 @@ class AdminHomeController extends Controller
         // dd($request->all());
         if (isset($_SERVER['HTTP_REFERER'])) {
             $id = $request->form_id;
+            $form = ApplicationForm::find($id);
+            $user = User::find($form->user_id);
 
             $action = FormProcessAction::where('application_form_id', $id)->first();
             $action->register_meter = true;
@@ -4352,6 +4469,10 @@ class AdminHomeController extends Controller
             $remark->installer_post = $request->installer_post;
             $remark->remark = $request->remark;
             $remark->save();
+
+            $noti = save_api_noti('form_register', $form->id, $user->id, 'The meter has been register with the number '.$remark->meter_no);
+            send_individual_noti_to_app($form->serial_code, 'The meter has been register with the number '.$remark->meter_no, $noti, $user->fcm_key);
+
             return redirect()->route('residentialPowerMeterRegisterMeterList.index');
         }else{
             return redirect()->route('dashboard');
@@ -4491,6 +4612,9 @@ class AdminHomeController extends Controller
             $from       = divType($form->div_state_id);
             Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
 
+            $noti = save_api_noti('form_resend', $form->id, $user->id, strip_tags($request->remark));
+            send_individual_noti_to_app($form->serial_code, 'Your form has requirements, so please check the contents and send it back.', $noti, $user->fcm_key);
+
             return redirect()->route('commercialPowerMeterApplicationList.index');
         }else{
             return redirect()->route('dashboard');
@@ -4537,6 +4661,9 @@ class AdminHomeController extends Controller
             $link_name  = trans('lang.go_to_form');
             $from       = divType($form->div_state_id);
             Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
+
+            $noti = save_api_noti('form_accept', $form->id, $user->id);
+            send_individual_noti_to_app($form->serial_code, 'Your meter application form is accepted.', $noti, $user->fcm_key);
 
             return redirect()->route('commercialPowerMeterApplicationList.index');
         }else{
@@ -4635,6 +4762,9 @@ class AdminHomeController extends Controller
                 'distance' => 'required',
             ]);
             $id = $request->form_id;
+
+            $form = ApplicationForm::find($id);
+            $user = User::find($form->user_id);
            
             if ($request->living == 'on') {
                 $living = true;
@@ -4849,6 +4979,9 @@ class AdminHomeController extends Controller
             $form->apply_sub_type = $request->allow_p_meter;
             $form->save();
 
+            $noti = save_api_noti('form_survey', $form->id, $user->id, null);
+            send_individual_noti_to_app($form->serial_code, 'The ground check stage has been completed.', $noti, $user->fcm_key);
+
             return redirect()->route('commercialPowerMeterGroundCheckList.index');
         }else{
             return redirect()->route('dashboard');
@@ -4920,6 +5053,10 @@ class AdminHomeController extends Controller
             ]);
             // dd($request->all());
             $id = $request->form_id;
+
+            $form = ApplicationForm::find($id);
+            $user = User::find($form->user_id);
+
             $action = FormProcessAction::where('application_form_id', $id)->first();
             $action->survey_confirm = true;
             $action->survey_confirmed_date = date('Y-m-d H:i:s');
@@ -4955,6 +5092,10 @@ class AdminHomeController extends Controller
             $adminAction = AdminAction::where('application_form_id', $id)->first();
             $adminAction->survey_confirm=admin()->id;
             $adminAction->save();
+
+            $noti = save_api_noti('form_tsp_approve', $form->id, $user->id, null);
+            send_individual_noti_to_app($form->serial_code, 'Your form has been approved by Township.', $noti, $user->fcm_key);
+
             return redirect()->route('commercialPowerMeterGroundCheckDoneList.index');
         }else{
             return redirect()->route('dashboard');
@@ -5320,6 +5461,9 @@ class AdminHomeController extends Controller
                 }
                 $remark->dist_recomm = $file;
                 $remark->save();
+
+                $noti = save_api_noti('form_district_approve', $form->id, $user->id, null);
+                send_individual_noti_to_app($form->serial_code, 'Your form has been approved by district.', $noti, $user->fcm_key);
             } elseif ($request->survey_submit_dist == 'resend') {
                 $action = FormProcessAction::where('application_form_id', $id)->first();
                 $action->survey_confirm = false;
@@ -5336,6 +5480,9 @@ class AdminHomeController extends Controller
                 $send_from_to->remark = $request->remark_dist;
                 $send_from_to->type = 'resend';
                 $send_from_to->save();
+
+                $noti = save_api_noti('form_district_township', $form->id, $user->id, strip_tags($request->remark_dist));
+                send_individual_noti_to_app($form->serial_code, 'Your form is resent back to township from district due to some reasons.', $noti, $user->fcm_key);
             } elseif ($request->survey_submit_dist == 'pending') {
                 $action = FormProcessAction::where('application_form_id', $id)->first();
                 $action->form_pending = true;
@@ -5368,6 +5515,9 @@ class AdminHomeController extends Controller
                 $link_name  = trans('lang.go_to_form');
                 $from       = divType($form->div_state_id);
                 Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
+
+                $noti = save_api_noti('form_district_pending', $form->id, $user->id, strip_tags($request->remark_dist));
+                send_individual_noti_to_app($form->serial_code, 'Your form is suspended by district due to some reasons.', $noti, $user->fcm_key);
 
             } elseif ($request->survey_submit_dist == 'reject') {
                 $action = FormProcessAction::where('application_form_id', $id)->first();
@@ -5402,6 +5552,8 @@ class AdminHomeController extends Controller
                 $from       = divType($form->div_state_id);
                 Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
                 
+                $noti = save_api_noti('form_district_reject', $form->id, $user->id, strip_tags($request->remark_dist));
+                send_individual_noti_to_app($form->serial_code, 'Your form is rejected by district for some reasons.', $noti, $user->fcm_key);
             }
 
             $adminAction = AdminAction::where('application_form_id', $id)->first();
@@ -5459,6 +5611,8 @@ class AdminHomeController extends Controller
     public function commercial_pending_list_store(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
             $form_id = $request->form_id;
+            $form = ApplicationForm::find($form_id);
+            $user = User::find($form->user_id);
 
             $action = FormProcessAction::where('application_form_id', $form_id)->first();
             $action->form_pending = false;
@@ -5467,6 +5621,9 @@ class AdminHomeController extends Controller
             $adminAction = AdminAction::where('application_form_id', $form_id)->first();
             $adminAction->form_pending = admin()->id;
             $adminAction->save();
+
+            $noti = save_api_noti('form_pending_remove', $form->id, $user->id, null);
+            send_individual_noti_to_app($form->serial_code, 'The suspending has been canceled and the form is now processing.', $noti, $user->fcm_key);
             return redirect()->route('commercialPowerMeterPendingForm.index');
         } else {
             return redirect()->route('dashboard');
@@ -5582,7 +5739,7 @@ class AdminHomeController extends Controller
             $expDate = Carbon::now()->addDay(7);
 
             // $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော စက်မှုသုံးမီတာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ငွေသွင်းရန်အဆင့်သို့ ရောက်ရှိနေပြီဖြစ်ပါသောကြောင့် အောက်ဖေါ်ပြပါ လင့်ခ် (Link) ကိုနှိပ်၍ ကျသင့်ငွေအား အွန်လိုင်းငွေချေစနစ်ဖြင့် ငွေပေးသွင်းနိုင်ပြီ ဖြစ်ပါသည်။ လုပ်ငန်းစဉ်များ ဆက်လက်လုပ်ဆောင်နိုင်ရန်အတွက် လူကြီးမင်းတို့အနေဖြင့် သက်မှတ်ရက် ( <span class="text-danger">'.$expDate->format('d-m-Y').' ၂:၀၀ နာရီ'.'</span> ) ထက်နောက်မကျဘဲ ငွေသွင်းပေးပါရန် အကြောင်းကြားပါသည်။</p>';
-            $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော စက်မှုသုံးမီတာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ငွေသွင်းရန်အဆင့်သို့ ရောက်ရှိနေပြီဖြစ်ပါသည်။ လုပ်ငန်းစဉ်များ ဆက်လက်လုပ်ဆောင်နိုင်ရန်အတွက် လူကြီးမင်းတို့အနေဖြင့် လျှောက်လွှာအတွင်းပါရှိသော အထောက်အထားများ၏ မူရင်းများကို တပါတည်းယူဆောင်၍  သက်မှတ်ရက် ( <span class="text-danger">'.$expDate->format('d-m-Y').' ၂:၀၀ နာရီ'.'</span> ) ထက်နောက်မကျဘဲ ရုံးသို့ လူကိုယ်တိုင် လာရောက်ငွေသွင်းပေးပါရန် အကြောင်းကြားပါသည်။</p>';
+            $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော စက်မှုသုံးမီတာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ငွေသွင်းရန်အဆင့်သို့ ရောက်ရှိနေပြီဖြစ်ပါသည်။ လုပ်ငန်းစဉ်များ ဆက်လက်လုပ်ဆောင်နိုင်ရန်အတွက် လူကြီးမင်းတို့အနေဖြင့် လျှောက်လွှာအတွင်းပါရှိသော အထောက်အထားများ၏ မူရင်းများကို တပါတည်းယူဆောင်၍  သက်မှတ်ရက် ( <span class="text-danger">'.$expDate->format('d-m-Y').' နေ့လည် ၂:၀၀ နာရီ'.'</span> ) ထက်နောက်မကျဘဲ ရုံးသို့ လူကိုယ်တိုင် လာရောက်ငွေသွင်းပေးပါရန် အကြောင်းကြားပါသည်။</p>';
             // $mail_body .= '<div class="text-center mt-5 mb-5"><a href="'.route('user_pay_form.create', $form_id).'" class="btn btn-info text-center">Click for payment</a></div>';
 
             $mail = new MailTbl();
@@ -5603,6 +5760,10 @@ class AdminHomeController extends Controller
             $link_name  = "";
             $from       = divType($form->div_state_id);
             Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
+
+            $noti = save_api_noti('form_announce_deposit', $form->id, $user->id, strip_tags($mail_body));
+            send_individual_noti_to_app($form->serial_code, 'The form is notified to make a deposit.', $noti, $user->fcm_key);
+
             return redirect()->route('commercialPowerMeterAnnounceList.index');
         }else{
             return redirect()->route('dashboard');
@@ -5721,7 +5882,9 @@ class AdminHomeController extends Controller
             // add the payment slips to mail body
             $fpa = DB::table("form_process_actions")->where("application_form_id", $form->id)->first();
             $files = explode(",",$fpa->payment_accepted_slips);
+            $photo_att = $pdf_att = null;
             if(count($files)> 0){
+                $photo_att = $pdf_att = [];
                 $payment_slips = "Payment Slips : </br>";
                 $payment_slips .= '<div class="row">';
                 foreach ($files as $file) {
@@ -5731,8 +5894,10 @@ class AdminHomeController extends Controller
                     if($file != ""){
                         if($ext != 'pdf'){
                             $payment_slips .= "<div class='col-md-2'><img src='".asset('storage/user_attachments/'.$form->id.'/'.$file)."' alt='".$file."' class='img-thumbnail'  data-toggle='modal' data-target='#myImg'></div>";
+                            array_push($photo_att, asset('storage/user_attachments/'.$form->id.'/'.$file));
                         }else{
                             $payment_slips .= "<a href='".asset('storage/user_attachments/'.$form->id.'/'.$file)."' target='_blank' class='pdf-block'>".$file."</a>";
+                            array_push($pdf_att, asset('storage/user_attachments/'.$form->id.'/'.$file));
                         }
                     }
                 }
@@ -5758,6 +5923,9 @@ class AdminHomeController extends Controller
             $from       = divType($form->div_state_id);
             $file_path  = public_path('storage/user_attachments/'.$form->id.'/');
             Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from, $files, $file_path));
+
+            $noti = save_api_noti('form_deposit_done', $form->id, $user->id, strip_tags($mail_body), $photo_att, $pdf_att);
+            send_individual_noti_to_app($form->serial_code, 'Your payment has been made for the meter.', $noti, $user->fcm_key);
 
             return redirect()->route('commercialPowerMeterPaymentList.index');
         }else{
@@ -5933,6 +6101,9 @@ class AdminHomeController extends Controller
     }
     public function commercial_chk_install_list_store(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $form = ApplicationForm::find($request->form_id);
+            $user = User::find($form->user_id);
+
             $action = FormProcessAction::where('application_form_id', $request->form_id)->first();
             $action->install_accept = true;
             $action->install_accepted_date = date('Y-m-d', strtotime($request->accept_date)).' '.date('H:i:s');
@@ -5959,6 +6130,10 @@ class AdminHomeController extends Controller
             $form138->string_form_date = $request->string_form_date;
             $form138->service_string_form_date = $request->service_string_form_date;
             $form138->save();
+
+            $noti = save_api_noti('form_install', $form->id, $user->id, 'The meter had been installed on '.date('d-m-Y', strtotime($request->accept_date)));
+            send_individual_noti_to_app($form->serial_code, 'The meter has been installed on '.date('d-m-Y', strtotime($request->accept_date)), $noti, $user->fcm_key);
+
             return redirect()->route('commercialPowerMeterCheckInstallList.index');
         }else{
             return redirect()->route('dashboard');
@@ -6025,6 +6200,8 @@ class AdminHomeController extends Controller
             ]);
             // dd($request->all());
             $form = ApplicationForm::find($request->form_id);
+            $user = User::find($form->user_id);
+
             $folder_name = $form->id;
             $path = public_path('storage/user_attachments/'.$folder_name);
             $pathPDF = "user_attachments/".$folder_name;
@@ -6064,6 +6241,10 @@ class AdminHomeController extends Controller
             $adminAction = AdminAction::where('application_form_id', $form->id)->first();
             $adminAction->install_confirm = admin()->id;
             $adminAction->save();
+
+            $noti = save_api_noti('form_ei', $form->id, $user->id, null);
+            send_individual_noti_to_app($form->serial_code, 'The meter has been ei-checked.', $noti, $user->fcm_key);
+
             return redirect()->route('commercialPowerMeterInstallationDoneList.index');
         }else{
             return redirect()->route('dashboard');
@@ -6136,6 +6317,8 @@ class AdminHomeController extends Controller
         // dd($request->all());
         if (isset($_SERVER['HTTP_REFERER'])) {
             $id = $request->form_id;
+            $form = ApplicationForm::find($id);
+            $user = User::find($form->user_id);
 
             $action = FormProcessAction::where('application_form_id', $id)->first();
             $action->register_meter = true;
@@ -6169,6 +6352,10 @@ class AdminHomeController extends Controller
             $remark->installer_post = $request->installer_post;
             $remark->remark = $request->remark;
             $remark->save();
+
+            $noti = save_api_noti('form_register', $form->id, $user->id, 'မီတာအမှတ်-'.$remark->meter_no.'ဖြင့် မှတ်ပုံတင်ပြီးဖြစ်ပါသည်။');
+            send_individual_noti_to_app($form->serial_code, 'The meter has been register with the number '.$remark->meter_no, $noti, $user->fcm_key);
+
             return redirect()->route('commercialPowerMeterRegisterMeterList.index');
         }else{
             return redirect()->route('dashboard');
@@ -6323,6 +6510,9 @@ class AdminHomeController extends Controller
             $from       = divType($form->div_state_id);
             Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
 
+            $noti = save_api_noti('form_resend', $form->id, $user->id, strip_tags($request->remark));
+            send_individual_noti_to_app($form->serial_code, 'Your form has requirements, so please check the contents and send it back.', $noti, $user->fcm_key);
+
             return redirect()->route('contractorMeterApplicationList.index');
         } else {
             return redirect()->route('dashboard');
@@ -6350,18 +6540,18 @@ class AdminHomeController extends Controller
             }elseif ($form->apply_division == 3) {
                 $route = route('contractor_applied_form_mdy', $form->id);
             }
-            // $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော ကန်ထရိုက်တိုက်မီတာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ မြို့နယ်ရုံးမှ လက်ခံပြီးဖြစ်ကြောင်းနှင့် လုပ်ငန်းစဥ်အခြေအနေအား အောက်ပါ လင့်ခ်(Link)တဆင့် ဝင်ရောက်ကြည့်ရှုနိုင်ပါကြောင်း အကြောင်းကြားပါသည်။</p>';
-            $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော စက်မှုသုံးမီတာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ငွေသွင်းရန်အဆင့်သို့ ရောက်ရှိနေပြီဖြစ်ပါသည်။ လုပ်ငန်းစဉ်များ ဆက်လက်လုပ်ဆောင်နိုင်ရန်အတွက် လူကြီးမင်းတို့အနေဖြင့် သက်မှတ်ရက် ( <span class="text-danger">'.$expDate->format('d-m-Y').' ၂:၀၀ နာရီ'.'</span> ) ထက်နောက်မကျဘဲ ငွေသွင်းပေးပါရန် အကြောင်းကြားပါသည်။</p>';
-            $mail_body .= '<div class="text-center mt-5 mb-5"><a href="'.$route.'" class="btn btn-info text-center">Go to Form</a></div>';
+            // // $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော ကန်ထရိုက်တိုက်မီတာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ မြို့နယ်ရုံးမှ လက်ခံပြီးဖြစ်ကြောင်းနှင့် လုပ်ငန်းစဥ်အခြေအနေအား အောက်ပါ လင့်ခ်(Link)တဆင့် ဝင်ရောက်ကြည့်ရှုနိုင်ပါကြောင်း အကြောင်းကြားပါသည်။</p>';
+            // $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော စက်မှုသုံးမီတာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ငွေသွင်းရန်အဆင့်သို့ ရောက်ရှိနေပြီဖြစ်ပါသည်။ လုပ်ငန်းစဉ်များ ဆက်လက်လုပ်ဆောင်နိုင်ရန်အတွက် လူကြီးမင်းတို့အနေဖြင့် သက်မှတ်ရက် ( <span class="text-danger">'.$expDate->format('d-m-Y').' ၂:၀၀ နာရီ'.'</span> ) ထက်နောက်မကျဘဲ ငွေသွင်းပေးပါရန် အကြောင်းကြားပါသည်။</p>';
+            // $mail_body .= '<div class="text-center mt-5 mb-5"><a href="'.$route.'" class="btn btn-info text-center">Go to Form</a></div>';
 
-            $mail = new MailTbl();
-            $mail->application_form_id = $form_id;
-            $mail->user_id = $form->user_id;
-            $mail->sender_id = admin()->id;
-            $mail->send_type = 2;
-            $mail->mail_send_date = date('Y-m-d H:i:s');
-            $mail->mail_body = $mail_body;
-            $mail->save();
+            // $mail = new MailTbl();
+            // $mail->application_form_id = $form_id;
+            // $mail->user_id = $form->user_id;
+            // $mail->sender_id = admin()->id;
+            // $mail->send_type = 2;
+            // $mail->mail_send_date = date('Y-m-d H:i:s');
+            // $mail->mail_body = $mail_body;
+            // $mail->save();
 
             $header     = trans('lang.accept_form_title');
             $body       = trans('lang.accept_form_text',['meter'=>trans('lang.contractor_meter_no',['no'=>$form->serial_code])]);
@@ -6370,6 +6560,9 @@ class AdminHomeController extends Controller
             $link_name  = trans('lang.go_to_form');
             $from       = divType($form->div_state_id);
             Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
+
+            $noti = save_api_noti('form_accept', $form->id, $user->id);
+            send_individual_noti_to_app($form->serial_code, 'Your meter application form is accepted.', $noti, $user->fcm_key);
 
             return redirect()->route('contractorMeterApplicationList.index');
         } else {
@@ -6478,6 +6671,9 @@ class AdminHomeController extends Controller
         if (isset($_SERVER['HTTP_REFERER'])) {
             // dd($request->all());
             $form_id = $request->form_id;
+            $form = ApplicationForm::find($form_id);
+            $user = User::find($form->user_id);
+
             $date = date('Y-m-d H:i:s');
 
             $loaded = false;
@@ -6525,6 +6721,9 @@ class AdminHomeController extends Controller
             $action->survey_accept = true;
             $action->survey_accepted_date = $date;
             $action->save();
+
+            $noti = save_api_noti('form_survey', $form->id, $user->id, null);
+            send_individual_noti_to_app($form->serial_code, 'The ground check stage has been completed.', $noti, $user->fcm_key);
 
             return redirect()->route('contractorMeterGroundCheckList.index');
         }else{
@@ -6673,6 +6872,8 @@ class AdminHomeController extends Controller
             $date = date('Y-m-d H:i:s');
 
             $form = ApplicationForm::find($form_id);
+            $user = User::find($form->user_id);
+
             $folder_name = $form->id;
             $path = public_path('storage/user_attachments/'.$folder_name);
             $pathPDF = "user_attachments/".$folder_name;
@@ -6783,6 +6984,10 @@ class AdminHomeController extends Controller
             $adminAction = AdminAction::where('application_form_id', $form_id)->first();
             $adminAction->survey_confirm=admin()->id;
             $adminAction->save();
+
+            $noti = save_api_noti('form_tsp_approve', $form->id, $user->id, null);
+            send_individual_noti_to_app($form->serial_code, 'Your form has been approved by Township.', $noti, $user->fcm_key);
+
             return redirect()->route('contractorMeterGroundCheckDoneList.index');
         } else {
             return redirect()->route('dashboard');
@@ -6939,6 +7144,9 @@ class AdminHomeController extends Controller
                 $adminAction = AdminAction::where('application_form_id', $form_id)->first();
                 $adminAction->survey_confirm_dist=admin()->id;
                 $adminAction->save();
+
+                $noti = save_api_noti('form_district_approve', $form->id, $user->id, null);
+                send_individual_noti_to_app($form->serial_code, 'Your form has been approved by district.', $noti, $user->fcm_key);
             } elseif ($request->survey_submit_district == 'resend') {
                 $send_from_to = new FormRoutine();
                 $send_from_to->application_form_id = $form_id;
@@ -6956,6 +7164,9 @@ class AdminHomeController extends Controller
                 $action = FormProcessAction::where('application_form_id', $form_id)->first();
                 $action->survey_confirm = false;
                 $action->save();
+
+                $noti = save_api_noti('form_district_township', $form->id, $user->id, strip_tags($request->dist_remark));
+                send_individual_noti_to_app($form->serial_code, 'Your form is resent back to township from district due to some reasons.', $noti, $user->fcm_key);
             } elseif ($request->survey_submit_district == 'pending') {
                 $action = FormProcessAction::where('application_form_id', $form_id)->first();
                 $action->form_pending = true;
@@ -6989,6 +7200,9 @@ class AdminHomeController extends Controller
                 $from       = divType($form->div_state_id);
                 Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
 
+                $noti = save_api_noti('form_district_pending', $form->id, $user->id, strip_tags($request->dist_remark));
+                send_individual_noti_to_app($form->serial_code, 'Your form is suspended by district due to some reasons.', $noti, $user->fcm_key);
+
             } elseif ($request->survey_submit_district == 'reject') {
                 $action = FormProcessAction::where('application_form_id', $form_id)->first();
                 $action->form_reject = true;
@@ -7021,6 +7235,9 @@ class AdminHomeController extends Controller
                 $link_name  = trans('lang.go_to_form');
                 $from       = divType($form->div_state_id);
                 Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
+
+                $noti = save_api_noti('form_district_reject', $form->id, $user->id, strip_tags($request->dist_remark));
+                send_individual_noti_to_app($form->serial_code, 'Your form is rejected by district for some reasons.', $noti, $user->fcm_key);
             }
 
             $adminAction = AdminAction::where('application_form_id', $form_id)->first();
@@ -7161,6 +7378,9 @@ class AdminHomeController extends Controller
                 $adminAction = AdminAction::where('application_form_id', $form_id)->first();
                 $adminAction->survey_confirm_div_state=admin()->id;
                 $adminAction->save();
+
+                $noti = save_api_noti('form_division_approve', $form->id, $user->id, null);
+                send_individual_noti_to_app($form->serial_code, 'Your form has been approved by division.', $noti, $user->fcm_key);
             }elseif ($request->survey_confirm_by_divstate == 'resend') {
                 $send_from_to = new FormRoutine();
                 $send_from_to->application_form_id = $form_id;
@@ -7173,6 +7393,9 @@ class AdminHomeController extends Controller
                 $action = FormProcessAction::where('application_form_id', $form_id)->first();
                 $action->survey_confirm_dist = false;
                 $action->save();
+
+                $noti = save_api_noti('form_division_district', $form->id, $user->id, strip_tags($request->div_state_remark));
+                send_individual_noti_to_app($form->serial_code, 'Your form is resent back to district from division due to some reasons.', $noti, $user->fcm_key);
             } elseif ($request->survey_confirm_by_divstate == 'pending') {
                 $action = FormProcessAction::where('application_form_id', $form_id)->first();
                 $action->form_pending = true;
@@ -7206,6 +7429,8 @@ class AdminHomeController extends Controller
                 $from       = divType($form->div_state_id);
                 Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
 
+                $noti = save_api_noti('form_division_pending', $form->id, $user->id, strip_tags($request->div_state_remark));
+                send_individual_noti_to_app($form->serial_code, 'Your form is suspended by division due to some reasons.', $noti, $user->fcm_key);
             } elseif ($request->survey_confirm_by_divstate == 'reject') {
                 $action = FormProcessAction::where('application_form_id', $form_id)->first();
                 $action->form_reject = true;
@@ -7239,6 +7464,8 @@ class AdminHomeController extends Controller
                 $from       = divType($form->div_state_id);
                 Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
                 
+                $noti = save_api_noti('form_division_reject', $form->id, $user->id, strip_tags($request->div_state_remark));
+                send_individual_noti_to_app($form->serial_code, 'Your form is rejected by division for some reasons.', $noti, $user->fcm_key);
             }
 
             $adminAction = AdminAction::where('application_form_id', $form_id)->first();
@@ -7299,6 +7526,9 @@ class AdminHomeController extends Controller
         if (isset($_SERVER['HTTP_REFERER'])) {
             $form_id = $request->form_id;
 
+            $form = ApplicationForm::find($form_id);
+            $user = User::find($form->user_id);
+
             $action = FormProcessAction::where('application_form_id', $form_id)->first();
             $action->form_pending = false;
             $action->save();
@@ -7306,6 +7536,10 @@ class AdminHomeController extends Controller
             $adminAction = AdminAction::where('application_form_id', $form_id)->first();
             $adminAction->form_pending = admin()->id;
             $adminAction->save();
+
+            $noti = save_api_noti('form_pending_remove', $form->id, $user->id, null);
+            send_individual_noti_to_app($form->serial_code, 'The suspending has been canceled and the form is now processing.', $noti, $user->fcm_key);
+
             return redirect()->route('contractorMeterPendingForm.index');
         } else {
             return redirect()->route('dashboard');
@@ -7409,7 +7643,7 @@ class AdminHomeController extends Controller
             $expDate = Carbon::now()->addDay(7);
 
             // $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော ကန်ထရိုက်တိုက်မီတာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ငွေသွင်းရန်အဆင့်သို့ ရောက်ရှိနေပြီဖြစ်ပါသောကြောင့် အောက်ဖေါ်ပြပါ လင့်ခ် (Link) ကိုနှိပ်၍ ကျသင့်ငွေအား အွန်လိုင်းငွေချေစနစ်ဖြင့် ငွေပေးသွင်းနိုင်ပြီ ဖြစ်ပါသည်။ လုပ်ငန်းစဉ်များ ဆက်လက်လုပ်ဆောင်နိုင်ရန်အတွက် လူကြီးမင်းတို့အနေဖြင့် သက်မှတ်ရက် ( <span class="text-danger">'.$expDate->format('d-m-Y').' ၂:၀၀ နာရီ'.'</span> ) ထက်နောက်မကျဘဲ ငွေသွင်းပေးပါရန် အကြောင်းကြားပါသည်။</p>';
-            $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော ကန်ထရိုက်တိုက်မီတာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ငွေသွင်းရန်အဆင့်သို့ ရောက်ရှိနေပြီဖြစ်ပါသည်။ လုပ်ငန်းစဉ်များ ဆက်လက်လုပ်ဆောင်နိုင်ရန်အတွက် လူကြီးမင်းတို့အနေဖြင့် လျှောက်လွှာအတွင်းပါရှိသော အထောက်အထားများ၏ မူရင်းများကို တပါတည်းယူဆောင်၍  သက်မှတ်ရက် ( <span class="text-danger">'.$expDate->format('d-m-Y').' ၂:၀၀ နာရီ'.'</span> ) ထက်နောက်မကျဘဲ ရုံးသို့ လူကိုယ်တိုင် လာရောက်ငွေသွင်းပေးပါရန် အကြောင်းကြားပါသည်။</p>';
+            $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော ကန်ထရိုက်တိုက်မီတာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ငွေသွင်းရန်အဆင့်သို့ ရောက်ရှိနေပြီဖြစ်ပါသည်။ လုပ်ငန်းစဉ်များ ဆက်လက်လုပ်ဆောင်နိုင်ရန်အတွက် လူကြီးမင်းတို့အနေဖြင့် လျှောက်လွှာအတွင်းပါရှိသော အထောက်အထားများ၏ မူရင်းများကို တပါတည်းယူဆောင်၍  သက်မှတ်ရက် ( <span class="text-danger">'.$expDate->format('d-m-Y').' နေ့လည် ၂:၀၀ နာရီ'.'</span> ) ထက်နောက်မကျဘဲ ရုံးသို့ လူကိုယ်တိုင် လာရောက်ငွေသွင်းပေးပါရန် အကြောင်းကြားပါသည်။</p>';
             $mail_body .= '<div class="text-center mt-5 mb-5"><a href="'.route('user_pay_form.create', $form_id).'" class="btn btn-info text-center">Click for payment</a></div>';
 
             $mail = new MailTbl();
@@ -7441,6 +7675,9 @@ class AdminHomeController extends Controller
             $adminAction = AdminAction::where('application_form_id', $form_id)->first();
             $adminAction->announce=admin()->id;
             $adminAction->save();
+
+            $noti = save_api_noti('form_announce_deposit', $form->id, $user->id, strip_tags($mail_body));
+            send_individual_noti_to_app($form->serial_code, 'The form is notified to make a deposit.', $noti, $user->fcm_key);
 
             return redirect()->route('contractorMeterAnnounceList.index');
         } else {
@@ -7586,6 +7823,11 @@ class AdminHomeController extends Controller
             $adminAction->payment_accept=admin()->id;
             $adminAction->save();
 
+            $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော အိမ်သုံးပါဝါမီတာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ('.date('d-m-Y', strtotime($paid_date)).')တွင် ငွေသွင်းလက်ခံ ရရှိပြီးဖြစ်ကြောင်း အကြောင်းကြားပါသည်။</p>';
+
+            $noti = save_api_noti('form_deposit_done', $form->id, $user->id, strip_tags($mail_body));
+            send_individual_noti_to_app($form->serial_code, 'Your payment has been made for the meter.', $noti, $user->fcm_key);
+
             return redirect()->route('contractorMeterPaymentList.index');
         } else {
             return redirect()->route('dashboard');
@@ -7649,10 +7891,14 @@ class AdminHomeController extends Controller
     }
     public function contractor_chk_install_list_store(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $form = ApplicationForm::find($request->form_id);
+            $user = User::find($form->user_id);
+            
             $survey = FormSurvey::where('application_form_id', $request->form_id)->first();
             $action = FormProcessAction::where('application_form_id', $request->form_id)->first();
             $action->install_accept = true;
             $action->install_accepted_date = date('Y-m-d H:i:s');
+            $install_date = $action->install_accepted_date;
             if ($survey->loaded) {
                 $action->install_confirm = true;
                 $action->install_confirmed_date = date('Y-m-d H:i:s');
@@ -7680,6 +7926,10 @@ class AdminHomeController extends Controller
             $form138->string_form_date = $request->string_form_date != "" ? date('Y-m-d', strtotime($request->string_form_date)) : null;
             $form138->service_string_form_date = $request->service_string_form_date != "" ? date('Y-m-d', strtotime($request->service_string_form_date)) : null;
             $form138->save();
+            
+            $noti = save_api_noti('form_install', $form->id, $user->id, date('d-m-Y', strtotime($install_date)).'နေ့တွင် တပ်ဆင်ပြီးပါပြီ။');
+            send_individual_noti_to_app($form->serial_code, 'The meter has been installed on '.date('d-m-Y', strtotime($install_date)), $noti, $user->fcm_key);
+            
             return redirect()->route('contractorMeterCheckInstallList.index');
         } else {
             return redirect()->route('dashboard');
@@ -7749,6 +7999,8 @@ class AdminHomeController extends Controller
                 // 'ei_remark' => 'required'
             // ]);
             $form = ApplicationForm::find($request->form_id);
+            $user = User::find($form->user_id);
+
             $folder_name = $form->id;
             $path = public_path('storage/user_attachments/'.$folder_name);
             $pathPDF = "user_attachments/".$folder_name;
@@ -7787,6 +8039,9 @@ class AdminHomeController extends Controller
             $adminAction = AdminAction::where('application_form_id', $form->id)->first();
             $adminAction->install_confirm=admin()->id;
             $adminAction->save();
+
+            $noti = save_api_noti('form_ei', $form->id, $user->id, null);
+            send_individual_noti_to_app($form->serial_code, 'The meter has been ei-checked.', $noti, $user->fcm_key);
 
             return redirect()->route('contractorMeterInstallationDoneList.index');
         } else {
@@ -7843,6 +8098,8 @@ class AdminHomeController extends Controller
     public function contractor_reg_meter_list_store(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
             $id = $request->form_id;
+            $form = ApplicationForm::find($id);
+            $user = User::find($form->user_id);
 
             $action = FormProcessAction::where('application_form_id', $id)->first();
             $action->register_meter = true;
@@ -7903,6 +8160,10 @@ class AdminHomeController extends Controller
                 $key->remark = $request->remark;
                 $key->save();
             }
+
+            $noti = save_api_noti('form_register', $form->id, $user->id, 'ကန်ထရိုက်တိုက် မီတာမှတ်ပုံတင်ပြီးဖြစ်ပါသည်။');
+            send_individual_noti_to_app($form->serial_code, 'The contractor meters has been register.', $noti, $user->fcm_key);
+
             return redirect()->route('contractorMeterRegisterMeterList.index');
         } else {
             return redirect()->route('dashboard');
@@ -8061,6 +8322,9 @@ class AdminHomeController extends Controller
             $from       = divType($form->div_state_id);
             Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
 
+            $noti = save_api_noti('form_resend', $form->id, $user->id, strip_tags($request->remark));
+            send_individual_noti_to_app($form->serial_code, 'Your form has requirements, so please check the contents and send it back.', $noti, $user->fcm_key);
+
             return redirect()->route('transformerApplicationList.index');
         } else {
             return redirect()->route('dashboard');
@@ -8107,6 +8371,9 @@ class AdminHomeController extends Controller
             $link_name  = trans('lang.go_to_form');
             $from       = divType($form->div_state_id);
             Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
+
+            $noti = save_api_noti('form_accept', $form->id, $user->id);
+            send_individual_noti_to_app($form->serial_code, 'Your meter application form is accepted.', $noti, $user->fcm_key);
 
             return redirect()->route('transformerApplicationList.index');
         } else {
@@ -8193,6 +8460,8 @@ class AdminHomeController extends Controller
             $action->save();
 
             $form = ApplicationForm::find($id);
+            $user = User::find($form->user_id);
+
             $folder_name = $id;
             $path = public_path('storage/user_attachments/'.$folder_name);
             $pathPDF = "user_attachments/".$folder_name;
@@ -8328,6 +8597,9 @@ class AdminHomeController extends Controller
             $new_tsf->apply_sub_type = $request->allowed_tsf;
             $new_tsf->save();
 
+            $noti = save_api_noti('form_survey', $form->id, $user->id, null);
+            send_individual_noti_to_app($form->serial_code, 'The ground check stage has been completed.', $noti, $user->fcm_key);
+
             return redirect()->route('transformerGroundCheckList.index');
         }else{
             return redirect()->route('dashboard');
@@ -8389,6 +8661,9 @@ class AdminHomeController extends Controller
             ]);
 
             $id = $request->form_id;
+            $form = ApplicationForm::find($id);
+            $user = User::find($form->user_id);
+
             $date = date('Y-m-d H:i:s');
             $folder_name = $id;
             $path = public_path('storage/user_attachments/'.$folder_name);
@@ -8432,6 +8707,9 @@ class AdminHomeController extends Controller
             $adminAction = AdminAction::where('application_form_id', $id)->first();
             $adminAction->survey_confirm = admin()->id;
             $adminAction->save();
+
+            $noti = save_api_noti('form_tsp_approve', $form->id, $user->id, null);
+            send_individual_noti_to_app($form->serial_code, 'Your form has been approved by Township.', $noti, $user->fcm_key);
 
             return redirect()->route('transformerGroundCheckDoneList.index');
         } else {
@@ -8743,6 +9021,9 @@ class AdminHomeController extends Controller
                 $action->survey_confirm_dist = true;
                 $action->survey_confirmed_dist_date = $date;
                 $action->save();
+
+                $noti = save_api_noti('form_district_approve', $form->id, $user->id, null);
+                send_individual_noti_to_app($form->serial_code, 'Your form has been approved by district.', $noti, $user->fcm_key);
             } elseif ($request->survey_submit_district == 'resend') {
                 $send_from_to = new FormRoutine();
                 $send_from_to->application_form_id = $form_id;
@@ -8780,6 +9061,9 @@ class AdminHomeController extends Controller
                 $action = FormProcessAction::where('application_form_id', $form_id)->first();
                 $action->survey_confirm = false;
                 $action->save();
+
+                $noti = save_api_noti('form_district_township', $form->id, $user->id, strip_tags($request->dist_remark));
+                send_individual_noti_to_app($form->serial_code, 'Your form is resent back to township from district due to some reasons.', $noti, $user->fcm_key);
             } elseif ($request->survey_submit_district == 'pending') {
                 $action = FormProcessAction::where('application_form_id', $form_id)->first();
                 // dd($action);
@@ -8813,6 +9097,9 @@ class AdminHomeController extends Controller
                 $link_name  = trans('lang.go_to_form');
                 $from       = divType($form->div_state_id);
                 Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
+
+                $noti = save_api_noti('form_district_pending', $form->id, $user->id, strip_tags($request->dist_remark));
+                send_individual_noti_to_app($form->serial_code, 'Your form is suspended by district due to some reasons.', $noti, $user->fcm_key);
                 
             } elseif ($request->survey_submit_district == 'reject') {
                 $action = FormProcessAction::where('application_form_id', $form_id)->first();
@@ -8847,6 +9134,8 @@ class AdminHomeController extends Controller
                 $from       = divType($form->div_state_id);
                 Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
                 
+                $noti = save_api_noti('form_district_reject', $form->id, $user->id, strip_tags($request->dist_remark));
+                send_individual_noti_to_app($form->serial_code, 'Your form is rejected by district for some reasons.', $noti, $user->fcm_key);
             }
 
             $adminAction = AdminAction::where('application_form_id', $form_id)->first();
@@ -8886,7 +9175,16 @@ class AdminHomeController extends Controller
                     ['form_process_actions.form_reject', false],
                     ['form_process_actions.form_pending', false],
                     ['form_process_actions.survey_confirm_dist', true],
-                    ['form_process_actions.survey_confirm_div_state', true],
+                    ['form_process_actions.survey_confirm_div_state', false],
+                    ['form_process_actions.survey_confirm_div_state_to_headoffice', true],
+                    ['form_process_actions.survey_confirm_headoffice', true],
+                ])
+                ->orWhere([
+                    ['application_forms.apply_type', 4],
+                    ['form_process_actions.form_reject', false],
+                    ['form_process_actions.form_pending', false],
+                    ['form_process_actions.survey_confirm_dist', true],
+                    ['form_process_actions.survey_confirm_div_state', NULL],
                     ['form_process_actions.survey_confirm_div_state_to_headoffice', true],
                     ['form_process_actions.survey_confirm_headoffice', true],
                 ])
@@ -8976,6 +9274,9 @@ class AdminHomeController extends Controller
                 $action->survey_confirm_div_state_to_headoffice = false;
                 $action->survey_confirm_headoffice = false;
                 $action->save();
+
+                $noti = save_api_noti('form_division_approve', $form->id, $user->id, null);
+                send_individual_noti_to_app($form->serial_code, 'Your form has been approved by division.', $noti, $user->fcm_key);
             } elseif ($request->survey_confirm_by_divstate == 'send') {
                 // $this->validate($request, [
                 //     'capacitor_bank' => ['required']
@@ -9025,6 +9326,9 @@ class AdminHomeController extends Controller
                 $action->survey_confirm_div_state_to_headoffice = true;
                 $action->survey_confirmed_div_state_to_headoffice_date = date('Y-m-d H:i:s');
                 $action->save();
+
+                $noti = save_api_noti('form_division_approve', $form->id, $user->id, null);
+                send_individual_noti_to_app($form->serial_code, 'Your form has been approved by division.', $noti, $user->fcm_key);
             } elseif ($request->survey_confirm_by_divstate == 'resend') {
                 $send_from_to = new FormRoutine();
                 $send_from_to->application_form_id = $form_id;
@@ -9041,6 +9345,9 @@ class AdminHomeController extends Controller
                 $action = FormProcessAction::where('application_form_id', $form_id)->first();
                 $action->survey_confirm_dist = false;
                 $action->save();
+
+                $noti = save_api_noti('form_division_district', $form->id, $user->id, strip_tags($request->div_state_remark));
+                send_individual_noti_to_app($form->serial_code, 'Your form is resent back to district from division due to some reasons.', $noti, $user->fcm_key);
             } elseif ($request->survey_confirm_by_divstate == 'pending') {
                 $action = FormProcessAction::where('application_form_id', $form_id)->first();
                 $action->form_pending = true;
@@ -9074,6 +9381,8 @@ class AdminHomeController extends Controller
                 $from       = divType($form->div_state_id);
                 Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
                 
+                $noti = save_api_noti('form_division_pending', $form->id, $user->id, strip_tags($request->div_state_remark));
+                send_individual_noti_to_app($form->serial_code, 'Your form had been suspended by division due to some reasons.', $noti, $user->fcm_key);
             } elseif ($request->survey_confirm_by_divstate == 'reject') {
                 $action = FormProcessAction::where('application_form_id', $form_id)->first();
                 $action->form_reject = true;
@@ -9107,6 +9416,8 @@ class AdminHomeController extends Controller
                 $from       = divType($form->div_state_id);
                 Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
 
+                $noti = save_api_noti('form_division_reject', $form->id, $user->id, strip_tags($request->div_state_remark));
+                send_individual_noti_to_app($form->serial_code, 'Your form is rejected by division for some reasons.', $noti, $user->fcm_key);
             }
 
             $adminAction = AdminAction::where('application_form_id', $form_id)->first();
@@ -9242,6 +9553,9 @@ class AdminHomeController extends Controller
                 $action->survey_confirm_headoffice = true;
                 $action->survey_confirmed_headoffice_date = date('Y-m-d H:i:s');
                 $action->save();
+
+                $noti = save_api_noti('form_ministry_approve', $form->id, $user->id, null);
+                send_individual_noti_to_app($form->serial_code, 'Your form has been approved by ministry.', $noti, $user->fcm_key);
             } elseif ($request->survey_confirm_by_headoffice == 'resend') {
                 $send_from_to = new FormRoutine();
                 $send_from_to->application_form_id = $form_id;
@@ -9255,6 +9569,9 @@ class AdminHomeController extends Controller
                 $action->survey_confirm_div_state = false;
                 $action->survey_confirm_div_state_to_headoffice = false;
                 $action->save();
+
+                $noti = save_api_noti('form_ministry_division', $form->id, $user->id, strip_tags($request->head_remark));
+                send_individual_noti_to_app($form->serial_code, 'Your form is resent back to division from ministry due to some reasons.', $noti, $user->fcm_key);
             } elseif ($request->survey_confirm_by_headoffice == 'pending') {
                 $action = FormProcessAction::where('application_form_id', $form_id)->first();
                 $action->form_pending = true;
@@ -9288,6 +9605,8 @@ class AdminHomeController extends Controller
                 $from       = divType($form->div_state_id);
                 Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
                 
+                $noti = save_api_noti('form_ministry_pending', $form->id, $user->id, strip_tags($request->head_remark));
+                send_individual_noti_to_app($form->serial_code, 'Your form is suspended by ministry due to some reasons.', $noti, $user->fcm_key);
             } elseif ($request->survey_confirm_by_headoffice == 'reject') {
                 $action = FormProcessAction::where('application_form_id', $form_id)->first();
                 $action->form_reject = true;
@@ -9321,6 +9640,8 @@ class AdminHomeController extends Controller
                 $from       = divType($form->div_state_id);
                 Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
 
+                $noti = save_api_noti('form_ministry_reject', $form->id, $user->id, strip_tags($request->head_remark));
+                send_individual_noti_to_app($form->serial_code, 'Your form is rejected by ministry for some reasons.', $noti, $user->fcm_key);
             }
 
             $adminAction = AdminAction::where('application_form_id', $form_id)->first();
@@ -9381,6 +9702,9 @@ class AdminHomeController extends Controller
         if (isset($_SERVER['HTTP_REFERER'])) {
             $form_id = $request->form_id;
 
+            $form = ApplicationForm::find($form_id);
+            $user = User::find($form->user_id);
+
             $action = FormProcessAction::where('application_form_id', $form_id)->first();
             $action->form_pending = false;
             $action->save();
@@ -9388,6 +9712,10 @@ class AdminHomeController extends Controller
             $adminAction = AdminAction::where('application_form_id', $form_id)->first();
             $adminAction->form_pending = admin()->id;
             $adminAction->save();
+
+            $noti = save_api_noti('form_pending_remove', $form->id, $user->id, null);
+            send_individual_noti_to_app($form->serial_code, 'The suspending has been canceled and the form is now processing.', $noti, $user->fcm_key);
+
             return redirect()->route('transformerPendingForm.index');
         } else {
             return redirect()->route('dashboard');
@@ -9518,7 +9846,7 @@ class AdminHomeController extends Controller
             $expDate = Carbon::now()->addDay(7);
 
             // $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော ထရန်စဖော်မာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ငွေသွင်းရန်အဆင့်သို့ ရောက်ရှိနေပြီဖြစ်ပါသောကြောင့် အောက်ဖေါ်ပြပါ လင့်ခ် (Link) ကိုနှိပ်၍ ကျသင့်ငွေအား အွန်လိုင်းငွေချေစနစ်ဖြင့် ငွေပေးသွင်းနိုင်ပြီ ဖြစ်ပါသည်။ လုပ်ငန်းစဉ်များ ဆက်လက်လုပ်ဆောင်နိုင်ရန်အတွက် လူကြီးမင်းတို့အနေဖြင့် သက်မှတ်ရက် ( <span class="text-danger">'.$expDate->format('d-m-Y').' ၂:၀၀ နာရီ'.'</span> ) ထက်နောက်မကျဘဲ ငွေသွင်းပေးပါရန် အကြောင်းကြားပါသည်။</p>';
-            $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော ထရန်စဖော်မာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ငွေသွင်းရန်အဆင့်သို့ ရောက်ရှိနေပြီဖြစ်ပါသည်။ လုပ်ငန်းစဉ်များ ဆက်လက်လုပ်ဆောင်နိုင်ရန်အတွက် လူကြီးမင်းတို့အနေဖြင့် လျှောက်လွှာအတွင်းပါရှိသော အထောက်အထားများ၏ မူရင်းများကို တပါတည်းယူဆောင်၍  သက်မှတ်ရက် ( <span class="text-danger">'.$expDate->format('d-m-Y').' ၂:၀၀ နာရီ'.'</span> ) ထက်နောက်မကျဘဲ ရုံးသို့ လူကိုယ်တိုင် လာရောက်ငွေသွင်းပေးပါရန် အကြောင်းကြားပါသည်။</p>';
+            $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော ထရန်စဖော်မာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ငွေသွင်းရန်အဆင့်သို့ ရောက်ရှိနေပြီဖြစ်ပါသည်။ လုပ်ငန်းစဉ်များ ဆက်လက်လုပ်ဆောင်နိုင်ရန်အတွက် လူကြီးမင်းတို့အနေဖြင့် လျှောက်လွှာအတွင်းပါရှိသော အထောက်အထားများ၏ မူရင်းများကို တပါတည်းယူဆောင်၍  သက်မှတ်ရက် ( <span class="text-danger">'.$expDate->format('d-m-Y').' နေ့လည် ၂:၀၀ နာရီ'.'</span> ) ထက်နောက်မကျဘဲ ရုံးသို့ လူကိုယ်တိုင် လာရောက်ငွေသွင်းပေးပါရန် အကြောင်းကြားပါသည်။</p>';
             // $mail_body .= '<div class="text-center mt-5 mb-5"><a href="'.route('user_pay_form.create', $form_id).'" class="btn btn-info text-center">Click for payment</a></div>';
 
             $mail = new MailTbl();
@@ -9539,6 +9867,9 @@ class AdminHomeController extends Controller
             $link_name  = "";
             $from       = divType($form->div_state_id);
             Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from));
+
+            $noti = save_api_noti('form_announce_deposit', $form->id, $user->id, strip_tags($mail_body));
+            send_individual_noti_to_app($form->serial_code, 'The form is notified to make a deposit.', $noti, $user->fcm_key);
 
             return redirect()->route('transformerAnnounceList.index');
         } else {
@@ -9605,6 +9936,7 @@ class AdminHomeController extends Controller
             $folder_name = $form_id;
             $path = public_path('storage/user_attachments/'.$folder_name);
             $pathPDF = "user_attachments/".$folder_name;
+            
             if ($request->hasFile('payment_accepted_slips')) {
                 foreach($request->file('payment_accepted_slips') as $slip){
                     $ext = $slip->getClientOriginalExtension();
@@ -9648,7 +9980,9 @@ class AdminHomeController extends Controller
             // add the payment slips to mail body
             $fpa = DB::table("form_process_actions")->where("application_form_id", $form->id)->first();
             $files = explode(",",$fpa->payment_accepted_slips);
+            $photo_att = $pdf_att = null;
             if(count($files)> 0){
+                $photo_att = $pdf_att = [];
                 $payment_slips = "Payment Slips : </br>";
                 $payment_slips .= '<div class="row">';
                 foreach ($files as $file) {
@@ -9658,8 +9992,10 @@ class AdminHomeController extends Controller
                     if($file != ""){
                         if($ext != 'pdf'){
                             $payment_slips .= "<div class='col-md-2'><img src='".asset('storage/user_attachments/'.$form->id.'/'.$file)."' alt='".$file."' class='img-thumbnail'  data-toggle='modal' data-target='#myImg'></div>";
+                            array_push($photo_att, asset('storage/user_attachments/'.$form->id.'/'.$file));
                         }else{
                             $payment_slips .= "<a href='".asset('storage/user_attachments/'.$form->id.'/'.$file)."' target='_blank' class='pdf-block'>".$file."</a>";
+                            array_push($pdf_att, asset('storage/user_attachments/'.$form->id.'/'.$file));
                         }
                     }
                 }
@@ -9686,6 +10022,11 @@ class AdminHomeController extends Controller
             $from       = divType($form->div_state_id);
             $file_path  = public_path('storage/user_attachments/'.$form->id.'/');
             Mail::to($user->email)->send(new SendMail($header, $body, $remark, $link, $link_name, $from, $files, $file_path));
+
+            $mail_body = '<p>လူကြီးမင်း လျှောက်ထားသော ထရန်စဖော်မာ ( လျှောက်လွှာအမှတ်စဉ်-<span class="text-danger">'.$form->serial_code.'</span> ) မှာ ('.date('d-m-Y', strtotime($paid_date)).')တွင် ငွေသွင်းလက်ခံ ရရှိပြီးဖြစ်ကြောင်း အကြောင်းကြားပါသည်။</p>';
+
+            $noti = save_api_noti('form_deposit_done', $form->id, $user->id, strip_tags($mail_body), $photo_att, $pdf_att);
+            send_individual_noti_to_app($form->serial_code, 'Your payment has been made for the meter.', $noti, $user->fcm_key);
 
             /* queue and mail */
             // dispatch(new PaymentDoneJob($mail_detail));
@@ -9763,6 +10104,10 @@ class AdminHomeController extends Controller
             //         'service_string_form_date' => 'required',
             //     ]);
             // dd($request->all());
+
+            $form = ApplicationForm::find($request->form_id);
+            $user = User::find($form->user_id);
+
             $action = FormProcessAction::where('application_form_id', $request->form_id)->first();
             $action->install_accept = true;
             $action->install_accepted_date = date('Y-m-d', strtotime($request->accept_date)).' '.date('H:i:s');
@@ -9790,6 +10135,10 @@ class AdminHomeController extends Controller
             $form138->string_form_date = $request->string_form_date;
             $form138->service_string_form_date = $request->service_string_form_date;
             $form138->save();
+
+            $noti = save_api_noti('form_install', $form->id, $user->id, date('d-m-Y', strtotime($request->accept_date)).'နေ့တွင် တပ်ဆင်ပြီးပါပြီ။');
+            send_individual_noti_to_app($form->serial_code, 'The meter has been installed on '.date('d-m-Y', strtotime($request->accept_date)), $noti, $user->fcm_key);
+
             return redirect()->route('transformerCheckInstallList.index');
         } else {
             return redirect()->route('dashboard');
@@ -9853,6 +10202,8 @@ class AdminHomeController extends Controller
                 ]);
             // dd($request->all());
             $form = ApplicationForm::find($request->form_id);
+            $user = User::find($form->user_id);
+
             $folder_name = $form->id;
             $path = public_path('storage/user_attachments/'.$folder_name);
             $pathPDF = "user_attachments/".$folder_name;
@@ -9892,6 +10243,9 @@ class AdminHomeController extends Controller
             $adminAction = AdminAction::where('application_form_id', $form->id)->first();
             $adminAction->install_confirm = admin()->id;
             $adminAction->save();
+
+            $noti = save_api_noti('form_ei', $form->id, $user->id, null);
+            send_individual_noti_to_app($form->serial_code, 'The meter has been ei-checked.', $noti, $user->fcm_key);
 
             return redirect()->route('transformerInstallationDoneList.index');
         } else {
@@ -9955,6 +10309,9 @@ class AdminHomeController extends Controller
             // dd($request->all());
             $id = $request->form_id;
 
+            $form = ApplicationForm::find($id);
+            $user = User::find($form->user_id);
+
             $action = FormProcessAction::where('application_form_id', $id)->first();
             $action->register_meter = true;
             $action->registered_meter_date = date('Y-m-d H:i:s');
@@ -9988,6 +10345,10 @@ class AdminHomeController extends Controller
             $remark->installer_post = $request->installer_post;
             $remark->remark = $request->remark;
             $remark->save();
+
+            $noti = save_api_noti('form_register', $form->id, $user->id, 'မီတာအမှတ်-'.$remark->meter_no.'ဖြင့် မှတ်ပုံတင်ပြီးဖြစ်ပါသည်။');
+            send_individual_noti_to_app($form->serial_code, 'The meter has been register with the number '.$remark->meter_no, $noti, $user->fcm_key);
+            
             return redirect()->route('transformerRegisterMeterList.index');
         } else {
             return redirect()->route('dashboard');

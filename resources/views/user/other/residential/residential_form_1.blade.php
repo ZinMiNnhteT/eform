@@ -57,19 +57,19 @@
                                 <tr class="text-center">
                                     <td></td>
                                     <td>
-                                        {!! Form::open(['route' => ['resident_store_meter_type']]) !!}
+                                        {!! Form::open(['route' => ['resident_store_meter_type',$div]]) !!}
                                         {!! Form::hidden('sub_type', 1) !!}
                                         <button type="submit" class="btn btn-rounded btn-outline-info ">{{ __('lang.choose') }}</button>
                                         {!! Form::close() !!}
                                     </td>
                                     <td>
-                                        {!! Form::open(['route' => ['resident_store_meter_type']]) !!}
+                                        {!! Form::open(['route' => ['resident_store_meter_type',$div]]) !!}
                                         {!! Form::hidden('sub_type', 2) !!}
                                         <button type="submit" class="btn btn-rounded btn-outline-info ">{{ __('lang.choose') }}</button>
                                         {!! Form::close() !!}
                                     </td>
                                     <td>
-                                        {!! Form::open(['route' => ['resident_store_meter_type']]) !!}
+                                        {!! Form::open(['route' => ['resident_store_meter_type',$div]]) !!}
                                         {!! Form::hidden('sub_type', 3) !!}
                                         <button type="submit" class="btn btn-rounded btn-outline-info ">{{ __('lang.choose') }}</button>
                                         {!! Form::close() !!}

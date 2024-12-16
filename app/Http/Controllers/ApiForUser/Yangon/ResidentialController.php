@@ -688,6 +688,7 @@ class ResidentialController extends Controller
     }
 
     function refresh_token($token){
+        return $token;
         try{
             $new_token = JWTAuth::refresh($token);
             return $new_token;

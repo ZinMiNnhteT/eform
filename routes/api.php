@@ -13,6 +13,23 @@ use Illuminate\Http\Request;
 |
 */
 
+
+Route::post('api_path_xOmfnoG1N7Nxgv', function(){
+    return response()->json([
+        'success'       => true,
+        'path'          => 'https://demoeform2.moee.gov.mm/'
+        // 'path'          => 'https://eformexample.moee.gov.mm/'
+    ]);
+});
+
+Route::post('etender_xOmfnoG1N7Nxgv', function(){
+    return response()->json([
+        'success'       => true,
+        'path'          => 'https://testetender.moee.gov.mm/'
+        // 'path'          => 'https://ettest.moee.gov.mm/'
+    ]);
+});
+
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
@@ -65,18 +82,20 @@ Route::group([
     Route::post('reset_passwordndh&bdflRf','AuthController@reset_psw');
 });
 Route::group([
-    'middleware'    => ['auth.jwt', 'cors'], 
+    'middleware'    => ['auth.jwt', 'cors', 'accdelactchk'], 
     'namespace'     => 'ApiForUser'
 ], function () {
     Route::get('logout', 'AuthController@logout');
     Route::get('profile', 'AuthController@profile');
     Route::post('check_token', 'AuthController@checkToken');
     Route::post('refresh_token', 'AuthController@refresh');
+    
+    Route::post('check_login', 'AuthController@checkLogin');
 });
 // authentication  end -----------
 // helpers        start -----------
 Route::group([
-    'middleware'    => ['auth.jwt', 'cors'], 
+    'middleware'    => ['auth.jwt', 'cors', 'accdelactchk'], 
     'namespace'     => 'ApiForUser',
 ], function () {
     // Townships 
@@ -134,7 +153,7 @@ Route::group([
 
 
 Route::group([
-    'middleware'    => ['auth.jwt', 'cors'], 
+    'middleware'    => ['auth.jwt', 'cors', 'accdelactchk'], 
     'namespace'     => 'ApiForUser',
 ], function () {
     // save meter type (မီတာအမျိုးအစား) for (r,rp,cp)
@@ -208,15 +227,22 @@ Route::group([
 
     // mandalay
     Route::post('mdy_r_show','HomeController@mdy_r_show');
+    Route::post('mdy_rp_show','HomeController@mdy_rp_show');
     Route::post('mdy_t_show','HomeController@mdy_t_show');
+
+    Route::post('cp_show','HomeController@cp_show');
     
     // other
     Route::post('other_r_show','HomeController@other_r_show');
+    Route::post('other_rp_show','HomeController@other_rp_show');
+    Route::post('other_cp_show','HomeController@other_cp_show'); 
     Route::post('other_t_show','HomeController@other_t_show');
-    
-    
 
     // overall process
     Route::post('overall_process', 'HomeController@overall_process');
+    
+    // get notification
+    Route::post('get_notis', 'NotiController@getNotis');
+    Route::post('read_noti', 'NotiController@readNoti');
 
 });

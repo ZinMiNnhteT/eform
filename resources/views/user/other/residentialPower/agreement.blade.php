@@ -33,7 +33,7 @@
                     </div>
                     <p class="text-danger mm"></p>
                     <a href="{{ route('all_meter_forms') }}" class="waves-effect waves-light btn btn-rounded btn-secondary ">{{ __('lang.cancel') }}</a>
-                    <a href="{{ route('resident_power_meter_type') }}" class="waves-effect waves-light btn btn-rounded btn-info rr-accept disabled ">{{ __('lang.continue') }}</a>
+                    <a href="{{ route('resident_power_meter_type',['div'=>$div]) }}" class="waves-effect waves-light btn btn-rounded btn-info rr-accept disabled ">{{ __('lang.continue') }}</a>
                 </div>
             </div>
         </div>

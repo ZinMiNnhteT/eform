@@ -69,6 +69,12 @@ class Kernel extends HttpKernel
         'jwt.refresh' => \Tymon\JWTAuth\Middleware\RefreshToken::class,
 
         'cors' => \App\Http\Middleware\Cors::class,
+        
+        // to check user account is deleted or not
+        'accdelchk' => \App\Http\Middleware\AccountDeletionCheck::class,
+        
+        // to check user account is deleted or active for api
+        'accdelactchk' => \App\Http\Middleware\ChkDeleteActUser::class,
     ];
 
     /**

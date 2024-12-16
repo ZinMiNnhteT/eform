@@ -1,11 +1,18 @@
 @php
     if (isset($form->id)) {
         $id = $form->id;
+        $data = $form;
     } elseif (isset($data->id)) {
         $id = $data->id;
+        $form = $data;
     } else {
         $id = null;
+        $form = $data = null;
     }
+
+    //print_r('<pre>');
+    //print_r(progress($id));
+    //print_r('</pre>');
 @endphp 
 @if ($id !== null)
     @if (chk_send($id) == 'first')
@@ -30,9 +37,16 @@
                                 }
                                 $class5 = progress($id)['ann'] ? 'pb-accept' : '';
                                 $class6 = progress($id)['payment'] ? 'pb-accept' : '';
-                                $class7 = progress($id)['c_payment'] ? 'pb-accept' : '';
-                                $class8 = progress($id)['install'] ? 'pb-accept' : '';
-                                $class9 = progress($id)['reg'] ? 'pb-accept' : '';
+                                // $class7 = progress($id)['c_payment'] ? 'pb-accept' : '';
+                                $class7 = progress($id)['install'] ? 'pb-accept' : '';
+
+                                if($form->apply_type > 1){
+                                    $class8 = progress($id)['install_confirm'] ? 'pb-accept' : '';
+                                    $class9 = progress($id)['reg'] ? 'pb-accept' : '';
+                                }else{
+                                    $class8 = progress($id)['reg'] ? 'pb-accept' : '';
+                                }
+
                             @endphp
                             <li class="{{ $class1 }}">
                                 @if (progress($id)['send'])
@@ -120,7 +134,7 @@
                                 {{ __('lang.step6') }}
                                 @endif
                             </li>
-                            <li class="{{ $class7 }}">
+                            {{-- <li class="{{ $class7 }}">
                                 @if (progress($id)['c_payment'])
                                 <span class="mytooltip tooltip-effect-4">
                                     <span class="tooltip-item custom-tt-item">{{ __('lang.step7') }}</span>
@@ -131,31 +145,59 @@
                                 @else
                                 {{ __('lang.step7') }}
                                 @endif
-                            </li>
-                            <li class="{{ $class8 }}">
+                            </li> --}}
+                            <li class="{{ $class7 }}">
                                 @if (progress($id)['install'])
                                 <span class="mytooltip tooltip-effect-4">
-                                    <span class="tooltip-item custom-tt-item">{{ __('lang.step8') }}</span>
+                                    <span class="tooltip-item custom-tt-item">{{ __('lang.step7') }}</span>
                                     <span class="tooltip-content custom-tt-content clearfix">
                                         <span class="tooltip-text py-4 px-4">{{ __('lang.alrdy_install') }}</span>
                                     </span>
                                 </span>
                                 @else
-                                {{ __('lang.step8') }}
+                                {{ __('lang.step7') }}
                                 @endif
                             </li>
-                            <li class="{{ $class9 }}">
-                                @if (progress($id)['reg'])
-                                <span class="mytooltip tooltip-effect-4">
-                                    <span class="tooltip-item custom-tt-item">{{ __('lang.step9') }}</span>
-                                    <span class="tooltip-content custom-tt-content clearfix">
-                                        <span class="tooltip-text py-4 px-4">{{ __('lang.alrdy_reg') }}</span>
+
+                            @if ($form->apply_type > 1)
+                                <li class="{{ $class8 }}">
+                                    @if (progress($id)['install_confirm'])
+                                    <span class="mytooltip tooltip-effect-4">
+                                        <span class="tooltip-item custom-tt-item">{{ __('lang.step8') }}</span>
+                                        <span class="tooltip-content custom-tt-content clearfix">
+                                            <span class="tooltip-text py-4 px-4">{{ __('lang.ei_finish') }}</span>
+                                        </span>
                                     </span>
-                                </span>
-                                @else
-                                {{ __('lang.step9') }}
-                                @endif
-                            </li>
+                                    @else
+                                    {{ __('lang.step8') }}
+                                    @endif
+                                </li>
+                                <li class="{{ $class9 }}">
+                                    @if (progress($id)['reg'])
+                                    <span class="mytooltip tooltip-effect-4">
+                                        <span class="tooltip-item custom-tt-item">{{ __('lang.step9') }}</span>
+                                        <span class="tooltip-content custom-tt-content clearfix">
+                                            <span class="tooltip-text py-4 px-4">{{ __('lang.alrdy_reg') }}</span>
+                                        </span>
+                                    </span>
+                                    @else
+                                    {{ __('lang.step9') }}
+                                    @endif
+                                </li>
+                            @else
+                                <li class="{{ $class8 }}">
+                                    @if (progress($id)['reg'])
+                                    <span class="mytooltip tooltip-effect-4">
+                                        <span class="tooltip-item custom-tt-item">{{ __('lang.step8') }}</span>
+                                        <span class="tooltip-content custom-tt-content clearfix">
+                                            <span class="tooltip-text py-4 px-4">{{ __('lang.alrdy_reg') }}</span>
+                                        </span>
+                                    </span>
+                                    @else
+                                    {{ __('lang.step8') }}
+                                    @endif
+                                </li>
+                            @endif
                         </ul>
                     </div>
                 </div>

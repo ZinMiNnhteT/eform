@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
+use Illuminate\Validation\Rule;
+use App\User;
+use Illuminate\Support\Facades\Hash;
+
 class LoginController extends Controller
 {
     /*
@@ -21,6 +25,7 @@ class LoginController extends Controller
     */
 
     use AuthenticatesUsers;
+    // use RedirectsUsers, ThrottlesLogins;
 
     /**
      * Where to redirect users after login.
@@ -66,7 +71,6 @@ class LoginController extends Controller
         ]);
 
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password], $request->get('remember'))) {
-
             return redirect()->intended('/dashboard');
         }
         return back()->withInput($request->only('email', 'remember'));
@@ -78,4 +82,37 @@ class LoginController extends Controller
     //     request()->merge([$this->username => $type]);
     //     return property_exists($this, 'username') ? $this->username : 'email';
     // }
+
+    public function login(Request $request){
+        $this->validateLogin($request);
+
+        // If the class is using the ThrottlesLogins trait, we can automatically throttle
+        // the login attempts for this application. We'll key this by the username and
+        // the IP address of the client making these requests into this application.
+        if ($this->hasTooManyLoginAttempts($request)) {
+            $this->fireLockoutEvent($request);
+
+            return $this->sendLockoutResponse($request);
+        }
+
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'delete_status' => false, 'active' => 1])) {
+            return $this->sendLoginResponse($request);
+        }else{
+            $user = User::where('email', $request->email)->where('delete_status', true)->first();
+            if (isset($user) && Hash::check($request->password, $user->password)) {
+                $this->incrementLoginAttempts($request);
+                return redirect()
+                ->back()
+                ->withInput($request->only($this->username(), 'remember'))
+                ->withErrors(['email' => 'Your account had been deleted!']);
+            }
+        }
+
+        // If the login attempt was unsuccessful we will increment the number of attempts
+        // to login and redirect the user back to the login form. Of course, when this
+        // user surpasses their maximum number of attempts they will get locked out.
+        $this->incrementLoginAttempts($request);
+
+        return $this->sendFailedLoginResponse($request);
+    }
 }

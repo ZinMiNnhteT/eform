@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Auth\Events\Registered;
 
 class RegisterController extends Controller
 {
@@ -58,10 +60,31 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
-            'captcha' => ['required', 'captcha']
+            'name'          => ['required', 'string', 'max:255'],
+            'email'         => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'phone'         => ['required', 'string', 'max:11', 'min:7', 'unique:users'],
+            'password'      => ['required', 'string', 'min:6', 'confirmed'],
+            'captcha'       => ['required', 'captcha']
+        ], ['captcha.captcha' => 'Invalid Code']);
+    }
+    protected function validatorForDeletedUserByEmail(array $data)
+    {
+        return Validator::make($data, [
+            'name'          => ['required', 'string', 'max:255'],
+            'email'         => ['required', 'string', 'email', 'max:255'],
+            'phone'         => ['required', 'string', 'max:11', 'min:7', 'unique:users'],
+            'password'      => ['required', 'string', 'min:6', 'confirmed'],
+            'captcha'       => ['required', 'captcha']
+        ], ['captcha.captcha' => 'Invalid Code']);
+    }
+    protected function validatorForDeletedUserByPhone(array $data)
+    {
+        return Validator::make($data, [
+            'name'          => ['required', 'string', 'max:255'],
+            'email'         => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'phone'         => ['required', 'string', 'max:11', 'min:7'],
+            'password'      => ['required', 'string', 'min:6', 'confirmed'],
+            'captcha'       => ['required', 'captcha']
         ], ['captcha.captcha' => 'Invalid Code']);
     }
 
@@ -81,15 +104,58 @@ class RegisterController extends Controller
         ]);
     }
 
+    /**
+     * Overwrite
+     * Handle a registration request for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function register(Request $request)
+    {
+        $email = $request->email;
+        $phone = $request->phone;
+
+        // check deleted user
+        $deletedUserByEmail = DB::table('users')->where('email', $email)->where('delete_status', 1)->first();
+        $deletedUserByPhone = DB::table('users')->where('phone', $phone)->where('delete_status', 1)->first();
+        $activeUserByEmail = DB::table('users')->where('email', $email)->where('delete_status', 0)->first();
+        $activeUserByPhone = DB::table('users')->where('phone', $phone)->where('delete_status', 0)->first();
+
+        if(isset($deletedUserByEmail) && !isset($activeUserByEmail)){
+            $this->validatorForDeletedUserByEmail($request->all())->validate();
+        }elseif(isset($deletedUserByPhone) && !isset($activeUserByPhone)){
+            $this->validatorForDeletedUserByPhone($request->all())->validate();
+        }else{
+            $this->validator($request->all())->validate();
+        }
+
+        event(new Registered($user = $this->create($request->all())));
+
+        $this->guard()->login($user);
+
+        return $this->registered($request, $user)
+                        ?: redirect($this->redirectPath());
+    }
+
     /* create admin function */
     protected function createAdmin(Request $request)
     {
-        $this->validator($request->all())->validate();
+        $this->validatorAdmin($request->all())->validate();
         $admin = Admin::create([
             'name' => $request['name'],
             'email' => $request['email'],
             'password' => Hash::make($request['password']),
         ]);
         return redirect()->intended('login/admin');
+    }
+    protected function validatorAdmin(array $data)
+    {
+        return Validator::make($data, [
+            'name'          => ['required', 'string', 'max:255'],
+            'email'         => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password'      => ['required', 'string', 'min:6', 'confirmed'],
+            'captcha'       => ['required', 'captcha']
+        ], ['captcha.captcha' => 'Invalid Code']);
     }
 }

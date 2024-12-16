@@ -1,4 +1,4 @@
-@extends('layouts.app')
+Z@extends('layouts.app')
 
 @section('content')
 <a href="{{ route('all_meter_forms') }}" class="waves-effect waves-light btn btn-info btn-rounded pull-right mb-1"><< {{ __('lang.back') }}</a>

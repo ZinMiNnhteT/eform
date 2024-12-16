@@ -290,15 +290,15 @@ return [
     // 'contract' => 'လျှပ်စစ်ပုံစံ ၁၆ စာချုပ်ချုပ်ဆိုမည်',
     // 'print' => 'စာထုတ်ရန်',
     'register_meter' => 'Register Meter',
-    'step1' => 'အဆင့် တစ်',
-    'step2' => 'အဆင့် နှစ်',
-    'step3' => 'အဆင့် သုံး',
-    'step4' => 'အဆင့် လေး',
-    'step5' => 'အဆင့် ငါး',
-    'step6' => 'အဆင့် ခြောက်',
-    'step7' => 'အဆင့် ခုနစ်',
-    'step8' => 'အဆင့် ရှစ်',
-    'step9' => 'အဆင့် ကိုး',
+    'step1' => 'Step 1',
+    'step2' => 'Step 2',
+    'step3' => 'Step 3',
+    'step4' => 'Step 4',
+    'step5' => 'Step 5',
+    'step6' => 'Step 6',
+    'step7' => 'Step 7',
+    'step8' => 'Step 8',
+    'step9' => 'Step 9',
     'form16' => 'လျှပ်စစ်ပုံစံ (၁၆)',
     'residentReject' => 'Rejected Form',
     'residentPending' => 'Pending Form',
@@ -682,8 +682,27 @@ return [
 
     'applied_load_list' => 'Applied Load List',
     'allowed_load_list' => 'Allowed Load List',
+    
+    
+    'account_deletion'          => 'Account Deletion',
+    'req_to_delete'             => 'Request to Delete Account',
+    // 'acc_del_noti'              => 'To delete your account, you must click Request to Delete Account. After you request, the system will send a confirmation key to your email.',
+    
+    'acc_del_noti'              => 'To delete your account, you must click Request to Delete Account.',
+    'acc_del_noti2'             => 'Once your account is deleted, you will no longer be able to log in with this account on both the website and the mobile application. This action cannot be undone.',
+    'acc_delete'                => 'Delete Account',
+    'acc_delete_success'        => 'Your account is successfully deleted.',
+    'acc_delete_noti_title'     => 'Incorrect operation',
+    'acc_delete_noti_msg'       => 'It is not possible to perform operations as the account has been canceled. Click Sign out and use another account.',
+
+    'acc_delete_mail_title' => 'Account Deletion',
+    'acc_delete_mail_msg'   => 'Dear Customer, A Confirmation Key is sent to you to delete your account as you have requested to delete the account opened in MOEP-E-Form. You can delete the account using the following key. Ignore this email if you are not deleting your account.',
 
 
-
-
+    'wrong' => 'Password invalid',
+    'form_current_state' => 'Form Current State',
+    
+    "form_send_ready" => " Your application has not yet been sent to the office. Check it carefully and click send.",
+    "form_send_not_ready" => "Your application has not been completed yet.",
+    
 ];

@@ -989,7 +989,24 @@ function cdt($form_id) { /* condition */
             $data = chk_cdt(5);
             $route = 'contractor_applied_form_mdy';
         }
-    } 
+    } else{ // npt
+        if ($form->apply_type == 1) {
+            $data = chk_cdt(1); /* id and route  || get form_id */
+            $route = 'resident_applied_form';
+        } elseif ($form->apply_type == 2) {
+            $data = chk_cdt(2); /* id and route  || get form_id */
+            $route = 'resident_power_applied_form';
+        } elseif ($form->apply_type == 3) {
+            $data = chk_cdt(3); /* id and route  || get form_id */
+            $route = 'commercial_applied_form';
+        } elseif ($form->apply_type == 4) {
+            $data = chk_cdt(4);
+            $route = 'tsf_applied_form';
+        } else {
+            $data = chk_cdt(5);
+            $route = 'contractor_applied_form';
+        }
+    }
     if (count($data['id']) > 0) {
         $index = array_search($form_id, $data['id'], true);
         if (is_int($index)) {
@@ -1561,9 +1578,31 @@ function power_dist($form_id) {
     ];
 }
 
+// function progress($form_id) {
+//     $form = ApplicationForm::find($form_id);
+//     $f_action = $form->form_actions;
+//     $send = $accept = $survey = $c_survey = $c_survey_dist = $c_survey_div_state = $ann = $payment = $c_payment = $install = $reg = $finish = false;
+//     foreach ($f_action as $act) {
+//         $send = $act->user_send_to_office ? true : false;
+//         $accept = $act->form_accept ? true : false;
+//         $survey = $act->survey_accept ? true : false;
+//         $c_survey = $act->survey_confirm ? true : false;
+//         $c_survey_dist = $act->survey_confirm_dist ? true : false;
+//         $c_survey_div_state = $act->survey_confirm_div_state ? true : false;
+//         $ann = $act->announce ? true : false;
+//         $payment = $act->payment_accept ? true : false; //user_pay
+//         $c_payment = $act->payment_accept ? true : false;
+//         $install = $act->install_accept ? true : false;
+//         $reg = $act->register_meter ? true : false;
+//         $finish = $act->finish_form ? true : false;
+//     }
+//     return ['send' => $send, 'accept' => $accept, 'survey' => $survey, 'c_survey' => $c_survey, 'c_survey_dist' => $c_survey_dist, 'c_survey_div_state' => $c_survey_div_state, 'ann' => $ann, 'payment' => $payment, 'c_payment' => $c_payment, 'install' => $install, 'reg' => $reg, 'finish' => $finish];
+// }
+
 function progress($form_id) {
     $form = ApplicationForm::find($form_id);
     $f_action = $form->form_actions;
+    $send = $accept = $survey = $c_survey = $c_survey_dist = $c_survey_div_state = $ann = $c_survey_head_state = $payment = $c_payment = $install = $install_confirm = $reg = $finish = false;
     foreach ($f_action as $act) {
         $send = $act->user_send_to_office ? true : false;
         $accept = $act->form_accept ? true : false;
@@ -1571,14 +1610,16 @@ function progress($form_id) {
         $c_survey = $act->survey_confirm ? true : false;
         $c_survey_dist = $act->survey_confirm_dist ? true : false;
         $c_survey_div_state = $act->survey_confirm_div_state ? true : false;
+        $c_survey_head_state = $act->survey_confirm_headoffice ? true : false;
         $ann = $act->announce ? true : false;
-        $payment = $act->user_pay ? true : false;
+        $payment = $act->payment_accept ? true : false; //user_pay
         $c_payment = $act->payment_accept ? true : false;
         $install = $act->install_accept ? true : false;
+        $install_confirm = $act->install_confirm ? true : false;
         $reg = $act->register_meter ? true : false;
         $finish = $act->finish_form ? true : false;
     }
-    return ['send' => $send, 'accept' => $accept, 'survey' => $survey, 'c_survey' => $c_survey, 'c_survey_dist' => $c_survey_dist, 'c_survey_div_state' => $c_survey_div_state, 'ann' => $ann, 'payment' => $payment, 'c_payment' => $c_payment, 'install' => $install, 'reg' => $reg, 'finish' => $finish];
+    return ['send' => $send, 'accept' => $accept, 'survey' => $survey, 'c_survey' => $c_survey, 'c_survey_dist' => $c_survey_dist, 'c_survey_div_state' => $c_survey_div_state, 'c_survey_head_state' => $c_survey_head_state, 'ann' => $ann, 'payment' => $payment, 'c_payment' => $c_payment, 'install' => $install, 'install_confirm' => $install_confirm, 'reg' => $reg, 'finish' => $finish];
 }
 
 function mail_type($value) {
@@ -1853,5 +1894,134 @@ function space($number){
     return $space;
 }
 
+// flutter noti api helper
+function save_api_noti($type, $form_id, $user_id, $remark = null, $img = null, $pdf = null){
+    DB::table('flutter_notis')->insert([
+        'type' => $type,
+        'form_id' => $form_id,
+        'user_id' => $user_id,
+        'read_status' => 0,
+        'send_date' => date('Y-m-d H:i:s'),
+        'remark' => $remark,
+        'img' =>  $img != null ? implode(',', $img) : null,
+        'pdf' =>  $pdf != null ? implode(',', $pdf) : null,
+    ]);
+    $noti = DB::table('flutter_notis')
+    ->join('application_forms',function($join){
+        $join->on('application_forms.id','=','flutter_notis.form_id');
+    })
+    ->select('flutter_notis.*', 'application_forms.serial_code as serial_code', 'application_forms.apply_type as apply_type', 'application_forms.apply_division as apply_division')
+    ->where('flutter_notis.form_id', $form_id)
+    ->where('flutter_notis.user_id', $user_id)->orderBy('flutter_notis.id','desc')->first();
+    
+    $noti->form_id = (int) $noti->form_id;
+    $noti->user_id = (int) $noti->user_id;
+    $noti->read_status = (int) $noti->read_status;
+    $noti->id = (int) $noti->id;
+    $noti->send_date = date('d-m-Y h:i:s A', strtotime($noti->send_date));
+    $noti->remark = $noti->remark != null ? $noti->remark : '';
+    $noti->img = $noti->img != null ? $noti->img : '';
+    $noti->pdf = $noti->pdf != null ? $noti->pdf : '';
+    return $noti;
+}
+function form_for_api($form_id){
+    $data = ApplicationForm::select('application_forms.*', 'division_states.name as div_name', DB::raw('DATE_FORMAT(application_forms.date, "%d-%b-%Y") as date_f'))->where('application_forms.id', $form_id)->orderBy('date', 'desc')->orderBy('id', 'asc')->leftJoin('division_states',function($join){
+        $join->on('application_forms.div_state_id','=','division_states.id');
+    })->first();
+    
+    $status = cdt($data->id)[0];
+    if (chk_send($data->id) == 'first'){
+        $state_name = 'lang.'.chk_userForm($data->id)['msg'];
+        $state_lang = chk_userForm($data->id)['msg'];
+    }elseif (chk_send($data->id) == 'second'){
+        $state_name = 'lang.resend_form';
+        $state_lang = 'resend_form';
+    }else{
+        $state_name = 'lang.'.$status;
+        $state_lang = $status;
+    }
+    $data->state = trans($state_name,[], 'en');
 
+    $data->state_lang = $state_lang;
+
+    return $data;
+}
+
+function send_individual_noti_to_app($title, $body, $data, $token){ 
+
+    define('API_ACCESS_KEY','AAAABgbwbXw:APA91bH5apxvy3dcBfHIcad2LK8qPqj67ybtGxlTyrW5IaEm2_fkl8Es3bMFR3hvJf3Ujx055twjMhvdYL86GMF0xWVmFKoxiQ8s30cW3imqWobyyd09ZXJdn0IUHqO2sJXyt_anDcTV');
+
+    $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
+
+    $notification = [
+        'title'     => $title,
+        'body'      => $body,
+        'channelId' => 'high_importance_channel',
+        "icon"      => "default",
+        'sound'     => 'default'
+    ];
+
+    $fcmNotification = [
+        'notification' => $notification,
+        'data' => $data,
+
+        // one device sending 
+        'to' => $token, 
+
+        // group devices sending
+        // 'registration_ids' => array of register_ids or token ,
+
+        // topic sending
+        // 'to' => '/topics/alldevices',
+    ];
+
+    $headers = [
+        'Authorization:key=' . API_ACCESS_KEY,
+        'Content-Type:application/json'
+    ];
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $fcmUrl);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fcmNotification));
+    $result = curl_exec($ch);
+    curl_close($ch);
+
+    return $result;
+
+}
+
+function refresh_token($token){
+    return $token;
+    // try{
+    //     $new_token = JWTAuth::refresh($token);
+    //     return $new_token;
+    // }catch(TokenInvalidException $e){
+    //     return $token;
+    // }
+}
+
+function addressApi($formId, $lang) {
+    $form = ApplicationForm::find($formId);
+    if ($lang == 'mm') {
+        $home_no = $form->applied_home_no ? 'အမှတ် ('.$form->applied_home_no.')၊' : '';
+        $building = $form->applied_building ? 'တိုက်အမှတ် ('.$form->applied_building.')၊' : '';
+        $lane = $form->applied_lane ? $form->applied_lane.'၊' : '';
+        $street = $form->applied_street ? $form->applied_street.'၊' : '';
+        $quarter = $form->applied_quarter ? $form->applied_quarter.'၊' : '';
+        $town = $form->applied_town ? $form->applied_town.'၊' : '';
+        return $home_no.' '.$building.' '.$lane.' '.$street.' '.$quarter.' '.$town.' '.township_mm($form->township_id).'၊ '.district_mm($form->district_id).'၊ '.div_state_mm($form->div_state_id);
+    } else {
+        $home_no = $form->applied_home_no ? 'No ('.$form->applied_home_no.'),' : '';
+        $building = $form->applied_building ? 'Building ('.$form->applied_building.'),' : '';
+        $lane = $form->applied_lane ? $form->applied_lane.' Lane,' : '';
+        $street = $form->applied_street ? $form->applied_street.' Street,' : '';
+        $quarter = $form->applied_quarter ? $form->applied_quarter.' Quarter,' : '';
+        $town = $form->applied_town ? $form->applied_town.' Town,' : '';
+        return $home_no.' '.$building.' '.$lane.' '.$street.' '.$quarter.' '.$town.' '.township($form->township_id).', '.district($form->district_id).', '.div_state($form->div_state_id).'.';
+    }
+}
 

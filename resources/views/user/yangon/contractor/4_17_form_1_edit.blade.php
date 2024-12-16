@@ -48,7 +48,7 @@
                         {{-- Mobile --}}
                         <div class="form-group">
                             <label for="applied_phone" class="text-info"> {{ __('lang.contact_phone') }} <span class="text-danger f-s-15">&#10039;</span></label>
-                            <input type="text" name="applied_phone" value="{{ $applied_phone }}" id="phone" class="form-control {{ $errors->has('applied_phone') ? 'is-invalid' : '' }}" placeholder="{{ __('lang.eg_phone1') }}" required>
+                            <input type="text" name="applied_phone" value="{{ $applied_phone }}" id="phone" class="form-control {{ $errors->has('applied_phone') ? 'is-invalid' : '' }}" placeholder="{{ __('lang.eg_phone1') }}" required minlength="9"  maxlength="11">
                         </div>
                         {{-- Builing No --}}
                         <div class="form-group">

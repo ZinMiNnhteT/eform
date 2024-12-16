@@ -50,7 +50,7 @@
                                         {{ checkMM() === 'mm' ? mmNum(number_format($fee->$col_name)) : number_format($fee->$col_name) }}/-
                                             @php $t_count += $fee->$col_name; @endphp
                                             @endif
-                                            {{ $fee->sub_type }}
+                                            <!--{{ $fee->sub_type }}-->
                                     </td>
                                         @endif
                                     @endforeach
@@ -58,7 +58,7 @@
                                         {{ checkMM() === 'mm' ? mmNum(number_format($t_count)) : number_format($t_count) }}/-
                                     </td>
                                     <td class="text-center">
-                                        {!! Form::open(['route' => ['tsf_store_meter_type']]) !!}
+                                        {!! Form::open(['route' => ['tsf_store_meter_type',$div]]) !!}
                                         {!! Form::hidden('sub_type', $fee->sub_type) !!}
                                         <button type="submit" class="btn btn-rounded btn-outline-info ">{{ __('lang.choose') }}</button>
                                         {!! Form::close() !!}

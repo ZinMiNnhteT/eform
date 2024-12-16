@@ -34,7 +34,7 @@
                             <label for="applied_phone" class="text-primary m-b-10">
                                 {{ __('lang.contact_phone') }} <span class="text-danger f-s-15">&#10039;</span>
                             </label>
-                            {!! Form::text('applied_phone', null, ['id' => 'phone', 'class' => 'form-control inner-form', 'required']) !!}
+                            {!! Form::text('applied_phone', null, ['id' => 'phone', 'class' => 'form-control inner-form', 'required','maxlength' => '11','minlength' => '9']) !!}
                             <small class="text-danger"> {{ __('lang.phone_help') }}</small>
                         </div>
                        {{--  Work  --}}

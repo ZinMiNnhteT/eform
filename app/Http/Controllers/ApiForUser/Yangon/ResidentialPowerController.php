@@ -508,11 +508,12 @@ class ResidentialPowerController extends Controller
     }
 
     public function refresh_token($token){
-        try{
-            $new_token = JWTAuth::refresh($token);
-            return $new_token;
-        }catch(TokenInvalidException $e){
-            return $token;
-        }
+        return $token;
+        // try{
+        //     $new_token = JWTAuth::refresh($token);
+        //     return $new_token;
+        // }catch(TokenInvalidException $e){
+        //     return $token;
+        // }
     }
 }
